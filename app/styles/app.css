@@ -1,0 +1,4292 @@
+:root {
+  --aside-width: 400px;
+  --header-height: 56px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.link {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/*
+* --------------------------------------------------
+* Boutons
+* --------------------------------------------------
+*/
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0.85rem 1.5rem;
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  border: 1px solid var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  cursor: pointer;
+  border-radius: 6px;
+  transition:
+    background 200ms var(--ease-out-soft),
+    color 200ms var(--ease-out-soft),
+    opacity 200ms var(--ease-out-soft);
+}
+
+.btn:hover:not(:disabled) {
+  text-decoration: none;
+  background: #2c2c2c;
+  color: var(--color-paper);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn--full {
+  width: 100%;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--color-ink);
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid var(--color-ink);
+  min-height: 0;
+  padding: 0 0 0.15rem;
+}
+
+.btn--ghost:hover:not(:disabled) {
+  background: transparent;
+  color: var(--color-ink);
+  opacity: 0.6;
+}
+
+/* Secondary action: outlined on paper, inverting on hover. Pairs with the
+   solid .btn as the "add to cart" / "buy now" duo on the product page. */
+.btn--outline {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+}
+
+.btn--outline:hover:not(:disabled) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+/* A button that can't be pressed shouldn't be inviting a press. */
+
+.badge-sale {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+/* Same slot as .badge-sale — the two never show at once, so one card only
+   ever carries one tag. Muted rather than the sale badge's paper-on-ink, so
+   it reads as a status, not an invitation. */
+.badge-sold-out {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  background: var(--color-muted);
+  color: var(--color-paper);
+  font-size: 0.7rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+/* The photograph itself fades back too, so the card reads as unavailable at
+   a glance rather than only via the small badge in the corner. */
+.product-card--sold-out .product-card__img--main {
+  opacity: 0.45;
+}
+
+/* Three tracks: the side columns share the leftover space equally, so the
+   centre column — the wordmark — lands on the true middle of the header. */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  height: var(--header-height);
+  padding: 0 1rem;
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-line);
+  color: var(--color-ink);
+  transition:
+    background-color 300ms var(--ease-out-soft),
+    border-color 300ms var(--ease-out-soft),
+    color 300ms var(--ease-out-soft);
+}
+
+.site-header__side {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.site-header__side--end {
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+@media (min-width: 48em) {
+  .site-header {
+    padding: 0 1.5rem;
+  }
+}
+
+/* Only ever active on the homepage while the hero is in view (see
+   the Hero component's IntersectionObserver) — glass look matching the hero's own
+   CTA buttons, white text/icons so they stay legible over the photo. */
+.site-header--transparent {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom-color: rgba(255, 255, 255, 0.25);
+  color: var(--color-paper);
+}
+
+.site-header--transparent .site-header__logo,
+.site-header--transparent .site-header__nav-link,
+.site-header--transparent .site-header__icon-btn {
+  color: var(--color-paper);
+}
+
+.site-header--transparent .site-header__cart-count {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* The header is fixed and no longer reserves flow space — every page needs
+   that space reserved, except the homepage (its hero intentionally starts
+   at the very top, underneath the transparent header). */
+.main--with-header-space {
+  padding-top: var(--header-height);
+}
+
+.site-header__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* transform-origin keeps the press animation centred on the wordmark. */
+  transform-origin: center;
+}
+
+.site-header__logo:hover {
+  text-decoration: none;
+}
+
+/* The wordmark is a mask painted with currentColor, not an <img>: it therefore
+   inherits the header's colour and flips to white on its own when the header
+   goes transparent over the hero — no second asset, no JS. */
+.site-header__wordmark {
+  display: block;
+  width: 9.25rem;
+  height: 1.25rem;
+  background-color: currentColor;
+  -webkit-mask: url('/images/logo-wordmark.png') center / contain no-repeat;
+  mask: url('/images/logo-wordmark.png') center / contain no-repeat;
+  transition: opacity 200ms var(--ease-out-soft);
+}
+
+@media (min-width: 48em) {
+  .site-header__wordmark {
+    width: 10.5rem;
+    height: 1.4rem;
+  }
+}
+
+.site-header__logo:hover .site-header__wordmark {
+  opacity: 0.65;
+}
+
+/* Click feedback: a quick press-and-release. Driven by a class so it replays
+   on every click, with :active covering the press itself. */
+.site-header__logo:active {
+  transform: scale(0.96);
+}
+
+.site-header__logo--pressed {
+  animation: logo-press 420ms var(--ease-out-soft);
+}
+
+@keyframes logo-press {
+  0% {
+    transform: scale(1);
+  }
+  28% {
+    transform: scale(0.94);
+    letter-spacing: 0;
+  }
+  62% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__logo--pressed {
+    animation: none;
+  }
+
+  .site-header__logo:active {
+    transform: none;
+  }
+}
+
+.site-header__nav {
+  display: none;
+  gap: 1.1rem;
+}
+
+@media (min-width: 48em) {
+  .site-header__nav {
+    display: flex;
+  }
+}
+
+.site-header__nav-link {
+  position: relative;
+  font-size: 0.78rem;
+  text-transform: lowercase;
+  padding: 0.25rem 0;
+  color: var(--color-ink);
+  opacity: 0.85;
+  transition: opacity 150ms;
+}
+
+/* Underline that wipes in left-to-right on hover / active. */
+.site-header__nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms var(--ease-out-soft);
+}
+
+.site-header__nav-link:hover {
+  text-decoration: none;
+  opacity: 1;
+}
+
+.site-header__nav-link:hover::after,
+.site-header__nav-link[aria-current='page']::after {
+  transform: scaleX(1);
+}
+
+.site-header__nav-link[aria-current='page'] {
+  opacity: 1;
+}
+
+.site-header__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: none;
+  border: none;
+  color: var(--color-ink);
+  cursor: pointer;
+  position: relative;
+}
+
+.site-header__cart-count {
+  position: absolute;
+  top: 5px;
+  right: 3px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  border-radius: 999px;
+  background: var(--color-ink);
+  color: var(--color-paper);
+  font-size: 0.6rem;
+  line-height: 15px;
+  text-align: center;
+}
+
+/* Shown at every width, not just on phones: the drawer it opens is where the
+   settings live, and on desktop there is no other way in. */
+.site-header__burger {
+  display: inline-flex;
+}
+
+/*
+* --------------------------------------------------
+* Overlay / drawers (panier, recherche, menu)
+* --------------------------------------------------
+*/
+@media (max-width: 45em) {
+  html:has(.overlay.expanded) {
+    overflow: hidden;
+  }
+}
+
+.overlay {
+  background: rgba(17, 17, 17, 0.32);
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  transition: opacity 300ms var(--ease-out-soft);
+  visibility: hidden;
+  z-index: 40;
+}
+
+.overlay .close-outside {
+  background: transparent;
+  border: none;
+  color: transparent;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: calc(100% - var(--aside-width));
+}
+
+.overlay.expanded {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.drawer {
+  background: var(--color-paper);
+  height: 100dvh;
+  width: min(var(--aside-width), 100vw);
+  position: fixed;
+  right: calc(-1 * var(--aside-width));
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  transition: transform 320ms var(--ease-out-soft);
+}
+
+.overlay.expanded .drawer {
+  transform: translateX(calc(-1 * var(--aside-width)));
+}
+
+.drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  flex-shrink: 0;
+}
+
+.drawer__heading {
+  font-size: 0.85rem;
+  text-transform: lowercase;
+  margin: 0;
+}
+
+.drawer__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-ink);
+  padding: 0.4rem;
+  margin-right: -0.4rem;
+}
+
+.drawer__main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+* Reserve the scrollbar's column permanently.
+*
+* This is the first line of defence against the site changing width, and it
+* covers more than dialogs: without it, navigating from a page that scrolls to
+* one that doesn't makes the whole layout jump sideways. Chrome 94+, Firefox
+* 97+ and Safari 18.2+ honour it; older browsers fall back to the measured
+* compensation below, which is why lockScroll() measures the gap rather than
+* assuming it.
+*/
+html {
+  scrollbar-gutter: stable;
+}
+
+/*
+* Scroll lock that costs no layout.
+*
+* `--scrollbar-lock` is whatever width the layout actually gained when the
+* lock was applied — zero on a browser that honoured the gutter above. It is
+* given back here as padding so nothing moves. The fixed header is pulled in
+* by the same amount: it sits against the viewport, not the padded body, and
+* would otherwise fall out of line with the content underneath it.
+*/
+.is-scroll-locked {
+  overflow: hidden;
+  padding-right: var(--scrollbar-lock, 0px);
+}
+
+.is-scroll-locked .site-header {
+  right: var(--scrollbar-lock, 0px);
+}
+
+/*
+* --------------------------------------------------
+* Menu mobile
+* --------------------------------------------------
+*/
+.mobile-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-nav a {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.9rem;
+  text-transform: lowercase;
+}
+
+.mobile-nav a:hover {
+  text-decoration: none;
+  opacity: 0.6;
+}
+
+/* Set apart from the collections above it: a service, not a category. */
+.mobile-nav__service {
+  margin-top: 1rem;
+  border-top: 1px solid var(--color-line);
+  color: var(--color-muted);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/*
+* --------------------------------------------------
+* Recherche
+* --------------------------------------------------
+*/
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--color-ink);
+  padding-bottom: 0.4rem;
+  position: sticky;
+  top: 0;
+  background: var(--color-paper);
+}
+
+.search-bar input {
+  border: none;
+  flex: 1;
+  margin: 0;
+  padding: 0.4rem 0;
+}
+
+.search-group {
+  margin: 1.25rem 0;
+}
+
+.search-group h5 {
+  color: var(--color-muted);
+  text-transform: lowercase;
+  margin-bottom: 0.6rem;
+}
+
+.search-item {
+  margin-bottom: 0.6rem;
+}
+
+.search-item a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.search-item img {
+  background: var(--color-paper);
+}
+
+/* Hidden only while JavaScript is actually running: the `js` class is set
+   by an inline script in root.tsx before the page paints. A script that never
+   ran, or hydration that failed, used to leave these sections — whole rows of
+   products among them — invisible for good. */
+.reveal {
+  transition:
+    opacity 480ms var(--ease-out-soft),
+    transform 480ms var(--ease-out-soft);
+}
+
+/* Written as :not(--visible) rather than as two competing rules: a plain
+   `.js .reveal` would out-specify `.reveal--visible` and keep every section
+   hidden even once it had been revealed. */
+.js .reveal:not(.reveal--visible) {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* Revealed by Reveal's safety net instead of by the observer: no transition
+   at all. A transition frozen at its first frame (a throttled tab, a page
+   restored from the back/forward cache) holds opacity 0, which looks exactly
+   like missing content — the bug this whole mechanism caused. */
+.reveal--instant {
+  transition: none;
+}
+
+/*
+ * Movement only, never opacity.
+ *
+ * A CSS animation can be frozen at its first frame — a throttled tab, a page
+ * coming back from the back/forward cache, a browser in battery-saver mode —
+ * and an animation that starts at opacity 0 then leaves the header and the
+ * whole page invisible until something wakes it up. Sliding 8px is safe under
+ * exactly the same conditions: frozen, the content is 8px low and perfectly
+ * readable.
+ */
+@keyframes app-enter {
+  from {
+    transform: translateY(8px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (max-width: 47.99em) {
+  .site-header {
+    animation: app-enter 420ms 40ms var(--ease-out-soft) both;
+  }
+
+  main {
+    animation: app-enter 520ms var(--ease-out-soft) both;
+  }
+}
+
+@media (max-width: 47.99em) and (prefers-reduced-motion: reduce) {
+  .site-header,
+  main {
+    animation: none;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Hero
+* --------------------------------------------------
+*/
+.hero {
+  position: relative;
+  height: 92vh;
+  min-height: 560px;
+  overflow: hidden;
+  background: var(--color-paper);
+}
+
+@media (min-width: 48em) {
+  /* Was a full 100vh, which on a wide desktop screen stretched the photo
+     into a tall band you had to scroll past before seeing anything else. */
+  .hero {
+    height: 82vh;
+    min-height: 620px;
+  }
+}
+
+.hero__media {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 25% 30%, #d9d9d5, transparent 60%),
+    linear-gradient(160deg, #eceae6 0%, #cfcecb 100%);
+}
+
+.hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * The scrim that keeps the hero caption readable.
+ *
+ * A separate layer above the photo, never opacity on the photo itself: the
+ * image keeps its own brightness and detail everywhere, and only the bottom
+ * of the frame — where the eyebrow, title, text and buttons actually sit —
+ * is darkened. The previous flat 55% black over the whole thing made a
+ * bright photograph look like a grey one.
+ */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.34) 28%,
+    rgba(0, 0, 0, 0.08) 55%,
+    transparent 78%
+  );
+}
+
+/* Hero CTA text ("découvrir" / "notre histoire").
+   These are <a> elements, so Tailwind's `text-white` can't be relied on:
+   that utility lives in `@layer utilities`, while reset.css's
+   `a { color: var(--color-ink) }` is unlayered — and unlayered declarations
+   win over layered ones no matter the source order. This rule is unlayered
+   too and app.css loads after reset.css, so it takes precedence. */
+.hero__cta,
+.hero__cta:hover,
+.collection-feature__cta,
+.collection-feature__cta:hover {
+  color: var(--color-paper);
+  text-decoration: none;
+}
+
+/*
+* --------------------------------------------------
+* Rangée / grille produits
+* --------------------------------------------------
+*/
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem 0.4rem;
+  padding: 0.75rem;
+}
+
+/* Movement only — same reason as @keyframes app-enter: these keyframes carry
+   products, and an animation frozen at its first frame would leave every card
+   revealed by "view more" invisible. */
+@keyframes product-reveal {
+  from {
+    transform: translateY(12px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/* One column fewer per breakpoint than before (was 4 then 5), so each
+   product photo is bigger and the grid reads as a lookbook rather than a
+   contact sheet. ProductItem's `sizes` attribute already assumes these
+   widths (33vw / 25vw), so it lines up exactly now. */
+@media (min-width: 48em) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+}
+
+.view-all {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 1rem;
+}
+
+.view-all a {
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/*
+* --------------------------------------------------
+* Carte produit
+* --------------------------------------------------
+*/
+.product-card {
+  position: relative;
+  display: block;
+}
+
+/* Barely-there at rest, a touch more on hover — the card lifts off the page
+   instead of announcing itself. Shared elevation scale, see tailwind.css. */
+.product-card__media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1/1;
+  background: var(--color-paper);
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 260ms var(--ease-out-soft);
+}
+
+.product-card:hover .product-card__media {
+  box-shadow: var(--shadow-sm);
+}
+
+.product-card__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2%;
+  transition:
+    opacity 400ms var(--ease-out-soft),
+    transform 600ms var(--ease-out-soft);
+}
+
+.product-card__img--alt {
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .product-card__media:hover .product-card__img--main {
+    transform: scale(1.03);
+  }
+
+  .product-card__media:hover .product-card__img--alt {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  .product-card__media:hover .product-card__img--main:not(:only-child) {
+    opacity: 0;
+  }
+}
+
+.product-card__info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.25rem;
+  padding-top: 0.6rem;
+}
+
+.product-card__title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.product-card__price {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--color-ink);
+}
+
+.product-card__price s {
+  color: var(--color-muted);
+}
+
+/*
+* --------------------------------------------------
+* Section headings
+* --------------------------------------------------
+*
+* One scale for every section title on the site — homepage, product page,
+* collection showcase. They used to run from 0.85rem to 2.75rem depending on
+* the component, which flattened the page's hierarchy; a single token keeps
+* them in step.
+*/
+.section-title,
+.pdp__section-title,
+.showcase__heading {
+  font-size: var(--section-title-size);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.section-title {
+  padding: 3rem 1rem 0.5rem;
+}
+
+/* Breakpoint steps for the shared heading size. */
+@media (min-width: 48em) {
+  :root {
+    --section-title-size: 2.25rem;
+  }
+
+  .section-title {
+    padding: 3.5rem 1.5rem 0.75rem;
+  }
+}
+
+@media (min-width: 64em) {
+  :root {
+    --section-title-size: 2.75rem;
+  }
+
+  .section-title {
+    padding: 4.5rem 1.5rem 1rem;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Slider de collections (accueil)
+* --------------------------------------------------
+*/
+.collections-slider {
+  padding: 0 0 0.5rem;
+}
+
+/* The heading brings its own top padding via .section-title. */
+.collections-slider .section-title {
+  padding-bottom: 1.25rem;
+}
+
+.collections-slider__track {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78%;
+  gap: 0.9rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding: 0 1.25rem;
+}
+
+.collections-slider__track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  .collections-slider__track {
+    grid-auto-columns: 40%;
+    gap: 1.1rem;
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .collections-slider__track {
+    grid-auto-columns: 27%;
+  }
+}
+
+/* Belt-and-braces margin for short/wide viewports (phones in landscape) that
+   don't cross the 48em breakpoint above but still shouldn't have tiles
+   touching the screen edges. */
+@media (orientation: landscape) and (max-width: 47.99em) {
+  .collections-slider__track {
+    padding: 0 1.5rem;
+    gap: 1rem;
+  }
+}
+
+.collections-slider__tile {
+  scroll-snap-align: start;
+  display: block;
+}
+
+.collections-slider__media {
+  position: relative;
+  aspect-ratio: 3/4;
+  overflow: hidden;
+  background: var(--color-paper);
+}
+
+.collections-slider__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.88;
+  transition:
+    transform 400ms var(--ease-out-soft),
+    opacity 400ms var(--ease-out-soft);
+}
+
+/* One zoom for every image tile on the site — collections, showcase, shop
+   tiles, the collection banner. 2% over 400ms: noticed, not performed. */
+.collections-slider__tile:hover .collections-slider__media img {
+  transform: scale(1.02);
+  opacity: 1;
+}
+
+.collections-slider__placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, var(--color-tile), var(--color-line));
+}
+
+/*
+* Nom de la collection : encre noire posée directement sur la photo, sans
+* pastille. Le halo clair est un text-shadow, pas un fond : il décolle les
+* lettres des zones sombres de l'image sans ajouter de bloc opaque.
+*/
+.collections-slider__label {
+  position: absolute;
+  left: 0.9rem;
+  bottom: 0.9rem;
+  background: transparent;
+  color: var(--color-ink);
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+  text-shadow:
+    0 0 6px rgba(255, 255, 255, 0.85),
+    0 0 2px rgba(255, 255, 255, 0.95);
+  max-width: calc(100% - 1.8rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/*
+* --------------------------------------------------
+* Page FAQ dédiée
+* --------------------------------------------------
+*/
+.faq-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-bottom: 3rem;
+}
+
+.faq-page .section-title {
+  padding-bottom: 0.5rem;
+}
+
+.faq-page__intro {
+  padding: 0 1rem;
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  max-width: 46ch;
+}
+
+.faq-page__group-title {
+  padding: 2rem 1rem 0;
+  font-size: 0.75rem;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+}
+
+.faq-page .big-faq {
+  margin: 1rem 1rem 0;
+}
+
+@media (min-width: 48em) {
+  .faq-page__intro {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .faq-page__group-title {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .faq-page .big-faq {
+    margin: 1.25rem 1.5rem 0;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Grosse FAQ animée (accordéon sombre)
+* --------------------------------------------------
+*/
+.big-faq {
+  background: var(--color-ink);
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.big-faq__item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.big-faq__item:last-child {
+  border-bottom: none;
+}
+
+.big-faq__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-paper);
+  text-align: left;
+  transition: background 200ms var(--ease-out-soft);
+}
+
+.big-faq__trigger:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.big-faq__icon {
+  flex-shrink: 0;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-paper);
+  transition:
+    background 250ms var(--ease-out-soft),
+    transform 250ms var(--ease-out-soft);
+}
+
+.big-faq__item--open .big-faq__icon {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  transform: scale(1.05);
+}
+
+.big-faq__question {
+  flex: 1;
+  font-size: 0.85rem;
+  text-transform: lowercase;
+}
+
+.big-faq__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.big-faq__tag {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.big-faq__chevron {
+  color: rgba(255, 255, 255, 0.6);
+  transition: transform 300ms var(--ease-out-soft);
+}
+
+.big-faq__item--open .big-faq__chevron {
+  transform: rotate(180deg);
+}
+
+.big-faq__item--open .big-faq__trigger {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.big-faq__panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 350ms var(--ease-out-soft);
+}
+
+.big-faq__panel-inner {
+  padding: 0 1.25rem 1.5rem 1rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.8rem;
+  line-height: 1.7;
+  border-left: 2px solid rgba(255, 255, 255, 0.7);
+  margin-left: calc(1.25rem + 2.1rem);
+}
+
+.big-faq__panel-inner a {
+  color: var(--color-paper);
+}
+
+@media (min-width: 48em) {
+  .big-faq__trigger {
+    padding: 1.6rem 1.75rem;
+    gap: 1.25rem;
+  }
+
+  .big-faq__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .big-faq__question {
+    font-size: 1rem;
+  }
+
+  .big-faq__panel-inner {
+    padding: 0 1.75rem 1.75rem 1.25rem;
+    margin-left: calc(1.75rem + 2.5rem);
+    font-size: 0.85rem;
+  }
+}
+
+/*
+* Apparition : les cartes arrivent légèrement floues et se précisent.
+*
+* Le flou est porté par les cartes, pas par la rangée, et la rangée elle-même
+* ne se translate pas : le mouvement resterait sinon perceptible pendant un
+* défilement horizontal. Reveal pose la classe quand la rangée entre à
+* l'écran, et affiche sans transition si son observateur n'a jamais répondu
+* (.reveal--instant) — sans ce filet, un flou figé rendrait des avis
+* illisibles pour de bon.
+*/
+.js .rail-wrap.reveal:not(.reveal--visible) {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+* --------------------------------------------------
+* Need some help? — closing accordion
+* --------------------------------------------------
+*/
+.help-faq {
+  padding: 4rem 1rem 4.5rem;
+  max-width: 52rem;
+  margin: 0 auto;
+}
+
+.help-faq__eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.help-faq__title {
+  margin-top: 0.85rem;
+  margin-bottom: 2.75rem;
+  font-size: var(--section-title-size);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-align: center;
+  text-transform: lowercase;
+}
+
+/*
+* One clock for the whole accordion.
+*
+* Every moving part used to carry its own duration — 300, 350, 400, 450ms —
+* so opening a row was four animations finishing at four different moments.
+* That is what read as clumsy rather than smooth. `--faq-open` drives
+* everything that travels with the row's height; `--faq-tint` is the shorter
+* beat for colour changes, which should land first so the row looks committed
+* before it has finished growing.
+*/
+.help-faq__list {
+  --faq-open: 420ms;
+  --faq-tint: 240ms;
+
+  border-top: 1px solid var(--color-line);
+}
+
+.help-faq__item {
+  border-bottom: 1px solid var(--color-line);
+  transition: border-color var(--faq-tint) var(--ease-out-soft);
+}
+
+.help-faq__item--open {
+  border-bottom-color: var(--color-ink);
+}
+
+.help-faq__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.4rem 0.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.help-faq__index {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--color-muted);
+  transition: color var(--faq-tint) var(--ease-out-soft);
+}
+
+.help-faq__item--open .help-faq__index,
+.help-faq__trigger:hover .help-faq__index {
+  color: var(--color-ink);
+}
+
+.help-faq__icon {
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-line);
+  border-radius: 0.6rem;
+  color: var(--color-ink);
+  transition:
+    background var(--faq-tint) var(--ease-out-soft),
+    border-color var(--faq-tint) var(--ease-out-soft),
+    color var(--faq-tint) var(--ease-out-soft);
+}
+
+.help-faq__item--open .help-faq__icon {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.help-faq__question {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-transform: lowercase;
+  transition: transform var(--faq-open) var(--ease-out-soft);
+}
+
+.help-faq__trigger:hover .help-faq__question {
+  transform: translateX(4px);
+}
+
+/*
+* The cross makes a half-turn while its upright bar fades, so it lands as a
+* minus. A quarter-turn would swap the two bars onto each other's axis and
+* leave an upright stroke instead.
+*/
+.help-faq__toggle {
+  flex-shrink: 0;
+  color: var(--color-muted);
+  transition:
+    transform var(--faq-open) var(--ease-out-soft),
+    color var(--faq-tint) var(--ease-out-soft);
+}
+
+.help-faq__item--open .help-faq__toggle {
+  transform: rotate(180deg);
+  color: var(--color-ink);
+}
+
+.help-faq__toggle-bar {
+  transform-origin: 50% 50%;
+  transition: opacity var(--faq-tint) var(--ease-out-soft);
+}
+
+.help-faq__item--open .help-faq__toggle-bar {
+  opacity: 0;
+}
+
+/*
+* Opening without a guessed height: the grid row goes from 0fr to 1fr, which
+* animates the content's real height whatever it is.
+*/
+.help-faq__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--faq-open) var(--ease-out-soft);
+}
+
+.help-faq__item--open .help-faq__panel {
+  grid-template-rows: 1fr;
+}
+
+/* The clipper. Deliberately has no transform of its own: moving it would move
+   the clipping rectangle with it, and the content would jump rather than
+   slide out from under the edge. */
+.help-faq__panel-inner {
+  overflow: hidden;
+}
+
+/*
+* Closing: the text goes first, quickly, so the row collapses onto something
+* that has already gone rather than dragging visible words down with it.
+*/
+.help-faq__panel-content {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    opacity 150ms var(--ease-out-soft),
+    transform 200ms var(--ease-out-soft);
+}
+
+/*
+* Opening: the reverse. The row starts growing on its own for a beat, then the
+* text catches up and settles with it — the delays are what turn four
+* simultaneous movements into one gesture.
+*/
+.help-faq__item--open .help-faq__panel-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 280ms var(--ease-out-soft) 110ms,
+    transform var(--faq-open) var(--ease-out-soft) 70ms;
+}
+
+.help-faq__panel-inner p {
+  font-size: 0.86rem;
+  line-height: 1.8;
+  color: var(--color-muted);
+  padding-left: calc(2.5rem + 1rem + 2.6rem);
+  padding-bottom: 1.4rem;
+}
+
+.help-faq__panel-inner p + p {
+  margin-top: -0.5rem;
+}
+
+.help-faq__panel-inner a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 200ms var(--ease-out-soft);
+}
+
+.help-faq__panel-inner a:hover {
+  opacity: 0.55;
+}
+
+@media (max-width: 40em) {
+  .help-faq__panel-inner p {
+    padding-left: 0.25rem;
+  }
+}
+
+@media (min-width: 48em) {
+  .help-faq {
+    padding: 5rem 1.5rem 5.5rem;
+  }
+
+  .help-faq__trigger {
+    padding: 1.7rem 0.25rem;
+  }
+
+  .help-faq__question {
+    font-size: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-faq__item,
+  .help-faq__index,
+  .help-faq__icon,
+  .help-faq__panel,
+  .help-faq__panel-content,
+  .help-faq__item--open .help-faq__panel-content,
+  .help-faq__toggle,
+  .help-faq__toggle-bar,
+  .help-faq__question {
+    transition: none;
+  }
+
+  /* The row still has to open — it just does it instantly. */
+  .help-faq__panel-content {
+    transform: none;
+  }
+
+  .help-faq__trigger:hover .help-faq__question {
+    transform: none;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Newsletter
+* --------------------------------------------------
+*/
+.newsletter {
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+.newsletter p {
+  margin-bottom: 0.5rem;
+}
+
+.newsletter__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.newsletter__form input {
+  margin: 0;
+  min-width: 200px;
+}
+
+.newsletter__success {
+  margin-top: 1.5rem;
+}
+
+/*
+* --------------------------------------------------
+* Footer
+* --------------------------------------------------
+*/
+.site-footer {
+  border-top: 1px solid var(--color-line);
+  padding-top: 2.5rem;
+  font-size: 0.75rem;
+}
+
+.site-footer__top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.25rem;
+  padding: 0 1rem 2.25rem;
+}
+
+.site-footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.site-footer__logo {
+  font-size: 1rem;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+}
+
+.site-footer__blurb {
+  color: var(--color-muted);
+  line-height: 1.65;
+  max-width: 34ch;
+}
+
+.site-footer__email {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-footer__social {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+}
+
+.site-footer__social a {
+  color: var(--color-ink);
+  transition: opacity 200ms var(--ease-out-soft);
+}
+
+.site-footer__social a:hover {
+  opacity: 0.55;
+}
+
+.site-footer__col-title {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+  margin-bottom: 0.9rem;
+}
+
+.site-footer__col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.site-footer__col a {
+  text-transform: lowercase;
+  transition: opacity 200ms var(--ease-out-soft);
+}
+
+.site-footer__col a:hover {
+  opacity: 0.55;
+  text-decoration: none;
+}
+
+.site-footer__newsletter .newsletter {
+  padding: 0;
+  text-align: left;
+}
+
+.site-footer__newsletter .newsletter__form {
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.site-footer__newsletter .newsletter__form input {
+  min-width: 0;
+}
+
+.site-footer__bottom {
+  border-top: 1px solid var(--color-line);
+  padding: 1.1rem 1rem;
+  text-align: center;
+}
+
+.site-footer__copy {
+  text-transform: lowercase;
+  color: var(--color-muted);
+}
+
+@media (min-width: 40em) {
+  .site-footer__top {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 1.5rem 2.5rem;
+  }
+
+  .site-footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 64em) {
+  /* brand · informations · livraison & politiques · newsletter */
+  .site-footer__top {
+    grid-template-columns: 1.6fr 0.9fr 1fr 1.3fr;
+  }
+
+  .site-footer__brand {
+    grid-column: auto;
+  }
+
+  .site-footer__bottom {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+/* Page shell: a single vertical stack. Every long section below the buy box
+   is a direct child here so it spans the full page width. */
+.pdp {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+@media (min-width: 64em) {
+  .pdp {
+    gap: 3.5rem;
+    padding: 1.5rem;
+  }
+}
+
+/*
+* Product section: gallery + buy box
+*
+* This wrapper exists purely to bound the sticky buy box. A sticky element is
+* clamped to its grid CONTAINER's box, not to its own grid area, so if the
+* sections that follow shared a grid with the buy box, the buy box could keep
+* sticking past the gallery and slide over them. Nothing below the gallery may
+* be moved inside .pdp__main.
+*
+* Do not add height, min-height, overflow, transform or filter to .pdp__main
+* or any of its ancestors: each of those either breaks sticky outright or
+* turns an ancestor into the scroll container.
+*/
+.pdp__main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 64em) {
+  .pdp__main {
+    grid-template-columns: minmax(0, 57fr) minmax(0, 43fr);
+    gap: 3rem;
+    align-items: start;
+  }
+}
+
+.pdp__gallery {
+  min-width: 0;
+}
+
+/* Mobile: edge-to-edge. The negative inline margin exactly cancels .pdp's
+   1rem padding, so the images fill the viewport width without ever making
+   the page scroll sideways. */
+@media (max-width: 63.99em) {
+  .pdp__gallery {
+    margin-inline: -1rem;
+  }
+}
+
+/*
+* Product gallery (see ProductGallery.tsx) — one horizontal scroll-snap
+* slider at every width, driven by the browser's native scrolling so a swipe
+* never fights the page's vertical scroll.
+*
+* With several images the centred one is full size and its neighbours peek in
+* at the edges, scaled down and softened. How far each slide is from the
+* centre arrives as --gallery-progress (0 centred, 1 a slide away), set from
+* the scroll position on every frame — so the growth is continuous and
+* follows the finger, rather than a timed animation that could lag behind it.
+*
+* Desktop adds a thumbnail column on the left; mobile uses dots instead.
+*/
+.gallery {
+  position: relative;
+  background: var(--color-paper);
+}
+
+.gallery--empty {
+  aspect-ratio: 4 / 5;
+  background: var(--color-tile);
+}
+
+/* Thumbnails are a desktop affordance; on touch the dots + swipe do the job. */
+.gallery__thumbs {
+  display: none;
+}
+
+.gallery__track {
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  /* Keeps a sideways swipe at the last image from turning into Safari's
+     back/forward navigation gesture. */
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.gallery__track::-webkit-scrollbar {
+  display: none;
+}
+
+.gallery__track:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.gallery__slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  aspect-ratio: 4 / 5;
+  scroll-snap-align: center;
+  /* One swipe moves one image, however hard the flick — the natural feel for
+     a product gallery, and it keeps every stop centred. */
+  scroll-snap-stop: always;
+}
+
+.gallery--multiple .gallery__track {
+  cursor: grab;
+}
+
+.gallery--multiple .gallery__track:active {
+  cursor: grabbing;
+}
+
+/* Spacers either side, so the first and last images can reach the centre too.
+   Pseudo-elements rather than padding: a percentage flex-basis resolves
+   against the track's content box, which padding would shrink. */
+.gallery--multiple .gallery__track::before,
+.gallery--multiple .gallery__track::after {
+  content: '';
+  flex: 0 0 8%;
+}
+
+.gallery--multiple .gallery__slide {
+  flex-basis: 84%;
+  /* Before the first scroll measurement lands, neighbours already start at
+     their small size; the inline value set by the component then takes over. */
+  --gallery-progress: 1;
+}
+
+.gallery--multiple .gallery__slide--active {
+  --gallery-progress: 0;
+}
+
+.gallery__slide-inner {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery--multiple .gallery__slide-inner {
+  transform: scale(calc(1 - var(--gallery-progress) * 0.1));
+  opacity: calc(1 - var(--gallery-progress) * 0.4);
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* `contain` keeps every source ratio intact — images are never stretched and
+   never cropped, whatever the shop uploads. The aspect-ratio box reserves the
+   space before the image arrives, so nothing shifts on load. */
+.gallery__slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 2%;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.gallery__dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.9rem 0 0;
+}
+
+.gallery__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  background: var(--color-line);
+  cursor: pointer;
+  transition:
+    background 200ms var(--ease-out-soft),
+    width 260ms var(--ease-out-soft);
+}
+
+.gallery__dot--active {
+  width: 18px;
+  background: var(--color-ink);
+}
+
+@media (min-width: 64em) {
+  /* Thumbnail rail on the left, slider on the right. */
+  .gallery {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: start;
+  }
+
+  /* A single image has no thumbnail rail, so it takes the whole width. */
+  .gallery--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gallery__thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .gallery__thumb {
+    aspect-ratio: 4 / 5;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    border-radius: 3px;
+    background: var(--color-paper);
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0.6;
+    transition:
+      opacity 200ms var(--ease-out-soft),
+      border-color 200ms var(--ease-out-soft);
+  }
+
+  .gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4%;
+  }
+
+  .gallery__thumb:hover {
+    opacity: 1;
+  }
+
+  .gallery__thumb--active {
+    opacity: 1;
+    border-color: var(--color-ink);
+  }
+
+  .gallery--multiple .gallery__track::before,
+  .gallery--multiple .gallery__track::after {
+    flex-basis: 10%;
+  }
+
+  .gallery--multiple .gallery__slide {
+    flex-basis: 80%;
+  }
+
+  .gallery__dots {
+    display: none;
+  }
+}
+
+/*
+* Right column: buy box + description, characteristics and FAQ.
+*
+* Deliberately NOT sticky. This column now carries the long-form content, so
+* it is taller than the gallery: sticky would have no room to travel, and a
+* max-height would trap that content behind an inner scrollbar. Normal flow
+* is both simpler and impossible to overlap.
+*/
+.pdp__buy {
+  min-width: 0;
+}
+
+.buybox {
+  display: flex;
+  flex-direction: column;
+}
+
+.buybox__title {
+  font-size: 1.35rem;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+  margin-bottom: 0.6rem;
+}
+
+@media (min-width: 64em) {
+  .buybox__title {
+    font-size: 1.7rem;
+  }
+}
+
+.buybox__price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.4rem;
+}
+
+.buybox__price s {
+  color: var(--color-muted);
+}
+
+.buybox__discount {
+  color: var(--color-sale);
+}
+
+.buybox__tax {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.buybox__tax a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.buybox__blurb {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  margin-top: 0.85rem;
+}
+
+.buybox__stock {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  text-transform: lowercase;
+  margin: 1rem 0;
+}
+
+.buybox__stock-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.buybox__stock--in .buybox__stock-dot {
+  background: #2e7d32;
+}
+
+.buybox__stock--low .buybox__stock-dot {
+  background: #e07b39;
+}
+
+.buybox__stock--out .buybox__stock-dot {
+  background: var(--color-muted);
+}
+
+.buybox__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.buybox__perks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-line);
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  text-transform: lowercase;
+}
+
+/*
+* Variant / size selectors
+*/
+.pdp__option-label {
+  font-size: 0.78rem;
+  text-transform: lowercase;
+  margin-bottom: 0.5rem;
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(3.25rem, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Comfortable touch targets: 46px tall, never narrower than a fingertip. */
+.option-btn {
+  position: relative;
+  min-height: 46px;
+  padding: 0 0.5rem;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 4px;
+  transition:
+    background 150ms var(--ease-out-soft),
+    color 150ms var(--ease-out-soft),
+    border-color 150ms var(--ease-out-soft);
+}
+
+.option-btn:hover:not(:disabled) {
+  border-color: var(--color-ink);
+}
+
+.option-btn[data-selected='true'] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-color: var(--color-ink);
+}
+
+.option-btn[data-unavailable='true'] {
+  color: var(--color-muted);
+  overflow: hidden;
+}
+
+.option-btn[data-unavailable='true']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 0.5px),
+    var(--color-line) 50%,
+    transparent calc(50% + 0.5px)
+  );
+}
+
+.option-swatch {
+  display: inline-block;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  overflow: hidden;
+  vertical-align: middle;
+}
+
+.option-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+* Size guide
+*/
+.size-guide {
+  margin-bottom: 1rem;
+}
+
+.size-guide__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-ink);
+  font-size: 0.78rem;
+  text-transform: lowercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.size-guide__chevron {
+  transition: transform 250ms var(--ease-out-soft);
+}
+
+.size-guide__toggle[aria-expanded='true'] .size-guide__chevron {
+  transform: rotate(180deg);
+}
+
+.size-guide__panel {
+  margin-top: 0.9rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+}
+
+.size-guide__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.size-guide__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.78rem;
+}
+
+.size-guide__row:last-child {
+  border-bottom: none;
+}
+
+.size-guide__size {
+  text-transform: uppercase;
+}
+
+.size-guide__stock {
+  font-size: 0.72rem;
+  text-transform: lowercase;
+}
+
+.size-guide__stock--in {
+  color: var(--color-ink);
+}
+
+.size-guide__stock--out {
+  color: var(--color-muted);
+}
+
+.size-guide__note {
+  margin-top: 0.9rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--color-muted);
+}
+
+.size-guide__note a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/*
+* Quantity stepper
+*/
+.quantity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.quantity__label {
+  font-size: 0.78rem;
+  text-transform: lowercase;
+}
+
+.quantity__control {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 4px;
+}
+
+.quantity__btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-ink);
+  font-size: 0.95rem;
+  transition: background 150ms var(--ease-out-soft);
+}
+
+.quantity__btn:hover:not(:disabled) {
+  background: var(--color-tile);
+}
+
+.quantity__btn:disabled {
+  color: var(--color-muted);
+  cursor: not-allowed;
+}
+
+.quantity__value {
+  min-width: 2.25rem;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+/*
+* Description / characteristics / FAQ — inside the right column, under the
+* payment buttons.
+*/
+.pdp__details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-top: 2rem;
+}
+
+@media (min-width: 64em) {
+  .pdp__details {
+    gap: 2rem;
+    margin-top: 2.5rem;
+  }
+}
+
+/* Typography comes from the shared section-heading rule above. */
+.pdp__section-title {
+  margin-bottom: 1.5rem;
+}
+
+.pdp__prose {
+  font-size: 0.82rem;
+  line-height: 1.75;
+  font-weight: 400;
+  overflow-wrap: break-word;
+}
+
+.pdp__prose p {
+  margin-bottom: 0.85rem;
+}
+
+.pdp__prose p:last-child {
+  margin-bottom: 0;
+}
+
+.pdp__prose img {
+  max-width: 100%;
+  height: auto;
+}
+
+/*
+* FAQ accordions
+*/
+.pdp__accordions {
+  border-top: 1px solid var(--color-line);
+}
+
+.accordion {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.accordion__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.accordion__chevron {
+  flex-shrink: 0;
+  transition: transform 250ms var(--ease-out-soft);
+}
+
+.accordion__trigger[aria-expanded='true'] .accordion__chevron {
+  transform: rotate(180deg);
+}
+
+.accordion__panel {
+  overflow: hidden;
+}
+
+.accordion__panel-inner {
+  padding-bottom: 1rem;
+  font-size: 0.78rem;
+  color: var(--color-ink);
+  line-height: 1.7;
+}
+
+/*
+* Collapsible description
+*/
+.description__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 0 0.75rem;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--color-line);
+  cursor: pointer;
+  color: var(--color-ink);
+  text-align: left;
+}
+
+.description__label {
+  font-size: 0.85rem;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+}
+
+.description__chevron {
+  flex-shrink: 0;
+  transition: transform 300ms var(--ease-out-soft);
+}
+
+.description--open .description__chevron {
+  transform: rotate(180deg);
+}
+
+.description__intro {
+  margin-top: 0.9rem;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--color-muted);
+  overflow-wrap: break-word;
+}
+
+/* 0fr -> 1fr animates to the content's natural height. A max-height guess
+   would either clip long copy or make short copy ease from an oversized
+   value. */
+.description__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms var(--ease-out-soft);
+}
+
+.description--open .description__panel {
+  grid-template-rows: 1fr;
+}
+
+.description__inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.description--open .description__inner {
+  padding-top: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .description__panel {
+    transition: none;
+  }
+}
+
+/*
+* Recommendations
+*
+* A real carousel at every breakpoint now — touch swipe/scroll-snap on
+* mobile and tablet, mouse-drag and arrow controls on desktop too (see
+* useHorizontalRail and .rail-arrow below). No fixed column count to trim
+* against: it just runs through however many in-stock products the loader
+* found.
+*/
+.related-rail {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* Bleed to the screen edges so the row reads as a rail, while the negative
+     margin exactly cancels .pdp's padding (no sideways page scroll). */
+  margin-inline: -1rem;
+  padding-inline: 1rem;
+  cursor: grab;
+}
+
+.related-rail:active {
+  cursor: grabbing;
+}
+
+.related-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.related-rail__item {
+  flex: 0 0 44%;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+@media (min-width: 40em) {
+  .related-rail__item {
+    flex-basis: 30%;
+  }
+}
+
+@media (min-width: 64em) {
+  .related-rail {
+    /* .pdp's own padding grows at this breakpoint (see .pdp above) — match it
+       so the bleed still lands exactly on the edge, nothing more. */
+    margin-inline: -1.5rem;
+    padding-inline: 1.5rem;
+  }
+
+  .related-rail__item {
+    flex-basis: 22%;
+  }
+}
+
+/* Shared by .related-rail and .worn-rail: the rail plus its two edge
+   buttons, positioned relative to this wrapper rather than the section
+   (which also contains the heading). */
+.rail-wrap {
+  position: relative;
+}
+
+.rail-arrow {
+  display: none;
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-line);
+  /* Was var(--color-bg), which this project never defines — the button was
+     rendering transparent over whatever sat behind it. */
+  background: var(--color-paper);
+  color: var(--color-ink);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-50%);
+  transition:
+    border-color 240ms var(--ease-out-soft),
+    box-shadow 240ms var(--ease-out-soft);
+}
+
+.rail-arrow:hover {
+  border-color: var(--color-ink);
+  box-shadow: var(--shadow-md);
+}
+
+.rail-arrow:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.rail-arrow:disabled {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rail-arrow--prev {
+  left: -1.25rem;
+}
+
+.rail-arrow--next {
+  right: -1.25rem;
+}
+
+/* Arrows are a desktop-only affordance — mobile and tablet rely on touch
+   swipe, where a floating button over the rail would only get in the way. */
+@media (min-width: 64em) {
+  .rail-arrow {
+    display: flex;
+  }
+}
+
+/* Large enough to actually read the photo — a tile and a half on a phone,
+   so the row still visibly continues past the edge and invites the swipe. */
+
+@media (min-width: 64em) {
+  /* The cap matters on a wide monitor: 22% of 1600px would make a portrait
+     tile over 600px tall and turn the row into a wall. */
+}
+
+/* Movement only — see @keyframes app-enter. These are photographs: a frozen
+   fade from opacity 0 would simply look like an empty row. */
+@keyframes community-tile-in {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/*
+* One collection's homepage showcase (see CollectionProductShowcase) — a
+* large photo linking to the collection, then a product rail built on the
+* same mechanics as .related-rail/.worn-rail above (drag on desktop, touch
+* swipe on mobile, arrows — see useHorizontalRail).
+*/
+.collection-feature {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  /* Air around each showcase so consecutive ones (Automne, Summer, Best
+     Seller) read as separate chapters rather than one long scroll. Adjacent
+     margins collapse, so the gap between two of them is this value, not
+     twice it. */
+  margin-block: 3.5rem;
+}
+
+@media (min-width: 48em) {
+  .collection-feature {
+    margin-block: 5.5rem;
+  }
+}
+
+/* Each collection sets its own frame to match the crop of its own
+   photographs — see CollectionProductShowcase's ratio props. The defaults
+   here are Automne Drop's. Shaping the frame to the photo rather than the
+   other way round is what keeps `cover` trimming a sliver instead of
+   cutting heads and feet out of the picture. */
+.collection-feature__media {
+  position: relative;
+  display: block;
+  aspect-ratio: var(--feature-ratio-mobile, 3 / 4);
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+@media (min-width: 40em) {
+  .collection-feature__media {
+    aspect-ratio: var(--feature-ratio-desktop, 21 / 9);
+  }
+}
+
+.collection-feature__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms var(--ease-out-soft);
+}
+
+.collection-feature__media:hover .collection-feature__img {
+  transform: scale(1.02);
+}
+
+/* Light — the brief is explicit about not darkening the photo too much —
+   but reaches further up than a single-line title needed to, now that the
+   description and button sit above it too. */
+.collection-feature__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.55) 0%,
+    rgba(0, 0, 0, 0.18) 55%,
+    transparent 80%
+  );
+  pointer-events: none;
+}
+
+.collection-feature__caption {
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+@media (min-width: 40em) {
+  .collection-feature__caption {
+    left: 2rem;
+    right: auto;
+    bottom: 2rem;
+    max-width: 26rem;
+  }
+}
+
+.collection-feature__title {
+  margin: 0;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 40em) {
+  .collection-feature__title {
+    font-size: 2rem;
+  }
+}
+
+.collection-feature__description {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 40em) {
+  .collection-feature__description {
+    font-size: 0.95rem;
+  }
+}
+
+/*
+ * The banner's call to action. Glass over the photograph, like the hero's
+ * buttons, but with the hover doing the work: the fill warms up, the border
+ * firms, and the whole thing rises a single pixel. One pixel is the point —
+ * enough to feel like a response, small enough that nothing jumps.
+ */
+.collection-feature__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.35rem;
+  padding: 0.85rem 2rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  will-change: transform;
+  transition:
+    background-color 260ms var(--ease-out-soft),
+    border-color 260ms var(--ease-out-soft),
+    transform 260ms var(--ease-out-soft),
+    box-shadow 260ms var(--ease-out-soft);
+}
+
+.collection-feature__cta:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.75);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Settles back down under the finger — the press has to register as a press. */
+.collection-feature__cta:active {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
+}
+
+.collection-feature__cta:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
+@media (min-width: 40em) {
+  .collection-feature__cta {
+    padding: 0.95rem 2.4rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* .rail-arrow sits *outside* its wrapper by default (-1.25rem), which works
+   on the product page because .pdp's own padding absorbs it. This section is
+   edge-to-edge, so out there the right-hand arrow hangs past the viewport and
+   gives the whole page 20px of horizontal scroll — keep both inside instead.
+   The community slider is edge-to-edge too, and had the same 20px. */
+.collection-feature .rail-arrow--prev {
+  left: 0.25rem;
+}
+
+.collection-feature .rail-arrow--next {
+  right: 0.25rem;
+}
+
+@media (min-width: 64em) {
+  /* Wider than the 22% it started at — same reasoning as the grid above:
+     fewer, larger product photos on a big screen. */
+}
+
+/*
+* Mobile : aucune apparition en glissé vertical dans cette section. Le contenu
+* est posé d'emblée, sans opacité ni translation à rattraper. Le comportement
+* desktop reste inchangé.
+*/
+@media (max-width: 47.99em) {
+  /* `.js` here only to outweigh `.js .reveal:not(.reveal--visible)`, which
+     would otherwise re-hide this section until it scrolled into view. */
+}
+
+@media (min-width: 64em) {
+  /* Five aligned blocks, no carousel. */
+}
+
+/*
+* Collection showcase closing the product page
+*
+* Full-bleed tall tiles, one per collection, each linking to a real Shopify
+* collection page. Row of four on desktop, touch carousel on mobile.
+*/
+.showcase {
+  /* Bleeds past .pdp's padding to touch both screen edges. */
+  margin-inline: -1rem;
+}
+
+/* Typography comes from the shared section-heading rule above. */
+.showcase__heading {
+  padding: 0 1rem 1.25rem;
+}
+
+.showcase__rail {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.showcase__rail::-webkit-scrollbar {
+  display: none;
+}
+
+.showcase__tile {
+  position: relative;
+  flex: 0 0 78%;
+  scroll-snap-align: start;
+  min-width: 0;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--color-tile);
+}
+
+.showcase__tile:hover {
+  text-decoration: none;
+}
+
+.showcase__media {
+  position: absolute;
+  inset: 0;
+}
+
+.showcase__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms var(--ease-out-soft);
+}
+
+.showcase__tile:hover .showcase__media img {
+  transform: scale(1.02);
+}
+
+.showcase__placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, var(--color-tile), var(--color-line));
+}
+
+/* Nom de la collection en noir sur pastille blanche, lisible sur toute photo. */
+.showcase__label {
+  position: absolute;
+  left: 50%;
+  bottom: 1.5rem;
+  transform: translateX(-50%);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.75rem 1.5rem;
+  max-width: calc(100% - 2rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    background 200ms var(--ease-out-soft),
+    transform 200ms var(--ease-out-soft);
+}
+
+.showcase__tile:hover .showcase__label {
+  background: var(--color-tile);
+}
+
+/* Press feedback before the route change. */
+.showcase__tile:active .showcase__label {
+  transform: translateX(-50%) scale(0.96);
+}
+
+.showcase__tile--pressed {
+  animation: showcase-press 380ms var(--ease-out-soft);
+}
+
+@keyframes showcase-press {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(0.985);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (min-width: 48em) {
+  .showcase__tile {
+    flex-basis: 42%;
+  }
+}
+
+@media (min-width: 64em) {
+  .showcase {
+    margin-inline: -1.5rem;
+  }
+
+  .showcase__heading {
+    padding: 0 1.5rem 1.25rem;
+  }
+
+  /* Four abreast, no carousel. */
+  .showcase__rail {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .showcase__tile {
+    flex: none;
+    aspect-ratio: 3 / 4.4;
+  }
+
+  .showcase__label {
+    bottom: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase__tile--pressed {
+    animation: none;
+  }
+
+  .showcase__media img,
+  .showcase__label {
+    transition: none;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Page collection / boutique
+* --------------------------------------------------
+*/
+.collection-head {
+  padding: 2rem 1rem 0;
+}
+
+@media (min-width: 48em) {
+  .collection-head {
+    padding: 2.5rem 1.5rem 0;
+  }
+}
+
+.collection-head p {
+  color: var(--color-muted);
+  max-width: 60ch;
+  margin-top: 0.4rem;
+}
+
+.pagination-link {
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem;
+  font-size: 0.78rem;
+  text-transform: lowercase;
+}
+
+/*
+* --------------------------------------------------
+* Panier (drawer)
+* --------------------------------------------------
+*/
+.cart-empty {
+  padding: 2rem 0;
+}
+
+.cart-lines {
+  flex: 1;
+}
+
+.cart-line {
+  display: flex;
+  gap: 0.9rem;
+  padding: 0.9rem 0;
+}
+
+.cart-line__img {
+  width: 72px;
+  height: 90px;
+  object-fit: contain;
+  background: var(--color-paper);
+  flex-shrink: 0;
+}
+
+.cart-line__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cart-line__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cart-line__title {
+  font-size: 0.78rem;
+  text-transform: lowercase;
+}
+
+.cart-line__option {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  text-transform: lowercase;
+}
+
+.cart-line__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.qty button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+}
+
+.qty button:disabled {
+  color: var(--color-line);
+  cursor: not-allowed;
+}
+
+.qty__value {
+  min-width: 28px;
+  text-align: center;
+  font-size: 0.78rem;
+}
+
+.cart-line__remove {
+  font-size: 0.72rem;
+  text-transform: lowercase;
+  color: var(--color-ink);
+}
+
+.cart-summary {
+  border-top: 1px solid var(--color-line);
+  padding-top: 1rem;
+  flex-shrink: 0;
+}
+
+.cart-summary__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+
+.cart-summary__note {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+  margin-bottom: 0.75rem;
+}
+
+.shipping-progress {
+  margin: 0.75rem 0 1rem;
+}
+
+.shipping-progress__bar {
+  height: 2px;
+  background: var(--color-line);
+  position: relative;
+  margin-bottom: 0.4rem;
+}
+
+.shipping-progress__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--color-ink);
+  transition: width 400ms var(--ease-out-soft);
+}
+
+.shipping-progress__label {
+  font-size: 0.72rem;
+  color: var(--color-muted);
+}
+
+.cart-discount-form {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.cart-discount-form input {
+  flex: 1;
+  margin: 0;
+  border-color: var(--color-line);
+}
+
+.cart-discount-form button {
+  border: 1px solid var(--color-ink);
+  background: none;
+  padding: 0 1rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  text-transform: lowercase;
+}
+
+/*
+* --------------------------------------------------
+* Pages simples (à propos, contact, lookbook, légal…)
+* --------------------------------------------------
+*/
+.page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 3rem 1rem 4rem;
+}
+
+.page h1 {
+  margin-bottom: 1.5rem;
+}
+
+.page p {
+  margin-bottom: 1rem;
+}
+
+.page--wide {
+  max-width: none;
+  padding: 1.5rem 1rem 4rem;
+}
+
+@media (min-width: 48em) {
+  .page--wide {
+    padding: 1.5rem;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Page "à propos"
+* --------------------------------------------------
+*/
+.about {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 3rem 1rem 5rem;
+}
+
+@media (min-width: 48em) {
+  .about {
+    padding: 4rem 1.5rem 6rem;
+  }
+}
+
+.about__eyebrow {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--color-muted);
+}
+
+.about__title {
+  margin-top: 0.5rem;
+  font-size: 1.6rem;
+}
+
+.about__lead {
+  margin-top: 1rem;
+  max-width: 42ch;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Le sur-titre garde sa propre taille : il n'est pas du corps de texte. */
+
+.about__manifesto {
+  margin: 3.5rem 0;
+  padding: 2rem 0;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.about__manifesto p {
+  max-width: 32ch;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  text-transform: lowercase;
+}
+
+@media (min-width: 48em) {
+  .about__manifesto p {
+    font-size: 1.4rem;
+    max-width: 38ch;
+  }
+}
+
+.about__cta {
+  margin-top: 3rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: var(--color-tile);
+}
+
+.about__cta h2 {
+  margin-bottom: 0.5rem;
+}
+
+.about__cta p {
+  margin-bottom: 1.5rem;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+/*
+* Version desktop de « notre histoire ». Tout est confiné à cette
+* media-query : la mise en page mobile et tablette n'est pas touchée.
+*
+* La page était calée sur une colonne étroite héritée du mobile, ce qui
+* laissait une large bande vide à droite et des visuels sous-dimensionnés.
+* On élargit le cadre, on agrandit les images et le corps de texte, et on
+* respire davantage entre les blocs.
+*/
+@media (min-width: 64em) {
+  .about {
+    max-width: 880px;
+    padding: 5rem 2.5rem 7rem;
+  }
+
+  .about__eyebrow {
+    font-size: 0.78rem;
+  }
+
+  .about__title {
+    margin-top: 0.75rem;
+    font-size: 2.6rem;
+  }
+
+  .about__lead {
+    margin-top: 1.5rem;
+    max-width: 46ch;
+    font-size: 1.1rem;
+    line-height: 1.75;
+  }
+
+  /* Cadre un peu moins haut que le 3/4 mobile : quatre portraits pleine
+     colonne resteraient sinon interminables au scroll. */
+
+  .about__manifesto {
+    margin: 5rem 0;
+    padding: 3rem 0;
+  }
+
+  .about__cta {
+    margin-top: 5rem;
+    padding: 3.5rem 2rem;
+  }
+
+  .about__cta p {
+    font-size: 0.9rem;
+  }
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 420px;
+}
+
+.contact-form label {
+  font-size: 0.75rem;
+  text-transform: lowercase;
+  margin-top: 0.6rem;
+}
+
+.form-error {
+  color: var(--color-sale);
+  font-size: 0.78rem;
+  margin: 0.5rem 0;
+}
+
+.form-success {
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
+}
+
+.not-found {
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+/*
+* --------------------------------------------------
+* Divers héritage scaffold (comptes, blog) — styles minimaux
+* --------------------------------------------------
+*/
+.account-logout {
+  display: inline-block;
+}
+
+/*
+* --------------------------------------------------
+* Pages légales (/legal/*)
+* --------------------------------------------------
+*/
+.legal {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 5rem;
+}
+
+/*
+* --------------------------------------------------
+* Suivi de commande (/order-tracking)
+* --------------------------------------------------
+*/
+.tracking {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 3.5rem 1.25rem 5rem;
+}
+
+.tracking__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.tracking__title {
+  margin-top: 0.9rem;
+  font-size: var(--section-title-size);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.tracking__intro {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+.tracking__form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+  background: var(--color-tile);
+}
+
+.tracking__field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.tracking__field label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.tracking__field input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.4rem;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.9rem;
+  transition: border-color 200ms var(--ease-out-soft);
+}
+
+.tracking__field input:focus {
+  outline: none;
+  border-color: var(--color-ink);
+}
+
+.tracking__error {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--color-sale);
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--color-sale);
+}
+
+.tracking__gate {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-ink);
+  border-radius: 0.75rem;
+}
+
+.tracking__gate h2 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  margin-bottom: 0.6rem;
+}
+
+.tracking__gate p {
+  font-size: 0.84rem;
+  line-height: 1.75;
+  color: var(--color-muted);
+  margin-bottom: 1.1rem;
+}
+
+.tracking__result {
+  margin-top: 2rem;
+  border: 1px solid var(--color-ink);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.tracking__result-head {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.tracking__result-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.tracking__result-value {
+  margin-top: 0.3rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.tracking__result-value--status {
+  text-transform: capitalize;
+}
+
+.tracking__pending,
+.tracking__status-link {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+.tracking__status-link a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tracking__shipment {
+  padding: 1.5rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.tracking__shipment-index {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.tracking__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.1rem;
+  margin: 0;
+}
+
+.tracking__grid dt {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.tracking__grid dd {
+  margin: 0.3rem 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  word-break: break-word;
+}
+
+/* Tracking numbers are codes, not prose — they keep their own casing. */
+.tracking__grid dd a {
+  color: var(--color-ink);
+  text-transform: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.tracking__history {
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.tracking__history-title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.tracking__history ol {
+  list-style: none;
+  padding: 0 0 0 0.6rem;
+  margin: 0;
+  /* The vertical rail the dots sit on. */
+  border-left: 1px solid var(--color-line);
+}
+
+.tracking__history li {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding: 0 0 1.1rem 1.1rem;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+.tracking__history li:last-child {
+  padding-bottom: 0;
+}
+
+.tracking__event-dot {
+  position: absolute;
+  left: -0.31rem;
+  top: 0.42em;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+}
+
+.tracking__event-status {
+  text-transform: capitalize;
+}
+
+/* The most recent event is the answer to "where is my parcel" — it reads as
+   the answer, and everything above it as context. */
+.tracking__event--latest {
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.tracking__event--latest .tracking__event-dot {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.tracking__event--latest time {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+
+.tracking__help {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.tracking__help h2 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  margin-bottom: 0.9rem;
+}
+
+.tracking__help p {
+  font-size: 0.84rem;
+  line-height: 1.8;
+  color: var(--color-muted);
+}
+
+.tracking__help p + p {
+  margin-top: 0.8rem;
+}
+
+.tracking__help a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+@media (min-width: 48em) {
+  .tracking {
+    padding: 4.5rem 1.5rem 6rem;
+  }
+
+  .tracking__form {
+    padding: 2rem;
+  }
+
+  /* Two fields side by side, the button spanning both. */
+  .tracking__form {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tracking__form > button {
+    grid-column: 1 / -1;
+  }
+
+  .legal {
+    padding: 4.5rem 1.5rem 6rem;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Index des collections (/collections) — destination de « shop now »
+* --------------------------------------------------
+*/
+.shop-index {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 1rem 4.5rem;
+}
+
+.shop-index__header {
+  padding-bottom: 2rem;
+}
+
+.shop-index__eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.shop-index__title {
+  margin-top: 0.9rem;
+  font-size: var(--section-title-size);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+}
+
+.shop-index__intro {
+  margin-top: 0.9rem;
+  max-width: 42ch;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: var(--color-muted);
+}
+
+/*
+* Two per row, at every width, scrolling down the page.
+*
+* Fixed at two rather than auto-fitting: the pairing is the layout, and letting
+* it become three or four on a wide screen would turn an editorial grid into a
+* catalogue listing. The tiles grow with the viewport instead.
+*/
+.shop-index__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.shop-tile {
+  display: block;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+/* The ratio is set here rather than left to each photo: collection images
+   come in whatever shape the merchant uploaded, and a grid whose rows change
+   height with them stops reading as a grid. */
+.shop-tile__media {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  background: var(--color-tile);
+  border-radius: 2px;
+}
+
+.shop-tile__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms var(--ease-out-soft);
+}
+
+.shop-tile:hover .shop-tile__media img {
+  transform: scale(1.02);
+}
+
+/* A collection with neither its own image nor a product still fills its tile
+   instead of collapsing the row. */
+.shop-tile__placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-tile);
+}
+
+/* Black, under the image — never white-on-photo, which is unreadable on a
+   pale shot. */
+.shop-tile__name {
+  display: block;
+  padding: 0.75rem 0.15rem 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.shop-index__empty {
+  padding: 2rem 0;
+  font-size: 0.88rem;
+  color: var(--color-muted);
+}
+
+.shop-index__empty a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.shop-index__foot {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+@media (min-width: 48em) {
+  .shop-index {
+    padding: 4rem 1.5rem 6rem;
+  }
+
+  .shop-index__grid {
+    gap: 1.25rem;
+  }
+
+  .shop-tile__name {
+    padding-top: 0.9rem;
+    font-size: 0.95rem;
+  }
+}
+
+@media (min-width: 64em) {
+  .shop-index__grid {
+    gap: 1.75rem;
+  }
+}
+
+/* Desktop: the group name in the bar, its collections in a panel below. */
+.nav-group {
+  position: relative;
+}
+
+.nav-group__label {
+  display: inline-block;
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+}
+
+/*
+* Opened on hover and on `:focus-within`. That second selector is what makes
+* the menu usable from the keyboard without a line of JavaScript: tabbing into
+* a link inside the panel keeps it open.
+*/
+.nav-group__panel {
+  position: absolute;
+  top: 100%;
+  left: -0.75rem;
+  z-index: 5;
+  min-width: 11rem;
+  padding: 0.6rem 0;
+  margin-top: 0.35rem;
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: 0.4rem;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition:
+    opacity 180ms var(--ease-out-soft),
+    transform 180ms var(--ease-out-soft),
+    visibility 180ms;
+}
+
+.nav-group:hover .nav-group__panel,
+.nav-group:focus-within .nav-group__panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.nav-group__panel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-group__panel a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-size: 0.78rem;
+  text-transform: lowercase;
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: background 150ms var(--ease-out-soft);
+}
+
+.nav-group__panel a:hover,
+.nav-group__panel a[aria-current='page'] {
+  background: var(--color-tile);
+  text-decoration: none;
+}
+
+/* Mobile: a collapsible group per category. */
+.mobile-group {
+  border-bottom: 1px solid var(--color-line);
+}
+
+.mobile-group__trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.9rem;
+  text-transform: lowercase;
+}
+
+/* A chevron drawn from two borders — no icon file for one arrow. */
+.mobile-group__chevron {
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 1.5px solid var(--color-ink);
+  border-bottom: 1.5px solid var(--color-ink);
+  transform: rotate(45deg) translate(-0.1rem, -0.1rem);
+  transition: transform 300ms var(--ease-out-soft);
+}
+
+.mobile-group--open .mobile-group__chevron {
+  transform: rotate(225deg) translate(-0.1rem, -0.1rem);
+}
+
+.mobile-group__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms var(--ease-out-soft);
+}
+
+.mobile-group--open .mobile-group__panel {
+  grid-template-rows: 1fr;
+}
+
+.mobile-group__panel-inner {
+  overflow: hidden;
+}
+
+/* Indented, lighter, and without the row borders the top level carries — the
+   nesting has to be visible at a glance. */
+.mobile-group__panel-inner a {
+  display: block;
+  padding: 0.6rem 0 0.6rem 1rem;
+  border-bottom: none;
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.mobile-group__panel-inner a:last-child {
+  padding-bottom: 1rem;
+}
+
+.mobile-group__panel-inner a[aria-current='page'] {
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-group__panel,
+  .mobile-group__panel,
+  .mobile-group__chevron {
+    transition: none;
+  }
+}
+
+/*
+* --------------------------------------------------
+* Suggestions dans le panier
+* --------------------------------------------------
+*/
+.cart-suggest {
+  border-top: 1px solid var(--color-line);
+  padding: 1.25rem 0 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.cart-suggest__title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+}
+
+.cart-suggest__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.cart-suggest__row {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.cart-suggest__media {
+  display: block;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--color-tile);
+}
+
+.cart-suggest__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.cart-suggest__body {
+  min-width: 0;
+}
+
+.cart-suggest__name {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.cart-suggest__name:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.cart-suggest__price {
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+}
+
+/* One button per available size. Wraps rather than scrolls: in a narrow
+   drawer a hidden size is a size nobody buys. */
+.cart-suggest__variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+
+.cart-suggest__add {
+  min-height: 0;
+  padding: 0.32rem 0.7rem;
+  font-size: 0.7rem;
+  text-transform: lowercase;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background 180ms var(--ease-out-soft),
+    border-color 180ms var(--ease-out-soft),
+    color 180ms var(--ease-out-soft);
+}
+
+.cart-suggest__add:hover:not(:disabled) {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.cart-suggest__add:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+/*
+* --------------------------------------------------
+* Paramètres : langue & devise (menu + footer)
+* --------------------------------------------------
+*/
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.12rem;
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+}
+
+/*
+* No fade, no travel: picking a language reloads the page, so any transition
+* here was competing with a navigation the visitor was already watching. The
+* pill simply moves to the side they chose.
+*/
+.lang-switch__option {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.14rem 0.45rem;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.lang-switch__option:hover {
+  color: var(--color-ink);
+}
+
+/*
+* The chosen language is filled in, so the pair reads as one control with a
+* current value rather than two loose buttons.
+*/
+.lang-switch__option[data-active='true'] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+@media (max-width: 47.99em) {
+  .lang-switch__option {
+    padding: 0.14rem 0.38rem;
+    font-size: 0.58rem;
+  }
+}
+
+/* The block itself — one small settings panel, used twice. */
+.locale-prefs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.locale-prefs__title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.locale-prefs__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.locale-prefs__label {
+  font-size: 0.8rem;
+  text-transform: lowercase;
+  color: var(--color-ink);
+}
+
+.locale-prefs__value {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--color-muted);
+}
+
+/* In the menu drawer: set apart from the links above it, like the service
+   links are, so it reads as settings rather than as another destination. */
+.mobile-nav__settings {
+  margin-top: 1.25rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--color-line);
+}
+
+/*
+* --------------------------------------------------
+* Arrivée : langue et cookies (LanguagePrompt)
+* --------------------------------------------------
+*
+* Une seule interruption, posée une seule fois. Sur téléphone c'est une
+* feuille ancrée en bas, plus discrète qu'un panneau au milieu de l'écran ;
+* sur grand écran, une carte centrée, l'image à gauche.
+*
+* Aucune animation d'apparition, volontairement : une animation figée par le
+* navigateur — onglet ralenti, page restaurée — laisserait un panneau
+* invisible par-dessus tout le site, sans moyen de répondre.
+*/
+.lang-prompt {
+  position: fixed;
+  inset: 0;
+  /* Au-dessus des tiroirs (60). */
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.5);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.lang-prompt__panel {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: min(760px, 100%);
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  border-radius: 2px;
+  box-shadow: var(--shadow-md);
+}
+.lang-prompt__media {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-tile);
+}
+
+.lang-prompt__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.lang-prompt__body {
+  padding: 1.75rem 1.5rem;
+  text-align: center;
+}
+
+.lang-prompt__eyebrow {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  opacity: 0.5;
+}
+
+.lang-prompt__title {
+  margin-top: 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.45;
+  text-transform: none;
+}
+
+.lang-prompt__title span {
+  display: block;
+  font-weight: 400;
+  opacity: 0.5;
+}
+
+.lang-prompt__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+
+.lang-prompt__btn {
+  padding: 0.85rem 1.2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border: 1px solid var(--color-ink);
+  border-radius: 2px;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--ease-out-soft),
+    color 200ms var(--ease-out-soft);
+}
+
+.lang-prompt__btn--primary {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.lang-prompt__btn:hover {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.lang-prompt__btn--primary:hover {
+  background: rgba(17, 17, 17, 0.85);
+}
+
+.lang-prompt__btn:focus-visible,
+.lang-prompt__link:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* Les cookies : une ligne de texte et deux réponses en petit, sous un filet.
+   Volontairement plus discret que la langue — c'est une question de réglage,
+   pas la raison de la visite. */
+.lang-prompt__cookies {
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--color-line);
+}
+
+.lang-prompt__cookies-text {
+  font-size: 0.68rem;
+  line-height: 1.6;
+  opacity: 0.6;
+}
+
+.lang-prompt__cookies-text a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.lang-prompt__cookies-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  margin-top: 0.7rem;
+}
+
+.lang-prompt__link {
+  padding: 0.25rem 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: none;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  opacity: 0.65;
+  transition:
+    opacity 200ms var(--ease-out-soft),
+    border-color 200ms var(--ease-out-soft);
+}
+
+.lang-prompt__link:hover,
+.lang-prompt__link[data-chosen='true'] {
+  opacity: 1;
+  border-bottom-color: var(--color-ink);
+}
+
+.lang-prompt__note {
+  margin-top: 1rem;
+  font-size: 0.62rem;
+  line-height: 1.6;
+  opacity: 0.45;
+}
+
+.lang-prompt__note span {
+  display: block;
+}
+
+/* Grand écran : carte centrée, photo à gauche sur toute la hauteur. */
+@media (min-width: 40em) {
+  .lang-prompt {
+    padding: 1.5rem;
+  }
+
+  .lang-prompt__panel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .lang-prompt__media {
+    aspect-ratio: auto;
+    height: 100%;
+  }
+
+  .lang-prompt__body {
+    padding: 2.5rem 2rem;
+    text-align: left;
+    align-self: center;
+  }
+
+  .lang-prompt__cookies-actions,
+  .lang-prompt__title,
+  .lang-prompt__note {
+    text-align: left;
+  }
+
+  .lang-prompt__cookies-actions {
+    justify-content: flex-start;
+  }
+
+  .lang-prompt__actions {
+    flex-direction: row;
+  }
+
+  .lang-prompt__btn {
+    flex: 1;
+  }
+}
+
+/* Les quatre pièces sur une ligne. Le slider devient une photo, pilotée par
+   les vignettes ; les signes quittent le haut des cartes pour les
+   gouttières, à hauteur des photos. En dessous de cette largeur, les
+   pièces restent l'une sous l'autre : quatre colonnes sur une tablette ne
+   montreraient plus les vêtements. */
+@media (min-width: 64em) {
+  /* Son cadre remonte d'autant qu'il est épais : les quatre photos partent
+     ainsi de la même ligne. */
+}

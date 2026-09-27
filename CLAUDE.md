@@ -1,0 +1,18 @@
+# Hustle Studio — notes for Claude
+
+Shopify headless storefront: React Router 7 + Hydrogen (as a library),
+deployed on **Vercel** through the Build Output API (`npm run build:vercel`
+→ `server/vercel.ts` + `scripts/vercel-output.mjs`). `npm run dev` runs the
+same app on Mini Oxygen through `server.ts`; keep the two entries in step.
+
+- Brand-specific values live in `app/config/` (brand, theme, home,
+  navigation) and `public/brand/`. Do not hardcode the brand name elsewhere;
+  dictionary strings can use `{brand}`.
+- Products, collections, stock, prices and legal texts come from Shopify.
+  Never add hardcoded products, fake reviews, fake stock counts or promises
+  (delivery times, return windows) that Shopify does not back.
+- UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
+- Secrets only in env vars (`.env.example` lists them). Never commit tokens.
+- Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
+- Vercel build: keep server and client CSS identical (no `build.target` on the
+  SSR build) or hydration breaks on a stylesheet hash mismatch.

@@ -1,0 +1,46 @@
+/**
+ * Brand theme — colours, fonts, motion and elevation.
+ *
+ * The one stylesheet to edit when the storefront changes brand. Every rule in
+ * app/styles reads these tokens (var(--color-ink), var(--font-sans), …), and
+ * Tailwind exposes them as utilities (text-ink, bg-paper, …).
+ *
+ * Fonts: Arial/Helvetica are system fonts, so nothing is downloaded. To use a
+ * web font, add its @font-face (files in public/fonts/) above @theme and put
+ * its family name first in --font-sans.
+ */
+@theme {
+  --color-ink: #111111;
+  --color-paper: #ffffff;
+  --color-tile: #f5f5f4;
+  --color-line: #e5e5e3;
+  --color-muted: #8a8a86;
+  --color-sale: #b3261e;
+
+  --font-mono: Arial, Helvetica, sans-serif;
+  --font-sans: Arial, Helvetica, sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /*
+   * Elevation. One scale so product cards, rail arrows, menus and the
+   * collection banner all agree instead of each inventing its own shadow.
+   *
+   * Every step is a tight contact shadow plus a wide, heavily negative-spread
+   * ambient one: on a white page that reads as the element sitting slightly
+   * above the paper, rather than as a grey slab painted behind it — which is
+   * what a single large blur at any real opacity always looks like.
+   */
+  --shadow-xs: 0 1px 2px rgba(17, 17, 17, 0.04);
+  --shadow-sm:
+    0 1px 2px rgba(17, 17, 17, 0.04), 0 8px 18px -12px rgba(17, 17, 17, 0.16);
+  --shadow-md:
+    0 1px 2px rgba(17, 17, 17, 0.05), 0 16px 30px -18px rgba(17, 17, 17, 0.2);
+  --shadow-lg:
+    0 2px 4px rgba(17, 17, 17, 0.05), 0 28px 48px -24px rgba(17, 17, 17, 0.24);
+
+  /* One size for every section heading, so the page has a single hierarchy
+     instead of a different scale per component. Overridden per breakpoint in
+     app.css. */
+  --section-title-size: 1.85rem;
+}

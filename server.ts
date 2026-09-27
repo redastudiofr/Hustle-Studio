@@ -1,9 +1,11 @@
 import * as serverBuild from 'virtual:react-router/server-build';
 import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
 import {createHydrogenRouterContext} from '~/lib/context';
+import {unavailablePage} from '~/lib/unavailable';
 
 /**
- * Export a fetch handler in module format.
+ * Local development entry, run by Mini Oxygen (`npm run dev`).
+ * Production runs on Vercel through server/vercel.ts — keep the two in step.
  */
 export default {
   async fetch(
@@ -53,7 +55,7 @@ export default {
       return response;
     } catch (error) {
       console.error(error);
-      return new Response('An unexpected error occurred', {status: 500});
+      return unavailablePage();
     }
   },
 };

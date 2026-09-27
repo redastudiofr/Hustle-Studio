@@ -8,11 +8,21 @@
     "*.tsx",
     "*.d.ts",
     ".graphqlrc.ts",
-    ".react-router/types/**/*"
+    ".react-router/types/**/*",
+    "server/**/*.ts"
   ],
-  "exclude": ["node_modules", "dist", "build", "packages/**/dist/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "packages/**/dist/**/*"
+  ],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
@@ -32,10 +42,15 @@
       "vite/client"
     ],
     "paths": {
-      "~/*": ["app/*"]
+      "~/*": [
+        "app/*"
+      ]
     },
     "noEmit": true,
-    "rootDirs": [".", "./.react-router/types"],
+    "rootDirs": [
+      ".",
+      "./.react-router/types"
+    ],
     "incremental": true,
     "composite": false,
     "verbatimModuleSyntax": true

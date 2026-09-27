@@ -1,0 +1,29 @@
+/**
+ * Tailwind entry point. The brand's design tokens live in
+ * app/config/theme.css — edit them there, not here.
+ *
+ * Classes are collected from app/ only, so the server and client builds
+ * always see the same sources. (Both builds must also emit byte-identical
+ * CSS — see the note in vite.config.ts — or the server-rendered <link>
+ * points at a stylesheet the browser does not have.)
+ */
+@import 'tailwindcss' source('../');
+@import '../config/theme.css';
+
+@layer base {
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

@@ -1,0 +1,248 @@
+import type {Storefront} from '@shopify/hydrogen';
+import type {
+  HomeCollectionFragment,
+  HomeProductFragment,
+} from 'storefrontapi.generated';
+import {HOME_SECTIONS, type HomeSection, type ProductSort} from '~/config/home';
+import {withoutAutoCollections} from '~/lib/collections';
+
+export type HomeProductsData = {
+  products: HomeProductFragment[];
+  /** Set when the products came from the configured collection. */
+  collection: {handle: string; title: string} | null;
+} | null;
+
+export type HomeFeatureData = {
+  collection: {
+    handle: string;
+    title: string;
+    description: string;
+    image: HomeCollectionFragment['image'];
+  };
+  products: HomeProductFragment[];
+} | null;
+
+export type HomeSectionData =
+  | {type: 'products'; data: Promise<HomeProductsData>}
+  | {type: 'feature'; data: Promise<HomeFeatureData>}
+  | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
+  | {type: 'static'};
+
+const SORT_KEYS: Record<
+  ProductSort,
+  {sortKey: 'CREATED_AT' | 'BEST_SELLING'; reverse: boolean}
+> = {
+  newest: {sortKey: 'CREATED_AT', reverse: true},
+  'best-selling': {sortKey: 'BEST_SELLING', reverse: false},
+};
+
+/**
+ * Starts one Shopify request per data-driven homepage section, without
+ * awaiting any of them: the page streams, and each section appears as soon as
+ * its own data is in. A failed or empty section resolves to null / [] and is
+ * not rendered — it never takes the page down with it.
+ */
+export function loadHomeSections(
+  storefront: Storefront,
+  sections: HomeSection[] = HOME_SECTIONS,
+): HomeSectionData[] {
+  // One collections request, shared by every "collections" section.
+  let collections: Promise<HomeCollectionFragment[]> | null = null;
+
+  return sections.map((section) => {
+    switch (section.type) {
+      case 'products':
+        return {
+          type: 'products',
+          data: loadProducts(storefront, section).catch(logAndReturn(null)),
+        };
+      case 'feature':
+        return {
+          type: 'feature',
+          data: loadFeature(storefront, section).catch(logAndReturn(null)),
+        };
+      case 'collections':
+        collections ??= storefront
+          .query(HOME_COLLECTIONS_QUERY, {cache: storefront.CacheLong()})
+          .then(({collections}) => withoutAutoCollections(collections.nodes))
+          .catch(logAndReturn([] as HomeCollectionFragment[]));
+        return {type: 'collections', data: collections};
+      default:
+        return {type: 'static'};
+    }
+  });
+}
+
+async function loadProducts(
+  storefront: Storefront,
+  section: Extract<HomeSection, {type: 'products'}>,
+): Promise<HomeProductsData> {
+  const first = section.limit ?? 12;
+
+  if (section.collection) {
+    const {collection} = await storefront.query(
+      HOME_COLLECTION_PRODUCTS_QUERY,
+      {
+        variables: {handle: section.collection, first},
+        cache: storefront.CacheShort(),
+      },
+    );
+    if (collection?.products.nodes.length) {
+      return {
+        products: collection.products.nodes,
+        collection: {handle: collection.handle, title: collection.title},
+      };
+    }
+    if (!section.fallbackSort) {
+      console.warn(
+        `Homepage: Shopify has no collection "${section.collection}" (or it is empty) — the section is hidden.`,
+      );
+      return null;
+    }
+  }
+
+  const {sortKey, reverse} = SORT_KEYS[section.fallbackSort ?? 'newest'];
+  const {products} = await storefront.query(HOME_SORTED_PRODUCTS_QUERY, {
+    variables: {first, sortKey, reverse},
+    cache: storefront.CacheShort(),
+  });
+  return products.nodes.length
+    ? {products: products.nodes, collection: null}
+    : null;
+}
+
+async function loadFeature(
+  storefront: Storefront,
+  section: Extract<HomeSection, {type: 'feature'}>,
+): Promise<HomeFeatureData> {
+  const {collection} = await storefront.query(HOME_COLLECTION_PRODUCTS_QUERY, {
+    variables: {handle: section.collection, first: section.limit ?? 12},
+    cache: storefront.CacheShort(),
+  });
+  if (!collection?.products.nodes.length) {
+    console.warn(
+      `Homepage: Shopify has no collection "${section.collection}" (or it is empty) — the feature is hidden.`,
+    );
+    return null;
+  }
+  return {
+    collection: {
+      handle: collection.handle,
+      title: collection.title,
+      description: collection.description,
+      image: collection.image,
+    },
+    products: collection.products.nodes,
+  };
+}
+
+function logAndReturn<T>(fallback: T) {
+  return (error: unknown) => {
+    console.error(error);
+    return fallback;
+  };
+}
+
+const HOME_PRODUCT_FRAGMENT = `#graphql
+  fragment HomeMoney on MoneyV2 {
+    amount
+    currencyCode
+  }
+  fragment HomeProduct on Product {
+    id
+    title
+    handle
+    availableForSale
+    priceRange {
+      minVariantPrice {
+        ...HomeMoney
+      }
+    }
+    compareAtPriceRange {
+      minVariantPrice {
+        ...HomeMoney
+      }
+    }
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    images(first: 2) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+` as const;
+
+const HOME_COLLECTION_FRAGMENT = `#graphql
+  fragment HomeCollection on Collection {
+    id
+    title
+    handle
+    image {
+      id
+      url
+      altText
+      width
+      height
+    }
+  }
+` as const;
+
+const HOME_COLLECTIONS_QUERY = `#graphql
+  query HomeCollections($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collections(first: 30, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...HomeCollection
+      }
+    }
+  }
+  ${HOME_COLLECTION_FRAGMENT}
+` as const;
+
+const HOME_COLLECTION_PRODUCTS_QUERY = `#graphql
+  query HomeCollectionProducts(
+    $handle: String!
+    $first: Int
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      ...HomeCollection
+      description
+      products(first: $first) {
+        nodes {
+          ...HomeProduct
+        }
+      }
+    }
+  }
+  ${HOME_COLLECTION_FRAGMENT}
+  ${HOME_PRODUCT_FRAGMENT}
+` as const;
+
+const HOME_SORTED_PRODUCTS_QUERY = `#graphql
+  query HomeSortedProducts(
+    $first: Int
+    $sortKey: ProductSortKeys
+    $reverse: Boolean
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    products(first: $first, sortKey: $sortKey, reverse: $reverse) {
+      nodes {
+        ...HomeProduct
+      }
+    }
+  }
+  ${HOME_PRODUCT_FRAGMENT}
+` as const;
