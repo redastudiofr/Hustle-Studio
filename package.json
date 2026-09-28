@@ -11,7 +11,8 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
-    "codegen": "shopify hydrogen codegen && react-router typegen"
+    "codegen": "shopify hydrogen codegen && react-router typegen",
+    "shopify:redirect": "node scripts/shopify-theme-redirect.mjs"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {

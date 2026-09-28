@@ -135,7 +135,46 @@ indisponible », et le détail apparaît dans Vercel → *Logs*.
      Shopify, puis mettre cette valeur dans `PUBLIC_CHECKOUT_DOMAIN` sur
      Vercel.
 3. Renseignez l'adresse finale dans `app/config/brand.ts` → `siteUrl`
-   (utilisée pour le SEO).
+   (utilisée pour le SEO et par la redirection de l'étape 7 bis).
+
+## Étape 7 bis — Rediriger le checkout vers ce site
+
+Dans le checkout Shopify, le **logo**, le lien **« Retour au panier »** et,
+après le paiement, **« Continuer vos achats »** mènent au *domaine principal*
+de la boutique Shopify (*Paramètres → Domaines*, aujourd'hui
+`xxxx.myshopify.com`). Ce domaine affiche le thème de la *Boutique en
+ligne* Shopify, pas ce site. Shopify ne permet pas de changer ces liens
+dans le checkout, mais le thème, lui, est modifiable : on lui fait
+renvoyer chaque page vers ce site, au même chemin (`/` → accueil,
+`/cart` → panier, `/products/…` → la même fiche).
+
+1. Générez le code (il reprend `siteUrl` de `app/config/brand.ts`) :
+   `npm run shopify:redirect` → `shopify/snippets/headless-redirect.liquid`
+   (déjà généré dans le dépôt).
+2. Shopify → **Boutique en ligne → Thèmes** → sur le thème publié,
+   **… → Modifier le code**.
+3. Dossier **Snippets → Ajouter un nouveau snippet** nommé
+   `headless-redirect`, collez-y tout le contenu du fichier, **Enregistrer**.
+4. Ouvrez **Layout → `theme.liquid`**. Juste après la ligne `<head>`,
+   ajoutez :
+   ```liquid
+   {% render 'headless-redirect' %}
+   ```
+   Enregistrez. Faites de même dans **Layout → `password.liquid`** (la page
+   « bientôt disponible » si la boutique est protégée par mot de passe).
+
+Ne désinstallez pas le canal *Boutique en ligne* : le formulaire de contact
+et l'inscription à la newsletter du site passent par lui.
+
+Ce qui n'est **pas** redirigé, volontairement : l'éditeur de thème (pour
+pouvoir encore le modifier) et les pages de compte client. Le checkout, les
+pages de suivi de commande et les liens de panier ne passent pas par le
+thème : ils continuent de fonctionner normalement.
+
+Vérification : ouvrez `https://xxxx.myshopify.com/cart` dans une fenêtre de
+navigation privée → vous devez arriver sur `https://hustlestudio.store/cart`.
+Puis faites une commande test et cliquez sur le logo du checkout, sur
+ordinateur et sur mobile.
 
 ## Étape 8 — Vérifier que tout fonctionne
 

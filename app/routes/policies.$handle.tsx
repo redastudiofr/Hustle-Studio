@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from 'react-router';
+import {Link, redirect, useLoaderData} from 'react-router';
 import type {Route} from './+types/policies.$handle';
 import {useT} from '~/lib/i18n';
 import {seoMeta, originFromMatches} from '~/lib/seo';
@@ -21,6 +21,20 @@ const POLICIES = {
 
 type PolicyHandle = keyof typeof POLICIES;
 
+/**
+ * The storefront's own legal pages (/legal/*), used while a policy is not
+ * published in Shopify — Shopify's theme, checkout and e-mails link to
+ * /policies/<handle>, and those links must not end on a 404.
+ */
+const LEGAL_PAGES: Partial<Record<PolicyHandle, string>> = {
+  'privacy-policy': 'privacy',
+  'refund-policy': 'returns',
+  'shipping-policy': 'shipping',
+  'terms-of-service': 'terms',
+  'terms-of-sale': 'terms',
+  'legal-notice': 'legal-notice',
+};
+
 export const meta: Route.MetaFunction = ({data, matches}) =>
   seoMeta({
     title: data?.policy.title,
@@ -42,6 +56,8 @@ export async function loader({params, context}: Route.LoaderArgs) {
 
   // Not written yet in Shopify Admin.
   if (!policy?.body) {
+    const legal = LEGAL_PAGES[handle];
+    if (legal) throw redirect(`/legal/${legal}`);
     throw new Response('Policy not published', {status: 404});
   }
 
