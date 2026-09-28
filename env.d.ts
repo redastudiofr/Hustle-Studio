@@ -12,5 +12,11 @@ declare global {
    * (PUBLIC_STORE_DOMAIN, PUBLIC_STOREFRONT_API_TOKEN, SESSION_SECRET, …);
    * the full list with explanations is in .env.example.
    */
-  interface Env {}
+  interface Env {
+    // Optional, server-only — see .env.example and docs/PROMOTIONS.md.
+    NOTION_API_KEY?: string;
+    NOTION_PHONE_DATABASE_ID?: string;
+    RESEND_API_KEY?: string;
+    NOTIFICATION_EMAIL?: string;
+  }
 }

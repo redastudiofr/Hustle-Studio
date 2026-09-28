@@ -8,7 +8,11 @@ import {
   type CartActionFeedback,
   type CartLine,
 } from '~/components/CartLineItem';
-import {ADD_TO_CART_FETCHER_KEY} from '~/components/AddToCartButton';
+import {
+  ADD_TO_CART_FETCHER_KEY,
+  BUNDLE_FETCHER_KEY,
+  PACK_FETCHER_KEY,
+} from '~/components/AddToCartButton';
 import {CartSummary} from './CartSummary';
 import {CartSuggestions} from './CartSuggestions';
 import {useT} from '~/lib/i18n';
@@ -83,11 +87,13 @@ export function CartMain({layout, cart: originalCart}: CartMainProps) {
 
 /** Shopify's reason when the last "add to cart" was refused or adjusted. */
 function AddFeedback() {
-  const fetcher = useFetcher<CartActionFeedback>({
-    key: ADD_TO_CART_FETCHER_KEY,
-  });
-  const message =
-    fetcher.state === 'idle' ? cartFeedbackMessage(fetcher.data) : null;
+  const add = useFetcher<CartActionFeedback>({key: ADD_TO_CART_FETCHER_KEY});
+  const bundle = useFetcher<CartActionFeedback>({key: BUNDLE_FETCHER_KEY});
+  const pack = useFetcher<CartActionFeedback>({key: PACK_FETCHER_KEY});
+  const message = [add, bundle, pack]
+    .filter((fetcher) => fetcher.state === 'idle')
+    .map((fetcher) => cartFeedbackMessage(fetcher.data))
+    .find(Boolean);
   if (!message) return null;
   return (
     <p className="cart-feedback" role="alert">

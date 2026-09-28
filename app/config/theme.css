@@ -16,6 +16,10 @@
   --color-line: #e5e5e3;
   --color-muted: #8a8a86;
   --color-sale: #b3261e;
+  /* Star ratings (real review-app ratings only). */
+  --color-star: #111111;
+  /* "verified" mark on review cards. */
+  --color-certified: #0f8a43;
 
   --font-mono: Arial, Helvetica, sans-serif;
   --font-sans: Arial, Helvetica, sans-serif;

@@ -10,6 +10,9 @@ import {QuantitySelector} from '~/components/QuantitySelector';
 import {ProductSizeGuide, type SizeEntry} from '~/components/ProductSizeGuide';
 import {useAside} from '~/components/Aside';
 import {useT} from '~/lib/i18n';
+import {StarRating} from '~/components/StarRating';
+import {TierNote} from '~/components/TierNote';
+import type {ProductRating} from '~/lib/rating';
 
 /** Shopify's own count is called out as "low" at or under this many units. */
 const LOW_STOCK_THRESHOLD = 5;
@@ -31,6 +34,7 @@ export function ProductPurchase({
   shortDescription,
   variantId,
   selectedVariant,
+  rating,
 }: {
   title: string;
   price?: MoneyV2;
@@ -44,6 +48,8 @@ export function ProductPurchase({
   variantId?: string;
   /** Lets the cart drawer show the line instantly, before Shopify answers. */
   selectedVariant?: ProductVariantFragment | null;
+  /** From a review app's Shopify metafields only; null shows no stars. */
+  rating?: ProductRating | null;
 }) {
   const {open: openAside} = useAside();
   const [quantity, setQuantity] = useState(1);
@@ -81,6 +87,18 @@ export function ProductPurchase({
 
   return (
     <div className="buybox">
+      {rating && (
+        <div className="rating-summary">
+          <StarRating rating={rating.value} size={18} />
+          <span className="rating-summary__text">
+            {t('product.ratedOutOf', {value: rating.value.toString()})}
+            {typeof rating.count === 'number' && (
+              <> {t('product.fromReviews', {count: rating.count})}</>
+            )}
+          </span>
+        </div>
+      )}
+
       <h1 className="buybox__title">{title}</h1>
 
       <div className="buybox__price">
@@ -89,6 +107,8 @@ export function ProductPurchase({
           <span className="buybox__discount">−{discountPct}%</span>
         )}
       </div>
+
+      <TierNote />
 
       <p className="buybox__tax">
         {t('product.taxIncluded')}{' '}

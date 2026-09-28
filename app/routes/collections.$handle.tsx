@@ -6,6 +6,7 @@ import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
 import {seoMeta, originFromMatches} from '~/lib/seo';
 import {SortSelect} from '~/components/SortSelect';
+import {TierNote} from '~/components/TierNote';
 import {collectionSortKey, sortFromRequest} from '~/lib/sort';
 import {useT} from '~/lib/i18n';
 import type {ProductItemFragment} from 'storefrontapi.generated';
@@ -64,6 +65,7 @@ export default function Collection() {
       <div className="collection-head">
         <h1>{collection.title}</h1>
         {collection.description ? <p>{collection.description}</p> : null}
+        <TierNote className="tier-note--collection" />
       </div>
       {!empty && (
         <div className="collection-toolbar">
@@ -105,6 +107,12 @@ const PRODUCT_ITEM_FRAGMENT = `#graphql
     handle
     title
     availableForSale
+    rating: metafield(namespace: "reviews", key: "rating") {
+      value
+    }
+    ratingCount: metafield(namespace: "reviews", key: "rating_count") {
+      value
+    }
     featuredImage {
       id
       altText

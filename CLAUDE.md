@@ -11,6 +11,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 - Products, collections, stock, prices and legal texts come from Shopify.
   Never add hardcoded products, fake reviews, fake stock counts or promises
   (delivery times, return windows) that Shopify does not back.
+- Promotions live in `app/config/promotions.ts` and stay invisible until a
+  Shopify code is set (`isLive`). Reviews come only from `app/data/reviews.ts`
+  (real ones) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
 - Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.

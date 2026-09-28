@@ -34,7 +34,7 @@ export type HomeSection =
   | {
       type: 'hero';
       eyebrow?: Localized;
-      /** Omit to show the brand's wordmark instead of a text title. */
+      /** Omit for no visible title (the logo stays in the header only). */
       title?: Localized;
       text?: Localized;
       image?: HomeImage;
@@ -73,6 +73,14 @@ export type HomeSection =
       text: Localized;
       image?: HomeImage;
       cta?: HomeLink;
+    }
+  | {
+      /** The pack offer (app/config/promotions.ts). Hidden while it is off. */
+      type: 'pack';
+    }
+  | {
+      /** Customer reviews (app/data/reviews.ts). Hidden while there are none. */
+      type: 'reviews';
     }
   | {type: 'newsletter'};
 
@@ -118,6 +126,7 @@ export const HOME_SECTIONS: HomeSection[] = [
     limit: 12,
     layout: 'rail',
   },
+  {type: 'pack'},
   {
     type: 'editorial',
     eyebrow: {en: 'the studio', fr: 'le studio'},
@@ -136,5 +145,6 @@ export const HOME_SECTIONS: HomeSection[] = [
     layout: 'grid',
     link: {label: {en: 'view all', fr: 'tout voir'}, to: '/collections/all'},
   },
+  {type: 'reviews'},
   {type: 'newsletter'},
 ];

@@ -3,6 +3,7 @@ import {Suspense, useId} from 'react';
 import type {CartApiQueryFragment, HeaderQuery} from 'storefrontapi.generated';
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
+import {NewsletterPopup} from '~/components/NewsletterPopup';
 import {Header, HeaderMenu, type NavCollection} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
 import {LanguagePrompt} from '~/components/LanguagePrompt';
@@ -22,6 +23,7 @@ interface PageLayoutProps {
   isLoggedIn: Promise<boolean>;
   publicStoreDomain: string;
   accountEnabled?: boolean;
+  promoSignupEnabled?: boolean;
   /** False only for a visitor who has never answered the language question. */
   localeChosen?: boolean;
   /** False only for a visitor who has never answered the cookie question. */
@@ -37,6 +39,7 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
   accountEnabled = false,
+  promoSignupEnabled = false,
   localeChosen = true,
   consentChosen = true,
 }: PageLayoutProps) {
@@ -67,6 +70,7 @@ export function PageLayout({
           {children}
         </main>
         <Footer />
+        <NewsletterPopup enabled={promoSignupEnabled} />
         {(!localeChosen || !consentChosen) && (
           <LanguagePrompt
             askLanguage={!localeChosen}

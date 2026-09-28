@@ -5,6 +5,8 @@ import type {
 } from 'storefrontapi.generated';
 import {HOME_SECTIONS, type HomeSection, type ProductSort} from '~/config/home';
 import {withoutAutoCollections} from '~/lib/collections';
+import {PACK_ENABLED} from '~/lib/packOffer';
+import {loadPack, type PackData} from '~/lib/packProducts';
 
 export type HomeProductsData = {
   products: HomeProductFragment[];
@@ -26,6 +28,7 @@ export type HomeSectionData =
   | {type: 'products'; data: Promise<HomeProductsData>}
   | {type: 'feature'; data: Promise<HomeFeatureData>}
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
+  | {type: 'pack'; data: Promise<PackData | null>}
   | {type: 'static'};
 
 const SORT_KEYS: Record<
@@ -67,6 +70,12 @@ export function loadHomeSections(
           .then(({collections}) => withoutAutoCollections(collections.nodes))
           .catch(logAndReturn([] as HomeCollectionFragment[]));
         return {type: 'collections', data: collections};
+      case 'pack':
+        if (!PACK_ENABLED) return {type: 'static'};
+        return {
+          type: 'pack',
+          data: loadPack(storefront).catch(logAndReturn(null)),
+        };
       default:
         return {type: 'static'};
     }
@@ -153,6 +162,12 @@ const HOME_PRODUCT_FRAGMENT = `#graphql
     title
     handle
     availableForSale
+    rating: metafield(namespace: "reviews", key: "rating") {
+      value
+    }
+    ratingCount: metafield(namespace: "reviews", key: "rating_count") {
+      value
+    }
     priceRange {
       minVariantPrice {
         ...HomeMoney

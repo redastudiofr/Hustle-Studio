@@ -16,8 +16,7 @@ const HEADER_OFFSET_PX = 64;
  *
  * - photo: full-bleed image (one crop per breakpoint, only the matching one is
  *   downloaded), bottom scrim, text and buttons bottom-left;
- * - typographic: the brand's wordmark large on black — the default until
- *   brand photography is added.
+ * - typographic: text on black, used until brand photography is added.
  *
  * The header sits transparent over it while it is in view. The entrance is a
  * CSS animation on transform only, so the content is visible even if
@@ -84,10 +83,9 @@ export function Hero({
         {title ? (
           <h1 className="hero__title">{l(title)}</h1>
         ) : (
-          <h1 className="hero__title hero__title--wordmark">
-            <span className="brand-wordmark" aria-hidden="true" />
-            <span className="sr-only">{BRAND.name}</span>
-          </h1>
+          // The logo lives in the header only; the page still has a real
+          // heading for search engines and screen readers.
+          <h1 className="sr-only">{BRAND.name}</h1>
         )}
         {text && <p className="hero__text">{l(text)}</p>}
         {(cta || secondaryCta) && (

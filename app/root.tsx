@@ -14,6 +14,7 @@ import type {Route} from './+types/root';
 import {HEADER_QUERY, NAV_COLLECTIONS_QUERY} from '~/lib/fragments';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
+import promotionsStyles from '~/styles/promotions.css?url';
 import brandStyles from '~/styles/brand.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
@@ -26,6 +27,8 @@ import {
   localeFromRequest,
 } from '~/lib/i18n/locale';
 import {BRAND} from '~/config/brand';
+import {isInAppBrowser} from '~/lib/inAppBrowser';
+import {PROMO_POPUP_ACTIVE} from '~/lib/newsletterPromo';
 import {seoMeta} from '~/lib/seo';
 import {ErrorPage} from '~/components/ErrorPage';
 
@@ -103,6 +106,12 @@ export async function loader(args: Route.LoaderArgs) {
     // Only a yes/no reaches the browser: whether the Customer Account API is
     // configured, which decides whether the header shows an account icon.
     accountEnabled: Boolean(env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID),
+    // Only a yes/no reaches the browser: whether the welcome pop-up is on
+    // (app/config/promotions.ts) and has a Notion database to store numbers
+    // in. The token itself never leaves the server.
+    promoSignupEnabled:
+      PROMO_POPUP_ACTIVE &&
+      Boolean(env.NOTION_API_KEY && env.NOTION_PHONE_DATABASE_ID),
     shop: getShopAnalytics({
       storefront,
       publicStorefrontId: env.PUBLIC_STOREFRONT_ID,
@@ -152,6 +161,9 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
     localeChosen: hasLocaleChoice(request),
     consentChosen: hasConsentChoice(request),
     origin: new URL(request.url).origin,
+    // TikTok's and Instagram's own browsers throw inline video full screen;
+    // the video carousel is skipped there — see app/lib/inAppBrowser.ts.
+    inAppBrowser: isInAppBrowser(request.headers.get('user-agent')),
   };
 }
 
@@ -210,6 +222,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
+        <link rel="stylesheet" href={promotionsStyles}></link>
         <link rel="stylesheet" href={brandStyles}></link>
         <Meta />
         <Links />

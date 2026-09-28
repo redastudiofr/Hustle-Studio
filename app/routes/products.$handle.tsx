@@ -19,6 +19,11 @@ import {ProductDescription} from '~/components/ProductDescription';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
 import {Accordion} from '~/components/Accordion';
 import {RelatedProductsRail} from '~/components/RelatedProductsRail';
+import {BundleOffer} from '~/components/BundleOffer';
+import {ProductWornVideos} from '~/components/ProductWornVideos';
+import {ProductReviews} from '~/components/ProductReviews';
+import {parseRating} from '~/lib/rating';
+import {OFFER_ENABLED} from '~/lib/offers';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductFaq} from '~/data/faq';
 import {useT} from '~/lib/i18n';
@@ -122,7 +127,48 @@ function loadDeferredData(
     return merged;
   });
 
-  return {recommended};
+  /*
+   * The pieces offered as the second half of the "take two" pair — real,
+   * buyable catalogue products. Only fetched while the offer is live.
+   */
+  const pairChoices = OFFER_ENABLED
+    ? context.storefront
+        .query(PAIR_CHOICES_QUERY, {
+          variables: {first: 12},
+          cache: context.storefront.CacheShort(),
+        })
+        .then((data) =>
+          (data?.products?.nodes ?? [])
+            .filter(
+              (node) =>
+                node.handle !== handle &&
+                node.availableForSale &&
+                node.variants?.nodes?.some(
+                  (variant) => variant.availableForSale,
+                ),
+            )
+            .map((node) => {
+              const variant = node.variants.nodes.find(
+                (candidate) => candidate.availableForSale,
+              )!;
+              return {
+                id: node.id,
+                title: node.title,
+                handle: node.handle,
+                featuredImage: node.featuredImage,
+                variantId: variant.id,
+                price: variant.price,
+              };
+            })
+            .slice(0, MAX_PAIR_CHOICES),
+        )
+        .catch((error: Error) => {
+          console.error(error);
+          return [];
+        })
+    : Promise.resolve([]);
+
+  return {recommended, pairChoices};
 }
 
 /** First sentence of the product description, for the short blurb in the buy box. */
@@ -135,7 +181,8 @@ function shortenDescription(description: string): string {
 }
 
 export default function Product() {
-  const {product, recommended, origin} = useLoaderData<typeof loader>();
+  const {product, recommended, pairChoices, origin} =
+    useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -192,7 +239,29 @@ export default function Product() {
             shortDescription={shortenDescription(description ?? '')}
             variantId={selectedVariant?.id}
             selectedVariant={selectedVariant}
+            // Only a real review app's score (Shopify metafields) — never an
+            // invented one. No review app: no stars.
+            rating={parseRating(product.rating, product.ratingCount)}
           />
+
+          {OFFER_ENABLED && (
+            <Suspense fallback={null}>
+              <Await resolve={pairChoices} errorElement={null}>
+                {(choices) => (
+                  <BundleOffer
+                    productTitle={title}
+                    productImage={
+                      product.images.nodes[0] ?? selectedVariant?.image
+                    }
+                    productPrice={selectedVariant?.price}
+                    productVariantId={selectedVariant?.id}
+                    choices={choices}
+                    available={available}
+                  />
+                )}
+              </Await>
+            </Suspense>
+          )}
 
           <div className="pdp__details">
             {descriptionHtml && (
@@ -218,6 +287,8 @@ export default function Product() {
         </aside>
       </div>
 
+      <ProductWornVideos />
+
       <Suspense fallback={null}>
         <Await resolve={recommended} errorElement={null}>
           {(items) =>
@@ -225,6 +296,10 @@ export default function Product() {
           }
         </Await>
       </Suspense>
+
+      <div className="pdp__reviews">
+        <ProductReviews productHandle={product.handle} productTitle={title} />
+      </div>
 
       <script
         type="application/ld+json"
@@ -264,6 +339,7 @@ function productJsonLd(
   origin: string,
 ): string {
   const url = absoluteUrl(`/products/${product.handle}`, origin);
+  const rating = parseRating(product.rating, product.ratingCount);
   const variants = [
     selected,
     ...product.adjacentVariants.filter(
@@ -280,6 +356,13 @@ function productJsonLd(
     image: product.images.nodes.map((image) => image.url),
     brand: {'@type': 'Brand', name: product.vendor || BRAND.name},
     sku: selected?.sku || undefined,
+    aggregateRating: rating
+      ? {
+          '@type': 'AggregateRating',
+          ratingValue: rating.value,
+          reviewCount: rating.count ?? undefined,
+        }
+      : undefined,
     offers: variants.map((variant) => ({
       '@type': 'Offer',
       url: `${url}?${new URLSearchParams(
@@ -343,6 +426,14 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    # Written by review apps (Shopify Product Reviews, Judge.me…). Absent
+    # when there is no review app — no rating is then shown at all.
+    rating: metafield(namespace: "reviews", key: "rating") {
+      value
+    }
+    ratingCount: metafield(namespace: "reviews", key: "rating_count") {
+      value
+    }
     encodedVariantExistence
     encodedVariantAvailability
     images(first: 12) {
@@ -409,6 +500,12 @@ const RECO_PRODUCT_FRAGMENT = `#graphql
     title
     handle
     availableForSale
+    rating: metafield(namespace: "reviews", key: "rating") {
+      value
+    }
+    ratingCount: metafield(namespace: "reviews", key: "rating_count") {
+      value
+    }
     featuredImage {
       id
       url
@@ -471,6 +568,46 @@ const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
     }
   }
   ${RECO_PRODUCT_FRAGMENT}
+` as const;
+
+/**
+ * How many pieces the offer proposes. Enough to feel like a real choice,
+ * few enough that the box stays a box rather than a second catalogue.
+ */
+const MAX_PAIR_CHOICES = 6;
+
+const PAIR_CHOICES_QUERY = `#graphql
+  query PdpPairChoices(
+    $first: Int
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    products(first: $first, sortKey: BEST_SELLING) {
+      nodes {
+        id
+        title
+        handle
+        availableForSale
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        variants(first: 10) {
+          nodes {
+            id
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
 ` as const;
 
 /** Tops the recommendation row up to a full set with real catalogue products. */

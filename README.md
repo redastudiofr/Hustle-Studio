@@ -26,6 +26,9 @@ Tout ce qui est propre à la marque est regroupé ici :
 | Couleurs, polices, ombres | `app/config/theme.css` |
 | Sections de la page d'accueil (ordre, titres, collections affichées, images) | `app/config/home.ts` |
 | Menu, ordre des collections, liens du footer | `app/config/navigation.ts` |
+| Promotions (2ᵉ pièce, pack, paliers, pop-up) — éteintes tant qu'aucun code n'est saisi | `app/config/promotions.ts` → guide : [`docs/PROMOTIONS.md`](docs/PROMOTIONS.md) |
+| Avis clients (réels uniquement) | `app/data/reviews.ts` |
+| Vidéos « portées » des fiches produits | `app/config/videos.ts` + `public/videos/` |
 | Logo, favicon, icône, image de partage | `public/brand/` + `public/favicon*.{ico,png}` + `public/apple-touch-icon.png` |
 | Textes de l'interface (FR / EN) | `app/lib/i18n/dictionary.ts` (`{brand}` y insère le nom automatiquement) |
 
@@ -42,7 +45,8 @@ Tout ce qui est propre à la marque est regroupé ici :
 
 `app/config/home.ts` décrit la page de haut en bas. Types de sections :
 `hero`, `products` (rangée ou grille), `feature` (grande bannière de
-collection + rangée), `collections`, `editorial`, `newsletter`.
+collection + rangée), `collections`, `editorial`, `pack`, `reviews`,
+`newsletter`.
 
 Les sections produits pointent vers une **collection Shopify** par son
 *handle* (la fin de l'URL de la collection). Si la collection n'existe pas

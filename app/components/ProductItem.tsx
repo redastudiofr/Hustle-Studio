@@ -9,6 +9,8 @@ import type {
 import {useVariantUrl} from '~/lib/variants';
 import {useT} from '~/lib/i18n';
 import {Price} from '~/components/Price';
+import {StarRating} from '~/components/StarRating';
+import {parseRating} from '~/lib/rating';
 
 type GridProduct =
   | CollectionItemFragment
@@ -42,6 +44,15 @@ export function ProductItem({
       : undefined;
   const onSale =
     !soldOut && compareAt && Number(compareAt.amount) > Number(price.amount);
+
+  // Only when a review app publishes real ratings in Shopify.
+  const rating =
+    'rating' in product
+      ? parseRating(
+          product.rating,
+          'ratingCount' in product ? product.ratingCount : null,
+        )
+      : null;
 
   return (
     <Link
@@ -88,6 +99,13 @@ export function ProductItem({
             </s>
           )}
         </div>
+        {rating && (
+          <StarRating
+            rating={rating.value}
+            count={rating.count}
+            className="product-card__rating"
+          />
+        )}
       </div>
     </Link>
   );

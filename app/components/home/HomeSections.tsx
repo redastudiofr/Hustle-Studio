@@ -13,6 +13,8 @@ import {ProductItem} from '~/components/ProductItem';
 import {CollectionsSlider} from '~/components/CollectionsSlider';
 import {Newsletter} from '~/components/Newsletter';
 import {Reveal} from '~/components/Reveal';
+import {PackOffer} from '~/components/PackOffer';
+import {HomeReviews} from '~/components/HomeReviews';
 import {useLocalized} from '~/lib/i18n/localized';
 import {useT} from '~/lib/i18n';
 
@@ -168,6 +170,13 @@ function HomeSectionView({
           </div>
         </Reveal>
       );
+
+    case 'pack':
+      if (data?.type !== 'pack') return null;
+      return <PackOffer pack={data.data} />;
+
+    case 'reviews':
+      return <HomeReviews />;
 
     case 'newsletter':
       return (
