@@ -79,6 +79,14 @@ export type HomeSection =
 export const HOME_SECTIONS: HomeSection[] = [
   {
     type: 'hero',
+    image: {
+      desktop: '/brand/hero-desktop.webp',
+      mobile: '/brand/hero-mobile.webp',
+      alt: {
+        en: 'Hustle Studio grey zip hoodie and joggers, worn beside a black sports car and a horse',
+        fr: 'Zip et jogging gris Hustle Studio, portés devant une voiture de sport noire et un cheval',
+      },
+    },
     eyebrow: {en: 'new collection', fr: 'nouvelle collection'},
     text: {
       en: 'minimal streetwear, made to be worn every day.',

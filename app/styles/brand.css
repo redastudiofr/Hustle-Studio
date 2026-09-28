@@ -235,17 +235,130 @@ body {
   width: 100%;
   max-width: 44rem;
   padding: calc(var(--header-height) + 2rem) var(--gutter) 3rem;
-  animation: hero-rise 900ms var(--ease-out-soft) both;
 }
 
-/* Movement only: content is never hidden behind an animation. */
-@keyframes hero-rise {
+/*
+ * Entrance: each line of the hero rises in turn (eyebrow, title, text,
+ * buttons). Opacity never starts at 0, so if an animation is frozen — a
+ * background tab, a throttled phone — the text is still readable.
+ */
+.hero__content > * {
+  animation: hero-item 1000ms var(--ease-out-soft) both;
+}
+
+.hero__content > :nth-child(2) {
+  animation-delay: 120ms;
+}
+
+.hero__content > :nth-child(3) {
+  animation-delay: 240ms;
+}
+
+.hero__content > :nth-child(4) {
+  animation-delay: 360ms;
+}
+
+@keyframes hero-item {
   from {
-    transform: translateY(18px);
+    opacity: 0.35;
+    transform: translateY(22px);
   }
   to {
+    opacity: 1;
     transform: none;
   }
+}
+
+/* Photo: a slow zoom-out that settles, like a camera finishing its move. */
+.hero--photo .hero__img {
+  animation: hero-zoom 2600ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: 50% 40%;
+}
+
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* The "opaque" veil: an even tint over the whole photo, plus the bottom
+   gradient that keeps the text legible on the light sand. */
+.hero--photo .hero__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgb(10 10 10 / 0.22);
+  animation: hero-veil 1400ms ease-out both;
+}
+
+@keyframes hero-veil {
+  from {
+    background: rgb(10 10 10 / 0.55);
+  }
+}
+
+.hero--photo .hero__scrim {
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 0.66) 0%,
+    rgb(0 0 0 / 0.36) 30%,
+    rgb(0 0 0 / 0.08) 58%,
+    transparent 80%
+  );
+}
+
+.hero--photo .hero__img--mobile,
+.hero--photo .hero__img {
+  object-position: 50% 30%;
+}
+
+@media (min-width: 48em) {
+  /* The subject, car and horse sit right of centre; the left side (wall and
+     sand) is where the text goes, so that is the side cropped first. */
+  .hero--photo .hero__img {
+    object-position: 72% 50%;
+  }
+}
+
+.hero--photo .hero__title--wordmark {
+  width: min(72vw, 24rem);
+}
+
+.hero--photo .hero__title--wordmark .brand-wordmark {
+  background-position: left center;
+  -webkit-mask-position: left center;
+  mask-position: left center;
+}
+
+/* Buttons: a light sheen sweeps across on hover. */
+.hero__cta {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero__cta::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgb(255 255 255 / 0.35) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 700ms var(--ease-out-soft);
+  pointer-events: none;
+}
+
+.hero__cta:hover::after {
+  transform: translateX(120%);
 }
 
 .hero__eyebrow {
@@ -802,4 +915,71 @@ body {
   color: var(--color-ink);
   font-weight: 600;
   text-shadow: none;
+}
+
+/* ── Motion ────────────────────────────────────────────────────────────────
+   Sections rise a little further and a little slower as they scroll in, and
+   product cards arrive one after another. Everything respects the visitor's
+   "reduce motion" setting (see tailwind.css). */
+.reveal {
+  transition:
+    opacity 800ms var(--ease-out-soft),
+    transform 800ms var(--ease-out-soft);
+}
+
+.js .reveal:not(.reveal--visible) {
+  transform: translateY(28px);
+}
+
+.related-rail__item,
+.product-grid > * {
+  animation: card-in 700ms var(--ease-out-soft) both;
+}
+
+.related-rail__item:nth-child(2),
+.product-grid > :nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.related-rail__item:nth-child(3),
+.product-grid > :nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.related-rail__item:nth-child(4),
+.product-grid > :nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.related-rail__item:nth-child(n + 5),
+.product-grid > :nth-child(n + 5) {
+  animation-delay: 280ms;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0.35;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Product photos zoom gently on hover. */
+@media (hover: hover) {
+  .product-card__media img {
+    transition:
+      opacity 500ms var(--ease-out-soft),
+      transform 900ms var(--ease-out-soft);
+  }
+
+  .product-card:hover .product-card__img--main {
+    transform: scale(1.05);
+  }
+
+  .collections-slider__tile:hover .collections-slider__media img {
+    transform: scale(1.05);
+  }
 }
