@@ -21,7 +21,7 @@ export const BRAND = {
    * URLs, Open Graph and the sitemap when the request URL is not enough.
    * Leave empty to use the domain the request came in on.
    */
-  siteUrl: '',
+  siteUrl: 'https://hustlestudio.store',
 
   logo: {
     /** Wordmark, black on transparent. Painted with currentColor via a CSS mask. */
