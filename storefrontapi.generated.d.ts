@@ -1910,7 +1910,7 @@ interface GeneratedQueryTypes {
     return: FooterQuery;
     variables: FooterQueryVariables;
   };
-  '#graphql\n  query NavCollections($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 10, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        id\n        title\n        handle\n      }\n    }\n  }\n': {
+  '#graphql\n  query NavCollections($country: CountryCode, $language: LanguageCode)\n    @inContext(country: $country, language: $language) {\n    collections(first: 50, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        id\n        title\n        handle\n      }\n    }\n  }\n': {
     return: NavCollectionsQuery;
     variables: NavCollectionsQueryVariables;
   };
