@@ -79,7 +79,7 @@ export function getProductFaq(t: Translate, description = ''): FaqItem[] {
       answer: (
         <>
           {t('faqData.shipping2A')}{' '}
-          <a href="/policies/shipping-policy">{t('faqData.shippingLink')}</a>.
+          <a href="/legal/shipping">{t('faqData.shippingLink')}</a>.
         </>
       ),
     },
@@ -88,7 +88,7 @@ export function getProductFaq(t: Translate, description = ''): FaqItem[] {
       answer: (
         <>
           {t('faqData.returnsA')}{' '}
-          <a href="/policies/refund-policy">{t('faqData.returnsLink')}</a>.
+          <a href="/legal/returns">{t('faqData.returnsLink')}</a>.
         </>
       ),
     },

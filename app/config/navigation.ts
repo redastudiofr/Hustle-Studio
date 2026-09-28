@@ -55,16 +55,15 @@ export const NAVIGATION = {
     ] as NavLinkConfig[],
 
     /**
-     * Legal pages. Their text is written in Shopify Admin → Settings →
-     * Policies, and shown at /policies/<handle>.
+     * Legal pages, written in app/data/legal.ts (EN) and legal.fr.ts (FR);
+     * the business details they state live in app/config/legal.ts.
      */
     policies: [
-      {labelKey: 'footer.shipping', to: '/policies/shipping-policy'},
-      {labelKey: 'footer.returns', to: '/policies/refund-policy'},
-      {labelKey: 'footer.termsOfSale', to: '/policies/terms-of-sale'},
-      {labelKey: 'footer.terms', to: '/policies/terms-of-service'},
-      {labelKey: 'footer.privacy', to: '/policies/privacy-policy'},
-      {labelKey: 'footer.legalNotice', to: '/policies/legal-notice'},
+      {labelKey: 'footer.shipping', to: '/legal/shipping'},
+      {labelKey: 'footer.returns', to: '/legal/returns'},
+      {labelKey: 'footer.termsOfSale', to: '/legal/terms'},
+      {labelKey: 'footer.privacy', to: '/legal/privacy'},
+      {labelKey: 'footer.legalNotice', to: '/legal/legal-notice'},
     ] as NavLinkConfig[],
   },
 };

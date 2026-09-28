@@ -8,7 +8,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 - Brand-specific values live in `app/config/` (brand, theme, home,
   navigation) and `public/brand/`. Do not hardcode the brand name elsewhere;
   dictionary strings can use `{brand}`.
-- Products, collections, stock, prices and legal texts come from Shopify.
+- Products, collections, stock and prices come from Shopify. Legal pages
+  (`/legal/*`) are in `app/data/legal*.ts`, fed by `app/config/legal.ts`.
   Never add hardcoded products, fake reviews, fake stock counts or promises
   (delivery times, return windows) that Shopify does not back.
 - Promotions live in `app/config/promotions.ts` and stay invisible until a

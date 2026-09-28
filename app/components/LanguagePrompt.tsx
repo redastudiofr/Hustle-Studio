@@ -170,7 +170,7 @@ export function LanguagePrompt({
               )}
               <p className="lang-prompt__cookies-text">
                 {t('cookies.text')}{' '}
-                <Link to="/policies/privacy-policy">{t('cookies.more')}</Link>
+                <Link to="/legal/privacy">{t('cookies.more')}</Link>
               </p>
               <div className="lang-prompt__cookies-actions">
                 <button

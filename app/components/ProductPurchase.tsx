@@ -112,7 +112,7 @@ export function ProductPurchase({
 
       <p className="buybox__tax">
         {t('product.taxIncluded')}{' '}
-        <a href="/policies/shipping-policy">{t('product.shipping')}</a>{' '}
+        <a href="/legal/shipping">{t('product.shipping')}</a>{' '}
         {t('product.calculatedAtCheckout')}
       </p>
 

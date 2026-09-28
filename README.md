@@ -30,6 +30,7 @@ Tout ce qui est propre à la marque est regroupé ici :
 | Avis clients (réels uniquement) | `app/data/reviews.ts` |
 | Vidéos « portées » des fiches produits | `app/config/videos.ts` + `public/videos/` |
 | Logo, favicon, icône, image de partage | `public/brand/` + `public/favicon*.{ico,png}` + `public/apple-touch-icon.png` |
+| Pages légales (`/legal/…`) : coordonnées de l'entreprise, délais de livraison, délai de retour | `app/config/legal.ts` (textes : `app/data/legal.ts` et `legal.fr.ts`) |
 | Textes de l'interface (FR / EN) | `app/lib/i18n/dictionary.ts` (`{brand}` y insère le nom automatiquement) |
 
 **Ce qui se gère dans Shopify, pas dans le code :**
@@ -37,8 +38,6 @@ Tout ce qui est propre à la marque est regroupé ici :
 - produits, prix, prix barrés, photos, variantes (tailles, couleurs), stock ;
 - collections : il suffit de créer une collection dans Shopify pour qu'elle
   apparaisse dans le menu, sur `/collections` et dans « nos catégories » ;
-- pages légales : *Paramètres → Politiques* (livraison, retours, CGV,
-  conditions d'utilisation, confidentialité, mentions légales) ;
 - codes promo, frais de livraison, taxes, moyens de paiement.
 
 ### Page d'accueil

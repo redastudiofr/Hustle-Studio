@@ -166,7 +166,7 @@ function buildItems(t: Translate): HelpItem[] {
           <p>{t('faq.returnsBody1')}</p>
           <p>
             {t('faq.returnsBody2')}{' '}
-            <Link to="/policies/refund-policy">{t('faq.returnsPage')}</Link>.
+            <Link to="/legal/returns">{t('faq.returnsPage')}</Link>.
           </p>
         </>
       ),
@@ -177,10 +177,10 @@ function buildItems(t: Translate): HelpItem[] {
       answer: (
         <p>
           {t('faq.legalBody')}{' '}
-          <Link to="/policies/terms-of-service">{t('faq.terms')}</Link>,{' '}
-          <Link to="/policies/privacy-policy">{t('faq.privacy')}</Link>{' '}
+          <Link to="/legal/terms">{t('faq.terms')}</Link>,{' '}
+          <Link to="/legal/privacy">{t('faq.privacy')}</Link>{' '}
           {t('faq.and')}{' '}
-          <Link to="/policies/shipping-policy">{t('faq.shippingPolicy')}</Link>.
+          <Link to="/legal/shipping">{t('faq.shippingPolicy')}</Link>.
         </p>
       ),
     },

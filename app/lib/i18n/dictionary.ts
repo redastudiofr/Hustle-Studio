@@ -105,6 +105,10 @@ export const en = {
   'faq.supportBody':
     'a question about sizing, an order in progress or a return? write to us from the',
   'faq.contactPage': 'contact page',
+  'legal.eyebrow': 'legal',
+  'legal.documents': 'documents',
+  'legal.updated': 'last updated',
+  'legal.question': 'a question about these terms? write to us from the',
   'faq.supportBodyEnd': 'and we will get back to you as soon as possible.',
 
   // — newsletter —
@@ -559,6 +563,10 @@ export const fr: Record<TranslationKey, string> = {
   'faq.supportBody':
     'une question sur une taille, une commande en cours ou un retour ? écrivez-nous depuis la',
   'faq.contactPage': 'page contact',
+  'legal.eyebrow': 'informations légales',
+  'legal.documents': 'documents',
+  'legal.updated': 'dernière mise à jour :',
+  'legal.question': 'une question sur ces conditions ? écrivez-nous depuis la',
   'faq.supportBodyEnd': 'et nous vous répondrons au plus vite.',
 
   // — newsletter / pop-up —

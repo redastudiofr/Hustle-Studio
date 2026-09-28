@@ -47,8 +47,20 @@ type ActionResult =
   | {state: 'needs-login'; orderNumber: string; email: string};
 
 export async function loader({context}: Route.LoaderArgs) {
-  const loggedIn = await context.customerAccount.isLoggedIn();
-  return {loggedIn};
+  const accountEnabled = Boolean(
+    context.env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
+  );
+  const loggedIn = accountEnabled
+    ? await context.customerAccount.isLoggedIn().catch(() => false)
+    : false;
+  return {
+    loggedIn,
+    accountEnabled,
+    // Without the Customer Account API configured on this site, customers
+    // still have Shopify's own hosted account: sign in with a one-time code
+    // sent by e-mail, see every order with its tracking.
+    shopifyAccountUrl: `https://${context.env.PUBLIC_STORE_DOMAIN}/account`,
+  };
 }
 
 /**
@@ -81,7 +93,13 @@ export async function action({request, context}: Route.ActionArgs) {
   // "#1024", "1024" and " 1024 " are the same order to a customer.
   const orderNumber = rawNumber.replace(/^#/, '');
 
-  if (!(await context.customerAccount.isLoggedIn())) {
+  const accountEnabled = Boolean(
+    context.env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID,
+  );
+  if (
+    !accountEnabled ||
+    !(await context.customerAccount.isLoggedIn().catch(() => false))
+  ) {
     return {state: 'needs-login', orderNumber, email} satisfies ActionResult;
   }
 
@@ -187,7 +205,8 @@ function formatDateTime(value: string): string {
 }
 
 export default function OrderTracking() {
-  const {loggedIn} = useLoaderData<typeof loader>();
+  const {loggedIn, accountEnabled, shopifyAccountUrl} =
+    useLoaderData<typeof loader>();
   const t = useT();
   const result = useActionData<typeof action>() as ActionResult | undefined;
   const navigation = useNavigation();
@@ -235,7 +254,12 @@ export default function OrderTracking() {
         </button>
       </Form>
 
-      {result?.state === 'needs-login' && <NeedsLogin email={result.email} />}
+      {result?.state === 'needs-login' && (
+        <NeedsLogin
+          email={result.email}
+          loginUrl={accountEnabled ? undefined : shopifyAccountUrl}
+        />
+      )}
 
       {result?.state === 'not-found' && (
         <p className="tracking__error" role="alert">
@@ -259,7 +283,7 @@ export default function OrderTracking() {
           {t('track.helpBody2')}{' '}
           <Link to="/contact">{t('faq.contactPage')}</Link>{' '}
           {t('track.helpBody3')}{' '}
-          <Link to="/policies/shipping-policy">{t('faq.shippingPolicy')}</Link>.
+          <Link to="/legal/shipping">{t('faq.shippingPolicy')}</Link>.
         </p>
         {loggedIn && (
           <p>
@@ -279,7 +303,14 @@ export default function OrderTracking() {
  * we simply will not hand order details to someone who has only typed a
  * number.
  */
-function NeedsLogin({email}: {email: string}) {
+function NeedsLogin({
+  email,
+  loginUrl: externalLoginUrl,
+}: {
+  email: string;
+  /** Shopify's hosted account, used when this site has no account pages. */
+  loginUrl?: string;
+}) {
   const t = useT();
 
   /*
@@ -289,10 +320,12 @@ function NeedsLogin({email}: {email: string}) {
    * authorisation comes back — which is what brings them to this page rather
    * than dumping them in the account dashboard.
    */
-  const loginUrl = `/account/login?${new URLSearchParams({
-    login_hint: email,
-    return_to: '/order-tracking',
-  }).toString()}`;
+  const loginUrl =
+    externalLoginUrl ??
+    `/account/login?${new URLSearchParams({
+      login_hint: email,
+      return_to: '/order-tracking',
+    }).toString()}`;
 
   return (
     <div className="tracking__gate">
