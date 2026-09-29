@@ -315,7 +315,8 @@ body {
 
 .hero--photo .hero__img--mobile,
 .hero--photo .hero__img {
-  object-position: 50% 30%;
+  /* Mobile photo: the subject stands left of centre, keep him in frame. */
+  object-position: 35% 50%;
 }
 
 @media (min-width: 48em) {

@@ -89,10 +89,11 @@ export const HOME_SECTIONS: HomeSection[] = [
     type: 'hero',
     image: {
       desktop: '/brand/hero-desktop.webp',
-      mobile: '/brand/hero-mobile.webp',
+      mobile: '/brand/hero-mobile-desert.webp',
       alt: {
-        en: 'Hustle Studio grey zip hoodie and joggers, worn beside a black sports car and a horse',
-        fr: 'Zip et jogging gris Hustle Studio, portés devant une voiture de sport noire et un cheval',
+        // One alt for both crops (desktop: car and horse; mobile: desert at sunset).
+        en: 'Hustle Studio streetwear, worn outdoors',
+        fr: 'Vêtements Hustle Studio, portés en extérieur',
       },
     },
     eyebrow: {en: 'new collection', fr: 'nouvelle collection'},
