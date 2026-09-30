@@ -200,6 +200,38 @@ body {
   }
 }
 
+/* Homepage only: product cards a notch smaller than on collection and
+   product pages — one more card in view at every width. */
+.home .related-rail__item {
+  flex-basis: 52%;
+}
+
+@media (min-width: 30em) {
+  .home .related-rail__item {
+    flex-basis: 37%;
+  }
+}
+
+@media (min-width: 48em) {
+  .home .related-rail__item {
+    flex-basis: calc((100% - 3 * 0.75rem) / 4);
+  }
+
+  .home .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 64em) {
+  .home .related-rail__item {
+    flex-basis: calc((100% - 4 * 0.75rem) / 5);
+  }
+
+  .home .product-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
 .view-all {
   display: flex;
   justify-content: center;

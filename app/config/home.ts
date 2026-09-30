@@ -108,16 +108,16 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
   },
   {
+    type: 'collections',
+    title: {en: 'shop by category', fr: 'nos catégories'},
+  },
+  {
     type: 'products',
     title: {en: 'new arrivals', fr: 'nouveautés'},
     collection: 'new-arrivals',
     fallbackSort: 'newest',
     limit: 12,
     layout: 'rail',
-  },
-  {
-    type: 'collections',
-    title: {en: 'shop by category', fr: 'nos catégories'},
   },
   {
     type: 'products',
