@@ -320,10 +320,10 @@ body {
 }
 
 @media (min-width: 48em) {
-  /* The subject, car and horse sit right of centre; the left side (wall and
-     sand) is where the text goes, so that is the side cropped first. */
+  /* The subject stands in the middle of the frame: keep him centred and
+     keep his head clear of the header when the screen crops the top. */
   .hero--photo .hero__img {
-    object-position: 72% 50%;
+    object-position: 50% 35%;
   }
 }
 

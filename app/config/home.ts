@@ -114,9 +114,9 @@ export const HOME_SECTIONS: HomeSection[] = [
   {
     type: 'hero',
     image: {
-      desktop: '/brand/hero-desktop.webp',
+      desktop: '/brand/hero-desktop-studio.webp',
       mobile: '/brand/hero-mobile-desert.webp',
-      alt: 'Hustle Studio streetwear, worn outdoors',
+      alt: 'Black hoodie and wide joggers, worn in a concrete studio',
     },
     eyebrow: 'New collection',
     title: 'Built on ambition.',
@@ -153,8 +153,8 @@ export const HOME_SECTIONS: HomeSection[] = [
       'Every piece is designed as a uniform for that work — clean lines, considered details, nothing that does not need to be there. Build something. Wear it while you do.',
     ],
     image: {
-      desktop: '/brand/hero-mobile.webp',
-      alt: 'Hustle Studio grey zip hoodie and joggers, worn beside a black car and a horse',
+      desktop: '/brand/about.webp',
+      alt: 'White long-sleeve and raw denim jeans, worn in a Paris street',
     },
     cta: {label: 'Discover the studio', to: '/about'},
   },

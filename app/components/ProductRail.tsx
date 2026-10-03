@@ -1,15 +1,13 @@
 import {Link} from 'react-router';
 import type {ComponentProps} from 'react';
 import {ProductItem} from '~/components/ProductItem';
-import {RailArrows} from '~/components/RailArrows';
 import {useHorizontalRail} from '~/lib/useHorizontalRail';
-import {useT} from '~/lib/i18n';
 
 type RailProduct = ComponentProps<typeof ProductItem>['product'];
 
 /**
  * A titled, horizontally scrolling row of product cards: swipe on touch,
- * drag or arrows on desktop (see useHorizontalRail). Used for the homepage
+ * drag on desktop (see useHorizontalRail). Used for the homepage
  * product sections and "you may also like" on product pages.
  */
 export function ProductRail({
@@ -23,9 +21,7 @@ export function ProductRail({
   products: RailProduct[];
   link?: {label: string; to: string};
 }) {
-  const t = useT();
-  const {ref, scrollByCard, atStart, atEnd} =
-    useHorizontalRail<HTMLDivElement>();
+  const {ref} = useHorizontalRail<HTMLDivElement>();
   if (!products.length) return null;
   const headingId = `${id}-heading`;
 
@@ -52,14 +48,6 @@ export function ProductRail({
             </div>
           ))}
         </div>
-        <RailArrows
-          onPrev={() => scrollByCard(-1)}
-          onNext={() => scrollByCard(1)}
-          disablePrev={atStart}
-          disableNext={atEnd}
-          prevLabel={t('rail.prevProduct')}
-          nextLabel={t('rail.nextProduct')}
-        />
       </div>
     </section>
   );

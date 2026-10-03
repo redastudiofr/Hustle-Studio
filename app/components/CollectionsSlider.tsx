@@ -1,7 +1,6 @@
 import {Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
 import {Reveal} from '~/components/Reveal';
-import {RailArrows} from '~/components/RailArrows';
 import {useHorizontalRail} from '~/lib/useHorizontalRail';
 import {useT} from '~/lib/i18n';
 
@@ -21,7 +20,7 @@ type SliderCollection = {
 /**
  * Horizontal collections slider shown under the hero. Each tile links to its
  * collection page. Native scroll-snap for the swipe on touch; mouse drag and
- * arrows on desktop (useHorizontalRail, the same engine as the product rails).
+ * on desktop (useHorizontalRail, the same engine as the product rails).
  */
 export function CollectionsSlider({
   title,
@@ -31,8 +30,7 @@ export function CollectionsSlider({
   collections: SliderCollection[];
 }) {
   const t = useT();
-  const {ref, scrollByCard, atStart, atEnd} =
-    useHorizontalRail<HTMLDivElement>();
+  const {ref} = useHorizontalRail<HTMLDivElement>();
   if (!collections.length) return null;
 
   return (
@@ -78,22 +76,11 @@ export function CollectionsSlider({
                 )}
               </div>
               <span className="collections-slider__label">
-                <span>{collection.title}</span>
-                <span className="collections-slider__arrow" aria-hidden="true">
-                  →
-                </span>
+                {collection.title}
               </span>
             </Link>
           ))}
         </div>
-        <RailArrows
-          onPrev={() => scrollByCard(-1)}
-          onNext={() => scrollByCard(1)}
-          disablePrev={atStart}
-          disableNext={atEnd}
-          prevLabel={t('rail.prevProduct')}
-          nextLabel={t('rail.nextProduct')}
-        />
       </div>
     </Reveal>
   );
