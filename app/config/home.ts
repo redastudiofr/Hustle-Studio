@@ -47,7 +47,8 @@ export type HomeSection =
       title: Localized;
       collection?: string;
       fallbackSort?: ProductSort;
-      limit?: number;
+      /** How many products; 'all' shows every product Shopify has. */
+      limit?: number | 'all';
       layout?: 'rail' | 'grid';
       /** "view all" link; defaults to the collection's own page. */
       link?: HomeLink;
@@ -94,6 +95,19 @@ export type HomeSection =
       photos: FamilyPhoto[];
     }
   | {
+      /**
+       * One product line put forward: a large photo, its story and its
+       * products, picked by Shopify handle (the end of the product URL).
+       * Handles Shopify does not know are skipped.
+       */
+      type: 'spotlight';
+      eyebrow?: Localized;
+      title: Localized;
+      text?: Localized;
+      products: string[];
+      cta?: HomeLink;
+    }
+  | {
       /** Large photo + the brand story, side by side on desktop. */
       type: 'about';
       eyebrow?: Localized;
@@ -129,10 +143,19 @@ export const HOME_SECTIONS: HomeSection[] = [
     title: 'Collections',
   },
   {
+    type: 'spotlight',
+    eyebrow: 'Spotlight',
+    title: 'CY Jogging',
+    text: 'The jogging that defines the CY line: a wide, relaxed cut and the CY patch on the leg. Two colours, same attitude.',
+    products: ['cy-jogging-black', 'cy-hoodie-gris-1'],
+    cta: {label: 'Shop CY Jogging', to: '/search?q=CY%20Jogging'},
+  },
+  {
     type: 'products',
     title: 'Our products',
     fallbackSort: 'newest',
-    limit: 12,
+    // Every product, not a first page: nothing in the catalogue is hidden.
+    limit: 'all',
     layout: 'grid',
     link: {label: 'View all', to: '/collections/all'},
   },

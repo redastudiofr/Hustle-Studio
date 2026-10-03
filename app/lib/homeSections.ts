@@ -2,6 +2,7 @@ import type {Storefront} from '@shopify/hydrogen';
 import type {
   HomeCollectionFragment,
   HomeProductFragment,
+  HomeSortedProductsQuery,
 } from 'storefrontapi.generated';
 import {HOME_SECTIONS, type HomeSection, type ProductSort} from '~/config/home';
 import {withoutAutoCollections} from '~/lib/collections';
@@ -36,10 +37,14 @@ export type FamilyTile = {
 export type HomeSectionData =
   | {type: 'products'; data: Promise<HomeProductsData>}
   | {type: 'family'; data: Promise<FamilyTile[]>}
+  | {type: 'spotlight'; data: Promise<HomeProductFragment[]>}
   | {type: 'feature'; data: Promise<HomeFeatureData>}
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'pack'; data: Promise<PackData | null>}
   | {type: 'static'};
+
+/** Largest page the Storefront API returns in one request. */
+const SHOPIFY_PAGE_MAX = 250;
 
 const SORT_KEYS: Record<
   ProductSort,
@@ -80,6 +85,13 @@ export function loadHomeSections(
           .then(({collections}) => withoutAutoCollections(collections.nodes))
           .catch(logAndReturn([] as HomeCollectionFragment[]));
         return {type: 'collections', data: collections};
+      case 'spotlight':
+        return {
+          type: 'spotlight',
+          data: loadByHandles(storefront, section.products).catch(
+            logAndReturn([] as HomeProductFragment[]),
+          ),
+        };
       case 'family':
         // Photos from the config win; until there are some, the shop's own
         // product photos stand in, so the section is never empty or fake.
@@ -106,7 +118,14 @@ async function loadProducts(
   storefront: Storefront,
   section: Extract<HomeSection, {type: 'products'}>,
 ): Promise<HomeProductsData> {
-  const first = section.limit ?? 12;
+  const all = section.limit === 'all';
+  // Shopify's page size cap: 'all' means "every page of this size".
+  const first =
+    typeof section.limit === 'number'
+      ? section.limit
+      : all
+        ? SHOPIFY_PAGE_MAX
+        : 12;
 
   if (section.collection) {
     const {collection} = await storefront.query(
@@ -131,13 +150,50 @@ async function loadProducts(
   }
 
   const {sortKey, reverse} = SORT_KEYS[section.fallbackSort ?? 'newest'];
-  const {products} = await storefront.query(HOME_SORTED_PRODUCTS_QUERY, {
-    variables: {first, sortKey, reverse},
-    cache: storefront.CacheShort(),
-  });
-  return products.nodes.length
-    ? {products: products.nodes, collection: null}
-    : null;
+  const nodes: HomeProductFragment[] = [];
+  let after: string | null = null;
+  // One page unless the section asks for every product; then follow the
+  // cursor until Shopify says there is nothing left.
+  do {
+    const {products}: HomeSortedProductsQuery = await storefront.query(
+      HOME_SORTED_PRODUCTS_QUERY,
+      {
+        variables: {first, sortKey, reverse, after},
+        cache: storefront.CacheShort(),
+      },
+    );
+    nodes.push(...products.nodes);
+    after =
+      all && products.pageInfo.hasNextPage
+        ? (products.pageInfo.endCursor ?? null)
+        : null;
+  } while (after);
+
+  return nodes.length ? {products: nodes, collection: null} : null;
+}
+
+async function loadByHandles(
+  storefront: Storefront,
+  handles: string[],
+): Promise<HomeProductFragment[]> {
+  const results = await Promise.all(
+    handles.map((handle) =>
+      storefront
+        .query(HOME_PRODUCT_BY_HANDLE_QUERY, {
+          variables: {handle},
+          cache: storefront.CacheShort(),
+        })
+        .then(({product}) => {
+          if (!product) {
+            console.warn(`Homepage: Shopify has no product "${handle}".`);
+          }
+          return product;
+        }),
+    ),
+  );
+  return results.filter(
+    (product): product is HomeProductFragment => product != null,
+  );
 }
 
 async function loadFamilyStandIns(
@@ -301,17 +357,40 @@ const HOME_COLLECTION_PRODUCTS_QUERY = `#graphql
   ${HOME_PRODUCT_FRAGMENT}
 ` as const;
 
+const HOME_PRODUCT_BY_HANDLE_QUERY = `#graphql
+  query HomeProductByHandle(
+    $handle: String!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    product(handle: $handle) {
+      ...HomeProduct
+    }
+  }
+  ${HOME_PRODUCT_FRAGMENT}
+` as const;
+
 const HOME_SORTED_PRODUCTS_QUERY = `#graphql
   query HomeSortedProducts(
     $first: Int
+    $after: String
     $sortKey: ProductSortKeys
     $reverse: Boolean
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    products(first: $first, sortKey: $sortKey, reverse: $reverse) {
+    products(
+      first: $first
+      after: $after
+      sortKey: $sortKey
+      reverse: $reverse
+    ) {
       nodes {
         ...HomeProduct
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }

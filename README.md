@@ -44,7 +44,9 @@ Tout ce qui est propre à la marque est regroupé ici :
 ### Page d'accueil
 
 `app/config/home.ts` décrit la page de haut en bas. Types de sections :
-`hero`, `collections`, `products` (rangée ou grille), `family` (mur de
+`hero`, `collections`, `spotlight` (une ligne de produits mise en avant,
+choisie par *handle*, ex. CY Jogging), `products` (rangée ou grille ;
+`limit: 'all'` affiche tout le catalogue), `family` (mur de
 photos sur deux lignes qui défilent en sens inverse), `about` (photo +
 texte), et aussi `feature`, `editorial`, `pack`, `reviews`, `newsletter`.
 
