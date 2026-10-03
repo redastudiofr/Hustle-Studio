@@ -10,6 +10,7 @@ import type {
 } from '~/lib/homeSections';
 import {FamilyWall} from '~/components/home/FamilyWall';
 import {AboutSection} from '~/components/home/AboutSection';
+import {HelpFaq} from '~/components/HelpFaq';
 import {Hero} from '~/components/home/Hero';
 import {ProductRail} from '~/components/ProductRail';
 import {ProductItem} from '~/components/ProductItem';
@@ -183,28 +184,14 @@ function HomeSectionView({
           src: photo.src,
           alt: l(photo.alt),
         }));
-        return (
-          <FamilyWall
-            id={id}
-            title={title}
-            text={text}
-            tiles={tiles}
-            layout={section.layout}
-          />
-        );
+        return <FamilyWall id={id} title={title} text={text} tiles={tiles} />;
       }
       if (data?.type !== 'family') return null;
       return (
         <Suspense fallback={null}>
           <Await resolve={data.data}>
             {(tiles: FamilyTile[]) => (
-              <FamilyWall
-                id={id}
-                title={title}
-                text={text}
-                tiles={tiles}
-                layout={section.layout}
-              />
+              <FamilyWall id={id} title={title} text={text} tiles={tiles} />
             )}
           </Await>
         </Suspense>
@@ -213,6 +200,9 @@ function HomeSectionView({
 
     case 'about':
       return <AboutSection id={id} section={section} />;
+
+    case 'faq':
+      return <HelpFaq />;
 
     case 'pack':
       if (data?.type !== 'pack') return null;

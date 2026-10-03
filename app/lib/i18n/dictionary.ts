@@ -84,20 +84,20 @@ export const en = {
 
   // — help / faq —
   'faq.eyebrow': 'support',
-  'faq.title': 'need some help?',
-  'faq.shipping': 'shipping time',
+  'faq.title': 'need help?',
+  'faq.shipping': 'shipping times',
   'faq.shippingBody':
-    'orders are prepared and shipped with tracking. delivery options and times are shown at checkout — follow your parcel on the',
+    'we prepare and ship every order within 1 to 3 business days. once it leaves our paris studio, delivery takes 48 hours anywhere in france, with tracking on every parcel, and 3 to 5 days worldwide — follow yours on the',
   'faq.trackingPage': 'order tracking page',
   'faq.returns': 'returns & exchanges',
   'faq.returnsBody1':
-    'returns and exchanges are accepted on unworn pieces in their original packaging, within the period set out in our refund policy.',
+    'returns and exchanges are accepted within 30 days of delivery, on unworn pieces in their original packaging.',
   'faq.returnsBody2':
-    'refunds are issued once the returned item reaches us and has been checked. the full procedure is on our',
+    'your refund is issued as soon as the item reaches us and has been checked. the full procedure is on our',
   'faq.returnsPage': 'returns page',
-  'faq.legal': 'legal policies',
+  'faq.legal': 'terms & policies',
   'faq.legalBody': 'our terms are available at any time:',
-  'faq.terms': 'terms of service',
+  'faq.terms': 'terms & conditions',
   'faq.privacy': 'privacy policy',
   'faq.shippingPolicy': 'shipping policy',
   'faq.and': 'and',
@@ -109,7 +109,7 @@ export const en = {
   'legal.documents': 'documents',
   'legal.updated': 'last updated',
   'legal.question': 'a question about these terms? write to us from the',
-  'faq.supportBodyEnd': 'and we will get back to you as soon as possible.',
+  'faq.supportBodyEnd': 'and we reply within 24 business hours.',
 
   // — newsletter —
   'news.title': 'newsletter',
@@ -549,13 +549,13 @@ export const fr: Record<TranslationKey, string> = {
   'faq.title': 'besoin d’aide ?',
   'faq.shipping': 'délai de livraison',
   'faq.shippingBody':
-    'les commandes sont préparées et expédiées avec suivi. les options et délais de livraison sont indiqués au paiement — suivez votre colis sur la',
+    'nous préparons et expédions toutes les commandes sous 1 à 3 jours ouvrés. une fois partie de notre studio parisien, la livraison prend 48 h partout en france, avec un suivi sur chaque colis, et entre 3 et 5 jours à travers le monde — suivez le vôtre sur la',
   'faq.trackingPage': 'page de suivi de commande',
   'faq.returns': 'retours & échanges',
   'faq.returnsBody1':
-    'les retours et échanges sont acceptés sur les pièces non portées, dans leur emballage d’origine, dans le délai prévu par notre politique de retour.',
+    'les retours et échanges sont acceptés sous 30 jours après réception, sur des pièces non portées dans leur emballage d’origine.',
   'faq.returnsBody2':
-    'le remboursement intervient à réception et vérification de l’article retourné. la procédure complète est sur notre',
+    'le remboursement intervient dès que l’article nous parvient et a été vérifié. la procédure complète est sur notre',
   'faq.returnsPage': 'page retours',
   'faq.legal': 'mentions et conditions',
   'faq.legalBody': 'nos conditions sont consultables à tout moment :',
@@ -571,7 +571,7 @@ export const fr: Record<TranslationKey, string> = {
   'legal.documents': 'documents',
   'legal.updated': 'dernière mise à jour :',
   'legal.question': 'une question sur ces conditions ? écrivez-nous depuis la',
-  'faq.supportBodyEnd': 'et nous vous répondrons au plus vite.',
+  'faq.supportBodyEnd': 'et nous répondons sous 24 h ouvrées.',
 
   // — newsletter / pop-up —
   'news.title': 'newsletter',

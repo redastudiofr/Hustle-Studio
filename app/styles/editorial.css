@@ -779,55 +779,93 @@ h1,
   text-transform: uppercase;
 }
 
-/* ── Family grid: 4 photos on the first row, then 5 per row (desktop) ──── */
-.family__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.6rem;
-  max-width: var(--page-max);
-  margin: 0 auto;
-  padding: 0 var(--gutter);
-}
-
-/* Phones: the first photo full width, then pairs — 9 photos fall into
-   1 + 4 rows of 2 with no orphan. */
-.family__grid > :first-child {
-  grid-column: span 2;
-}
-
-@media (min-width: 48em) {
-  .family__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-
-  .family__grid > :first-child {
-    grid-column: auto;
-  }
-}
-
-/* Desktop: a 20-column track — the first four photos take 5 columns each
-   (4 per row), every one after takes 4 (5 per row). */
-@media (min-width: 64em) {
-  .family__grid {
-    grid-template-columns: repeat(20, minmax(0, 1fr));
-    gap: 1rem;
-  }
-
-  .family__grid > * {
-    grid-column: span 4;
-  }
-
-  .family__grid > :nth-child(-n + 4) {
-    grid-column: span 5;
-  }
-}
-
-.family--grid .family__tile {
-  width: auto;
-}
-
 /* Posts keep their header (account name) in view whatever the crop. */
 .family__tile img {
   object-position: 50% 0;
+}
+
+/* ── Help / FAQ ("need help?") ─────────────────────────────────────────── */
+.home .help-faq {
+  padding-top: 5rem;
+  padding-bottom: 6rem;
+}
+
+.help-faq__eyebrow {
+  font-size: var(--label-size);
+  font-weight: 600;
+  letter-spacing: var(--label-tracking);
+}
+
+.help-faq__title {
+  font-family: var(--font-display);
+  font-stretch: 72%;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 1.6rem + 3vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.help-faq__icon {
+  border-radius: 0;
+}
+
+.help-faq__question {
+  transition: transform var(--faq-open) var(--ease-editorial);
+}
+
+/* Opening a row: the icon fills in with a small pop, the question steps
+   aside, and each paragraph of the answer rises in turn. */
+.help-faq__item--open .help-faq__icon {
+  animation: faq-icon-pop 520ms var(--ease-editorial);
+}
+
+.help-faq__item--open .help-faq__question {
+  transform: translateX(6px);
+}
+
+.help-faq__item--open .help-faq__panel-content > * {
+  animation: faq-line 600ms var(--ease-editorial) both;
+}
+
+.help-faq__item--open .help-faq__panel-content > :nth-child(1) {
+  animation-delay: 90ms;
+}
+
+.help-faq__item--open .help-faq__panel-content > :nth-child(2) {
+  animation-delay: 190ms;
+}
+
+@keyframes faq-icon-pop {
+  0% {
+    transform: scale(0.82);
+  }
+  55% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes faq-line {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .help-faq__item--open .help-faq__icon,
+  .help-faq__item--open .help-faq__panel-content > * {
+    animation: none;
+  }
+
+  .help-faq__item--open .help-faq__question {
+    transform: none;
+  }
 }

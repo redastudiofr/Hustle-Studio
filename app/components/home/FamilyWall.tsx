@@ -22,47 +22,15 @@ export function FamilyWall({
   title,
   text,
   tiles,
-  layout = 'marquee',
 }: {
   id: string;
   title: string;
   text?: string;
   tiles: FamilyTile[];
-  layout?: 'marquee' | 'grid';
 }) {
   const t = useT();
   const [paused, setPaused] = useState(false);
   if (!tiles.length) return null;
-
-  if (layout === 'grid') {
-    return (
-      <Reveal
-        as="section"
-        className="family family--grid"
-        aria-labelledby={`${id}-heading`}
-      >
-        <div className="section-head">
-          <div>
-            <h2 className="section-title" id={`${id}-heading`}>
-              {title}
-            </h2>
-            {text && <p className="section-head__text">{text}</p>}
-          </div>
-        </div>
-        <div className="family__grid">
-          {tiles.map((tile, index) => (
-            <figure
-              // eslint-disable-next-line react/no-array-index-key -- a photo may appear twice
-              key={`${tile.key}-${index}`}
-              className="family__tile"
-            >
-              <TileImage tile={tile} />
-            </figure>
-          ))}
-        </div>
-      </Reveal>
-    );
-  }
 
   // Alternate tiles between the rows; a short list feeds both rows whole.
   const split = tiles.length >= MIN_PER_ROW;
