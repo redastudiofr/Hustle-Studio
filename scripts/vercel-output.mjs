@@ -49,12 +49,36 @@ writeFileSync(
   ),
 );
 
+const SECURITY_HEADERS = {
+  // HTTPS only, for two years, subdomains included.
+  'strict-transport-security': 'max-age=63072000; includeSubDomains; preload',
+  // Browsers must not guess a file's type (no script disguised as an image).
+  'x-content-type-options': 'nosniff',
+  // No other site may frame this one (clickjacking).
+  'x-frame-options': 'DENY',
+  // Other sites only learn the domain a visitor came from, not the page.
+  'referrer-policy': 'strict-origin-when-cross-origin',
+  // Browser features this shop never needs, switched off for every script.
+  'permissions-policy':
+    'camera=(), microphone=(), geolocation=(), usb=(), payment=(), interest-cohort=()',
+  // Isolates this site's window from pop-ups it opens and from openers.
+  'cross-origin-opener-policy': 'same-origin',
+};
+
 writeFileSync(
   `${out}/config.json`,
   JSON.stringify(
     {
       version: 3,
       routes: [
+        // Security headers on every response — pages, API, static files.
+        // (The Content-Security-Policy itself is set per page, with its
+        // nonce, in app/entry.server.tsx.)
+        {
+          src: '/(.*)',
+          headers: SECURITY_HEADERS,
+          continue: true,
+        },
         // Hashed build assets never change: cache them for a year.
         {
           src: '^/assets/(.*)$',

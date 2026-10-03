@@ -19,6 +19,11 @@ export default async function handleRequest(
       checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
       storeDomain: context.env.PUBLIC_STORE_DOMAIN,
     },
+    // Nobody may frame the shop, and no injected <base> tag can redirect its
+    // relative links. (No form-action: "buy now" posts here, then redirects
+    // to Shopify's checkout, and Chrome applies form-action to redirects.)
+    frameAncestors: ["'none'"],
+    baseUri: ["'self'"],
   });
 
   const body = await renderToReadableStream(

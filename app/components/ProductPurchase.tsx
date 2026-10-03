@@ -7,7 +7,12 @@ import {ProductForm} from '~/components/ProductForm';
 import {AddToCartButton} from '~/components/AddToCartButton';
 import {BuyNowButton} from '~/components/BuyNowButton';
 import {QuantitySelector} from '~/components/QuantitySelector';
-import {ProductSizeGuide, type SizeEntry} from '~/components/ProductSizeGuide';
+import type {SizeEntry} from '~/components/ProductSizeGuide';
+import {SizeChartDialog} from '~/components/product/SizeChartDialog';
+import {PdpIcon} from '~/components/product/PdpIcons';
+import type {SizeChart} from '~/config/sizeCharts';
+import {PRODUCT_PAGE} from '~/config/productPage';
+import {useLocalized} from '~/lib/i18n/localized';
 import {useAside} from '~/components/Aside';
 import {useT} from '~/lib/i18n';
 import {StarRating} from '~/components/StarRating';
@@ -35,6 +40,7 @@ export function ProductPurchase({
   variantId,
   selectedVariant,
   rating,
+  sizeChart = null,
 }: {
   title: string;
   price?: MoneyV2;
@@ -50,7 +56,10 @@ export function ProductPurchase({
   selectedVariant?: ProductVariantFragment | null;
   /** From a review app's Shopify metafields only; null shows no stars. */
   rating?: ProductRating | null;
+  /** The garment's real measurements, when this product has a chart. */
+  sizeChart?: SizeChart | null;
 }) {
+  const l = useLocalized();
   const {open: openAside} = useAside();
   const [quantity, setQuantity] = useState(1);
   const t = useT();
@@ -110,6 +119,18 @@ export function ProductPurchase({
 
       <TierNote />
 
+      <ul className="buybox__features">
+        {PRODUCT_PAGE.features.map((feature) => (
+          <li key={l(feature.title)} className="buybox__feature">
+            <PdpIcon name={feature.icon} />
+            <span>
+              <strong>{l(feature.title)}</strong>
+              {l(feature.detail)}
+            </span>
+          </li>
+        ))}
+      </ul>
+
       <p className="buybox__tax">
         {t('product.taxIncluded')}{' '}
         <a href="/legal/shipping">{t('product.shipping')}</a>{' '}
@@ -118,14 +139,9 @@ export function ProductPurchase({
 
       {shortDescription && <p className="buybox__blurb">{shortDescription}</p>}
 
-      <div className={`buybox__stock ${stock.className}`}>
-        <span className="buybox__stock-dot" />
-        {stock.label}
-      </div>
-
       <ProductForm productOptions={productOptions} />
 
-      <ProductSizeGuide sizes={sizes} />
+      <SizeChartDialog title={title} chart={sizeChart} sizes={sizes} />
 
       <QuantitySelector
         value={quantity}
@@ -148,11 +164,16 @@ export function ProductPurchase({
         </BuyNowButton>
       </div>
 
-      <ul className="buybox__perks">
-        <li>{t('product.perk.delivery')}</li>
-        <li>{t('product.perk.returns')}</li>
-        <li>{t('product.perk.payment')}</li>
-      </ul>
+      {/* Stock, straight from the selected Shopify variant. */}
+      <div className={`buybox__stock-card ${stock.className}`} role="status">
+        <span className="buybox__stock-icon">
+          <PdpIcon name="check" />
+        </span>
+        <span>
+          <strong>{stock.label}</strong>
+          {available && <span>{l(PRODUCT_PAGE.shipsNote)}</span>}
+        </span>
+      </div>
     </div>
   );
 }

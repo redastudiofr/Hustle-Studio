@@ -1,21 +1,32 @@
-import {useId, useRef, useState} from 'react';
-import {ChevronDownIcon} from '~/components/Icons';
+import {useId, useState} from 'react';
 
+/**
+ * Disclosure row. Two looks:
+ * - 'line' (default): a hairline row with a + that turns into a −;
+ * - 'block': a grey bar with a round black + (the info rows of the product
+ *   page).
+ *
+ * Opening animates the content's real height (grid rows 0fr → 1fr, nothing
+ * measured or guessed), then the text fades and rises into place.
+ */
 export function Accordion({
   title,
   children,
   defaultOpen = false,
+  variant = 'line',
 }: {
   title: string;
   children: React.ReactNode;
   defaultOpen?: boolean;
+  variant?: 'line' | 'block';
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const panelId = useId();
-  const panelRef = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="accordion">
+    <div
+      className={`accordion accordion--${variant} ${open ? 'accordion--open' : ''}`}
+    >
       <button
         type="button"
         className="accordion__trigger"
@@ -24,20 +35,12 @@ export function Accordion({
         onClick={() => setOpen((v) => !v)}
       >
         <span>{title}</span>
-        <ChevronDownIcon className="accordion__chevron" />
+        <span className="accordion__plus" aria-hidden="true" />
       </button>
-      <div
-        id={panelId}
-        ref={panelRef}
-        className="accordion__panel"
-        style={{
-          maxHeight: open
-            ? `${panelRef.current?.scrollHeight ?? 600}px`
-            : '0px',
-          transition: 'max-height 300ms cubic-bezier(0.22, 1, 0.36, 1)',
-        }}
-      >
-        <div className="accordion__panel-inner">{children}</div>
+      <div id={panelId} className="accordion__panel" role="region">
+        <div className="accordion__clip">
+          <div className="accordion__panel-inner">{children}</div>
+        </div>
       </div>
     </div>
   );

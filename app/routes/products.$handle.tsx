@@ -15,9 +15,18 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductGallery} from '~/components/ProductGallery';
 import {ProductPurchase} from '~/components/ProductPurchase';
-import {ProductDescription} from '~/components/ProductDescription';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
 import {Accordion} from '~/components/Accordion';
+import {PairsWithCard} from '~/components/product/PairsWithCard';
+import {
+  ProductHighlights,
+  ProductStoryBlock,
+} from '~/components/product/ProductStory';
+import {CollectionsBand} from '~/components/product/CollectionsBand';
+import {SizeChartBody} from '~/components/product/SizeChartDialog';
+import {sizeChartFor} from '~/config/sizeCharts';
+import {PRODUCT_PAGE} from '~/config/productPage';
+import {NAVIGATION} from '~/config/navigation';
 import {RelatedProductsRail} from '~/components/RelatedProductsRail';
 import {BundleOffer} from '~/components/BundleOffer';
 import {ProductWornVideos} from '~/components/ProductWornVideos';
@@ -168,7 +177,44 @@ function loadDeferredData(
         })
     : Promise.resolve([]);
 
-  return {recommended, pairChoices};
+  // "Made to go with": the complementary piece set in Shopify Search &
+  // Discovery, else the closest related product.
+  const pairsWith = context.storefront
+    .query(PAIRS_WITH_QUERY, {variables: {productId}})
+    .then(
+      (data) =>
+        [...(data?.complementary ?? []), ...(data?.related ?? [])].find(
+          (item) => item.handle !== handle && item.availableForSale,
+        ) ?? null,
+    )
+    .catch((error: Error) => {
+      console.error(error);
+      return null;
+    });
+
+  // Collections band closing the page.
+  const bandCollections = context.storefront
+    .query(BAND_COLLECTIONS_QUERY, {cache: context.storefront.CacheLong()})
+    .then((data) => {
+      const withImage = (data?.collections?.nodes ?? []).filter(
+        (collection) =>
+          collection.image &&
+          !NAVIGATION.hiddenCollections.includes(collection.handle),
+      );
+      const wanted = PRODUCT_PAGE.collectionsBand.handles;
+      const picked = wanted.length
+        ? wanted
+            .map((h) => withImage.find((collection) => collection.handle === h))
+            .filter((collection) => collection != null)
+        : withImage;
+      return picked.slice(0, PRODUCT_PAGE.collectionsBand.count);
+    })
+    .catch((error: Error) => {
+      console.error(error);
+      return [];
+    });
+
+  return {recommended, pairChoices, pairsWith, bandCollections};
 }
 
 /** First sentence of the product description, for the short blurb in the buy box. */
@@ -181,7 +227,7 @@ function shortenDescription(description: string): string {
 }
 
 export default function Product() {
-  const {product, recommended, pairChoices, origin} =
+  const {product, recommended, pairChoices, pairsWith, bandCollections, origin} =
     useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
@@ -217,6 +263,7 @@ export default function Product() {
     name: value.name,
     available: value.available,
   }));
+  const sizeChart = sizeChartFor(product);
 
   return (
     <div className="pdp">
@@ -242,6 +289,7 @@ export default function Product() {
             // Only a real review app's score (Shopify metafields) — never an
             // invented one. No review app: no stars.
             rating={parseRating(product.rating, product.ratingCount)}
+            sizeChart={sizeChart}
           />
 
           {OFFER_ENABLED && (
@@ -263,18 +311,33 @@ export default function Product() {
             </Suspense>
           )}
 
+          <Suspense fallback={null}>
+            <Await resolve={pairsWith} errorElement={null}>
+              {(pair) => (pair ? <PairsWithCard product={pair} /> : null)}
+            </Await>
+          </Suspense>
+
           <div className="pdp__details">
+            <ProductHighlights value={product.highlights?.value} />
+
+            <ProductStoryBlock title={title} value={product.story?.value} />
+
             {descriptionHtml && (
-              <section className="pdp__section">
-                <ProductDescription
-                  html={descriptionHtml}
-                  intro={shortenDescription(description ?? '')}
+              <section className="pdp-block pdp__section">
+                <p className="pdp-block__eyebrow">
+                  {t('pdp.descriptionEyebrow')}
+                </p>
+                {/* Written by the merchant in Shopify Admin (Shopify sanitises
+                    product HTML). */}
+                <div
+                  className="pdp__prose pdp-description"
+                  dangerouslySetInnerHTML={{__html: descriptionHtml}}
                 />
               </section>
             )}
 
-            <section className="pdp__section">
-              <h2 className="pdp__section-title">{t('product.faqTitle')}</h2>
+            <section className="pdp-block pdp__section">
+              <h2 className="pdp-block__title">{t('product.faqTitle')}</h2>
               <div className="pdp__accordions">
                 {getProductFaq(t, description ?? '').map((item) => (
                   <Accordion key={item.question} title={item.question}>
@@ -283,6 +346,24 @@ export default function Product() {
                 ))}
               </div>
             </section>
+
+            <div className="pdp__info">
+              {sizes.length > 0 && (
+                <Accordion title={t('product.sizeGuide')} variant="block">
+                  <SizeChartBody chart={sizeChart} sizes={sizes} />
+                </Accordion>
+              )}
+              <Accordion title={PRODUCT_PAGE.info.shippingTitle} variant="block">
+                {PRODUCT_PAGE.info.shipping.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </Accordion>
+              <Accordion title={PRODUCT_PAGE.info.paymentTitle} variant="block">
+                {PRODUCT_PAGE.info.payment.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </Accordion>
+            </div>
           </div>
         </aside>
       </div>
@@ -300,6 +381,12 @@ export default function Product() {
       <div className="pdp__reviews">
         <ProductReviews productHandle={product.handle} productTitle={title} />
       </div>
+
+      <Suspense fallback={null}>
+        <Await resolve={bandCollections} errorElement={null}>
+          {(collections) => <CollectionsBand collections={collections} />}
+        </Await>
+      </Suspense>
 
       <script
         type="application/ld+json"
@@ -426,6 +513,18 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    productType
+    # Optional per-product content, written in Shopify Admin (see
+    # app/config/productPage.ts): story, highlights, size chart.
+    story: metafield(namespace: "custom", key: "story") {
+      value
+    }
+    highlights: metafield(namespace: "custom", key: "highlights") {
+      value
+    }
+    sizeChart: metafield(namespace: "custom", key: "size_chart") {
+      value
+    }
     # Written by review apps (Shopify Product Reviews, Judge.me…). Absent
     # when there is no review app — no rating is then shown at all.
     rating: metafield(namespace: "reviews", key: "rating") {
@@ -605,6 +704,68 @@ const PAIR_CHOICES_QUERY = `#graphql
             }
           }
         }
+      }
+    }
+  }
+` as const;
+
+const PAIRS_WITH_QUERY = `#graphql
+  fragment PairProduct on Product {
+    id
+    title
+    handle
+    availableForSale
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 6) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+  query PdpPairsWith(
+    $productId: ID!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    complementary: productRecommendations(
+      productId: $productId
+      intent: COMPLEMENTARY
+    ) {
+      ...PairProduct
+    }
+    related: productRecommendations(productId: $productId, intent: RELATED) {
+      ...PairProduct
+    }
+  }
+` as const;
+
+const BAND_COLLECTIONS_QUERY = `#graphql
+  fragment BandCollection on Collection {
+    id
+    title
+    handle
+    image {
+      id
+      url
+      altText
+      width
+      height
+    }
+  }
+  query PdpBandCollections($country: CountryCode, $language: LanguageCode)
+  @inContext(country: $country, language: $language) {
+    collections(first: 30, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...BandCollection
       }
     }
   }

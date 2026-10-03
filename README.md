@@ -28,11 +28,20 @@ Tout ce qui est propre à la marque est regroupé ici :
 | Langues du site (anglais seul par défaut ; les pages légales gardent leur version française) | `app/config/brand.ts` → `languages` |
 | Menu, ordre des collections, liens du footer | `app/config/navigation.ts` |
 | Promotions (2ᵉ pièce, pack, paliers, pop-up) — éteintes tant qu'aucun code n'est saisi | `app/config/promotions.ts` → guide : [`docs/PROMOTIONS.md`](docs/PROMOTIONS.md) |
+| Fiche produit : tuiles, histoire, points forts, infos livraison/paiement, bandeau collections | `app/config/productPage.ts` |
+| Guides des tailles (mesures réelles du vêtement, en cm) | `app/config/sizeCharts.ts`, ou par produit dans Shopify (métachamp `custom.size_chart`) |
 | Avis clients (réels uniquement) | `app/data/reviews.ts` |
 | Vidéos « portées » des fiches produits | `app/config/videos.ts` + `public/videos/` |
 | Logo, favicon, icône, image de partage | `public/brand/` + `public/favicon*.{ico,png}` + `public/apple-touch-icon.png` |
 | Pages légales (`/legal/…`) : coordonnées de l'entreprise, délais de livraison, délai de retour | `app/config/legal.ts` (textes : `app/data/legal.ts` et `legal.fr.ts`) |
 | Textes de l'interface (FR / EN) | `app/lib/i18n/dictionary.ts` (`{brand}` y insère le nom automatiquement) |
+
+**Contenu propre à chaque produit (facultatif)** — Shopify → *Paramètres →
+Données personnalisées → Produits → Ajouter une définition* :
+`custom.story` (texte multiligne : l'histoire du produit),
+`custom.highlights` (liste de textes « Titre — détail »),
+`custom.size_chart` (JSON : `{"columns":["Chest","Length"],"rows":[["S",56,70],["M",59,72]]}`).
+Sans ces champs, la fiche utilise les textes de `app/config/productPage.ts`.
 
 **Ce qui se gère dans Shopify, pas dans le code :**
 

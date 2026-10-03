@@ -160,11 +160,11 @@ export const en = {
     'the country of manufacture is printed on the label sewn inside the garment.',
   'faqData.shipping2Q': 'shipping',
   'faqData.shipping2A':
-    'tracked delivery; options and times are shown at checkout. full details on our',
+    'prepared and shipped within 1 to 3 business days: 48 hours in france, 3 to 5 days worldwide, tracked. full details on our',
   'faqData.shippingLink': 'shipping page',
   'faqData.returnsQ': 'returns',
   'faqData.returnsA':
-    'returns and exchanges accepted under the conditions of our policy. full details on our',
+    'returns and exchanges within 30 days of delivery, on unworn pieces in their original packaging. full details on our',
   'faqData.returnsLink': 'returns page',
   'faqData.careQ': 'care',
   'faqData.careA':
@@ -355,6 +355,21 @@ export const en = {
 
   // — added for Hustle Studio —
   'nav.shop': 'shop',
+  'sizeChart.open': 'Size chart',
+  'sizeChart.eyebrow': 'Size chart',
+  'sizeChart.caption': 'Garment measurements by size',
+  'sizeChart.size': 'Size',
+  'sizeChart.howTo': 'How to measure',
+  'sizeChart.availability': 'In stock now',
+  'sizeChart.pending': 'Measurements for this piece are being added. Between two sizes?',
+  'sizeChart.pendingEnd': 'with your height and usual size — we reply within 24 business hours.',
+  'pdp.pairsEyebrow': 'Made to go with',
+  'pdp.pairsView': 'View the piece',
+  'pdp.price': 'Price',
+  'pdp.detailsEyebrow': 'Details',
+  'pdp.descriptionEyebrow': 'Description',
+  'pdp.prevImage': 'Previous image',
+  'pdp.nextImage': 'Next image',
   'family.pause': 'Pause',
   'family.play': 'Play',
   'product.colours': 'Colours',
@@ -623,11 +638,11 @@ export const fr: Record<TranslationKey, string> = {
     'le pays de fabrication est indiqué sur l’étiquette cousue à l’intérieur du vêtement.',
   'faqData.shipping2Q': 'livraison',
   'faqData.shipping2A':
-    'livraison suivie ; options et délais affichés au paiement. tous les détails sur notre',
+    'préparée et expédiée sous 1 à 3 jours ouvrés : 48 h en france, 3 à 5 jours dans le monde, avec suivi. tous les détails sur notre',
   'faqData.shippingLink': 'page livraison',
   'faqData.returnsQ': 'retours',
   'faqData.returnsA':
-    'retours et échanges acceptés selon nos conditions. tous les détails sur notre',
+    'retours et échanges sous 30 jours après réception, sur des pièces non portées dans leur emballage d’origine. tous les détails sur notre',
   'faqData.returnsLink': 'page retours',
   'faqData.careQ': 'entretien',
   'faqData.careA':
@@ -820,6 +835,21 @@ export const fr: Record<TranslationKey, string> = {
 
   // — ajouts Hustle Studio —
   'nav.shop': 'boutique',
+  'sizeChart.open': 'Guide des tailles',
+  'sizeChart.eyebrow': 'Guide des tailles',
+  'sizeChart.caption': 'Mesures du vêtement par taille',
+  'sizeChart.size': 'Taille',
+  'sizeChart.howTo': 'Comment mesurer',
+  'sizeChart.availability': 'En stock maintenant',
+  'sizeChart.pending': 'Les mesures de cette pièce arrivent. Entre deux tailles ?',
+  'sizeChart.pendingEnd': 'avec votre taille et votre taille habituelle — réponse sous 24 h ouvrées.',
+  'pdp.pairsEyebrow': 'Créée pour aller avec',
+  'pdp.pairsView': 'Voir la pièce',
+  'pdp.price': 'Prix',
+  'pdp.detailsEyebrow': 'Détails',
+  'pdp.descriptionEyebrow': 'Description',
+  'pdp.prevImage': 'Image précédente',
+  'pdp.nextImage': 'Image suivante',
   'family.pause': 'Pause',
   'family.play': 'Lecture',
   'product.colours': 'Couleurs',
