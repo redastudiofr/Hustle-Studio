@@ -14,7 +14,7 @@ export const BRAND = {
 
   /** Default SEO description, used when a page has none of its own. */
   description:
-    'Hustle Studio — streetwear minimaliste et premium. T-shirts, hoodies, jeans et essentiels pensés pour durer.',
+    'Hustle Studio — premium, minimal streetwear. T-shirts, hoodies, jeans and essentials built to last.',
 
   /**
    * Public URL of the live site, without a trailing slash. Used for canonical
@@ -72,6 +72,14 @@ export const BRAND = {
    * time; the choice is remembered in a cookie.
    */
   defaultLocale: 'en' as 'en' | 'fr',
+
+  /**
+   * Languages offered to visitors. With one language, the site never asks
+   * and shows no language switch. French stays available on the legal pages
+   * (/legal/…?lang=fr): consumer terms must exist in French for customers in
+   * France. Add 'fr' here to offer the whole site in French again.
+   */
+  languages: ['en'] as ReadonlyArray<'en' | 'fr'>,
 
   /** Colour of the browser UI on mobile (address bar). */
   themeColor: '#111111',

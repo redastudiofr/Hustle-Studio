@@ -18,6 +18,14 @@ export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = BRAND.defaultLocale;
 
+/** The languages this site offers (BRAND.languages), default first. */
+export const ACTIVE_LOCALES: readonly Locale[] = LOCALES.filter(
+  (locale) => locale === DEFAULT_LOCALE || BRAND.languages.includes(locale),
+);
+
+/** False when the site runs in a single language: nothing to choose. */
+export const HAS_LANGUAGE_CHOICE = ACTIVE_LOCALES.length > 1;
+
 export const LOCALE_COOKIE = 'locale';
 
 /** A year: long enough that a returning customer never has to choose twice. */
@@ -38,7 +46,7 @@ export function localeFromRequest(request: Request): Locale {
     const [name, ...rest] = part.trim().split('=');
     if (name === LOCALE_COOKIE) {
       const value = decodeURIComponent(rest.join('='));
-      if (isLocale(value)) return value;
+      if (isLocale(value) && ACTIVE_LOCALES.includes(value)) return value;
     }
   }
 
@@ -53,6 +61,7 @@ export function localeFromRequest(request: Request): Locale {
  * been put to them, and the prompt is rendered (see LanguagePrompt).
  */
 export function localeChosen(request: Request): boolean {
+  if (!HAS_LANGUAGE_CHOICE) return true;
   const header = request.headers.get('Cookie');
   if (!header) return false;
 

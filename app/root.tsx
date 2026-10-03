@@ -16,6 +16,7 @@ import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import promotionsStyles from '~/styles/promotions.css?url';
 import brandStyles from '~/styles/brand.css?url';
+import editorialStyles from '~/styles/editorial.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
 import {withoutAutoCollections} from '~/lib/collections';
@@ -224,6 +225,22 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={appStyles}></link>
         <link rel="stylesheet" href={promotionsStyles}></link>
         <link rel="stylesheet" href={brandStyles}></link>
+        <link rel="stylesheet" href={editorialStyles}></link>
+        {/* The two latin font files every page uses (app/config/theme.css). */}
+        <link
+          rel="preload"
+          href="/fonts/inter-tight-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/archivo-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <Meta />
         <Links />
         {/*

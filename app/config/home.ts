@@ -82,7 +82,33 @@ export type HomeSection =
       /** Customer reviews (app/data/reviews.ts). Hidden while there are none. */
       type: 'reviews';
     }
+  | {
+      /**
+       * "Family": a wall of photos in two rows that scroll continuously in
+       * opposite directions. Uses `photos` when set; while the list is empty,
+       * the shop's own product photos (from Shopify) stand in.
+       */
+      type: 'family';
+      title: Localized;
+      text?: Localized;
+      photos: FamilyPhoto[];
+    }
+  | {
+      /** Large photo + the brand story, side by side on desktop. */
+      type: 'about';
+      eyebrow?: Localized;
+      title: Localized;
+      paragraphs: Localized[];
+      image: HomeImage;
+      cta?: HomeLink;
+    }
   | {type: 'newsletter'};
+
+/**
+ * A photo of the "family" wall. Put the file in public/brand/family/ and
+ * only use photos you own or have the wearer's permission to publish.
+ */
+export type FamilyPhoto = {src: string; alt: Localized};
 
 export const HOME_SECTIONS: HomeSection[] = [
   {
@@ -90,62 +116,46 @@ export const HOME_SECTIONS: HomeSection[] = [
     image: {
       desktop: '/brand/hero-desktop.webp',
       mobile: '/brand/hero-mobile-desert.webp',
-      alt: {
-        // One alt for both crops (desktop: car and horse; mobile: desert at sunset).
-        en: 'Hustle Studio streetwear, worn outdoors',
-        fr: 'Vêtements Hustle Studio, portés en extérieur',
-      },
+      alt: 'Hustle Studio streetwear, worn outdoors',
     },
-    eyebrow: {en: 'new collection', fr: 'nouvelle collection'},
-    text: {
-      en: 'minimal streetwear, made to be worn every day.',
-      fr: 'du streetwear minimaliste, pensé pour tous les jours.',
-    },
-    cta: {label: {en: 'shop now', fr: 'découvrir'}, to: '/collections/all'},
-    secondaryCta: {
-      label: {en: 'collections', fr: 'collections'},
-      to: '/collections',
-    },
+    eyebrow: 'New collection',
+    title: 'Built on ambition.',
+    text: 'Streetwear for the ones still building.',
+    cta: {label: 'Shop now', to: '/collections/all'},
+    secondaryCta: {label: 'Collections', to: '/collections'},
   },
   {
     type: 'collections',
-    title: {en: 'shop by category', fr: 'nos catégories'},
+    title: 'Collections',
   },
   {
     type: 'products',
-    title: {en: 'new arrivals', fr: 'nouveautés'},
-    collection: 'new-arrivals',
+    title: 'Our products',
     fallbackSort: 'newest',
     limit: 12,
-    layout: 'rail',
-  },
-  {
-    type: 'products',
-    title: {en: 'best sellers', fr: 'meilleures ventes'},
-    collection: 'best-sellers',
-    fallbackSort: 'best-selling',
-    limit: 12,
-    layout: 'rail',
-  },
-  {type: 'pack'},
-  {
-    type: 'editorial',
-    eyebrow: {en: 'the studio', fr: 'le studio'},
-    title: {en: 'built for the hustle.', fr: 'pensé pour ceux qui avancent.'},
-    text: {
-      en: 'clean cuts, heavy fabrics and quiet details. pieces designed to last longer than a season.',
-      fr: 'des coupes nettes, des matières épaisses et des détails discrets. des pièces pensées pour durer plus qu’une saison.',
-    },
-    cta: {label: {en: 'our story', fr: 'notre histoire'}, to: '/about'},
-  },
-  {
-    type: 'products',
-    title: {en: 'all products', fr: 'tous les produits'},
-    fallbackSort: 'newest',
-    limit: 24,
     layout: 'grid',
-    link: {label: {en: 'view all', fr: 'tout voir'}, to: '/collections/all'},
+    link: {label: 'View all', to: '/collections/all'},
   },
-  {type: 'reviews'},
-  {type: 'newsletter'},
+  {
+    type: 'family',
+    title: 'Family',
+    text: 'Worn by the ones still building.',
+    // Your photos go here, e.g. {src: '/brand/family/01.webp', alt: '…'}.
+    photos: [],
+  },
+  {
+    type: 'about',
+    eyebrow: 'About us',
+    title: 'Hustle Studio.',
+    paragraphs: [
+      'Hustle is not a slogan. It is the hours nobody sees — the early mornings, the late nights, the work you put in long before anyone is watching.',
+      'Hustle Studio is made for the ones still building: the first idea sketched on a phone, the hundredth draft, the session nobody asked you to do. People who measure progress in effort, not in noise.',
+      'Every piece is designed as a uniform for that work — clean lines, considered details, nothing that does not need to be there. Build something. Wear it while you do.',
+    ],
+    image: {
+      desktop: '/brand/hero-mobile.webp',
+      alt: 'Hustle Studio grey zip hoodie and joggers, worn beside a black car and a horse',
+    },
+    cta: {label: 'Discover the studio', to: '/about'},
+  },
 ];

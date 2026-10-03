@@ -12,8 +12,10 @@ import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
+import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
 import {
   buildNavGroups,
+  NAV_HEADER_LINKS,
   NAV_SERVICE_LINKS,
   type NavCollection,
   type NavGroup,
@@ -126,6 +128,17 @@ export function HeaderMenu({
         {groups.map((group) => (
           <DesktopGroup key={group.id} group={group} />
         ))}
+        {NAV_HEADER_LINKS.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            end
+            prefetch="intent"
+            className="site-header__nav-link"
+          >
+            {t(link.labelKey)}
+          </NavLink>
+        ))}
       </nav>
     );
   }
@@ -138,6 +151,12 @@ export function HeaderMenu({
 
       {groups.map((group) => (
         <MobileGroup key={group.id} group={group} onNavigate={close} />
+      ))}
+
+      {NAV_HEADER_LINKS.map((link) => (
+        <NavLink key={link.to} to={link.to} onClick={close} prefetch="intent">
+          {t(link.labelKey)}
+        </NavLink>
       ))}
 
       {/* Service links sit under the categories, not among them. */}
@@ -178,6 +197,13 @@ function DesktopGroup({group}: {group: NavGroup}) {
       </button>
       <div className="nav-group__panel">
         <ul>
+          {group.id === 'shop' && (
+            <li>
+              <NavLink to="/collections/all" prefetch="intent">
+                {t('nav.allProducts')}
+              </NavLink>
+            </li>
+          )}
           {group.collections.map((collection) => (
             <li key={collection.id}>
               <NavLink
@@ -299,10 +325,12 @@ export function LocalePreferences({className}: {className?: string}) {
     <div className={['locale-prefs', className].filter(Boolean).join(' ')}>
       <span className="locale-prefs__title">{t('nav.settings')}</span>
 
-      <div className="locale-prefs__row">
-        <span className="locale-prefs__label">{t('nav.language')}</span>
-        <LanguageSwitcher />
-      </div>
+      {HAS_LANGUAGE_CHOICE && (
+        <div className="locale-prefs__row">
+          <span className="locale-prefs__label">{t('nav.language')}</span>
+          <LanguageSwitcher />
+        </div>
+      )}
 
       <div className="locale-prefs__row">
         <span className="locale-prefs__label">{t('nav.currency')}</span>

@@ -355,6 +355,10 @@ export const en = {
 
   // — added for Hustle Studio —
   'nav.shop': 'shop',
+  'family.pause': 'Pause',
+  'family.play': 'Play',
+  'product.colours': 'Colours',
+  'nav.collections': 'collections',
   'nav.account': 'Account',
   'nav.cartCount': 'Cart, {count} item(s)',
   'nav.allProducts': 'all products',
@@ -816,6 +820,10 @@ export const fr: Record<TranslationKey, string> = {
 
   // — ajouts Hustle Studio —
   'nav.shop': 'boutique',
+  'family.pause': 'Pause',
+  'family.play': 'Lecture',
+  'product.colours': 'Couleurs',
+  'nav.collections': 'collections',
   'nav.account': 'Compte',
   'nav.cartCount': 'Panier, {count} article(s)',
   'nav.allProducts': 'tous les produits',

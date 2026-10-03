@@ -24,8 +24,18 @@ export type HomeFeatureData = {
   products: HomeProductFragment[];
 } | null;
 
+/** One tile of the "family" wall: a config photo or a Shopify image. */
+export type FamilyTile = {
+  key: string;
+  src: string;
+  alt: string;
+  /** Shopify image (sized through its CDN) vs a file in public/. */
+  shopify?: {url: string; width?: number | null; height?: number | null};
+};
+
 export type HomeSectionData =
   | {type: 'products'; data: Promise<HomeProductsData>}
+  | {type: 'family'; data: Promise<FamilyTile[]>}
   | {type: 'feature'; data: Promise<HomeFeatureData>}
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'pack'; data: Promise<PackData | null>}
@@ -70,6 +80,16 @@ export function loadHomeSections(
           .then(({collections}) => withoutAutoCollections(collections.nodes))
           .catch(logAndReturn([] as HomeCollectionFragment[]));
         return {type: 'collections', data: collections};
+      case 'family':
+        // Photos from the config win; until there are some, the shop's own
+        // product photos stand in, so the section is never empty or fake.
+        if (section.photos.length) return {type: 'static'};
+        return {
+          type: 'family',
+          data: loadFamilyStandIns(storefront).catch(
+            logAndReturn([] as FamilyTile[]),
+          ),
+        };
       case 'pack':
         if (!PACK_ENABLED) return {type: 'static'};
         return {
@@ -118,6 +138,33 @@ async function loadProducts(
   return products.nodes.length
     ? {products: products.nodes, collection: null}
     : null;
+}
+
+async function loadFamilyStandIns(
+  storefront: Storefront,
+): Promise<FamilyTile[]> {
+  const {products} = await storefront.query(HOME_SORTED_PRODUCTS_QUERY, {
+    variables: {first: 16, ...SORT_KEYS.newest},
+    cache: storefront.CacheLong(),
+  });
+  const seen = new Set<string>();
+  const tiles: FamilyTile[] = [];
+  for (const product of products.nodes) {
+    // The second photo is usually the product worn; the first, a packshot.
+    const nodes = [...product.images.nodes].reverse();
+    for (const image of nodes) {
+      if (seen.has(image.id ?? image.url)) continue;
+      seen.add(image.id ?? image.url);
+      tiles.push({
+        key: image.id ?? image.url,
+        src: image.url,
+        alt: image.altText || product.title,
+        shopify: {url: image.url, width: image.width, height: image.height},
+      });
+      break;
+    }
+  }
+  return tiles;
 }
 
 async function loadFeature(
@@ -184,6 +231,15 @@ const HOME_PRODUCT_FRAGMENT = `#graphql
       altText
       width
       height
+    }
+    options(first: 3) {
+      name
+      optionValues {
+        name
+        swatch {
+          color
+        }
+      }
     }
     images(first: 2) {
       nodes {

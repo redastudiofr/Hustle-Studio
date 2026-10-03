@@ -39,6 +39,12 @@ export const NAVIGATION = {
   /** Collections never shown in the menu or on /collections (handle or title). */
   hiddenCollections: ['frontpage', 'home page'],
 
+  /** Plain links next to the "shop" menu in the desktop header. */
+  headerLinks: [
+    {labelKey: 'nav.collections', to: '/collections'},
+    {labelKey: 'footer.about', to: '/about'},
+  ] as NavLinkConfig[],
+
   /** Extra links under the collections in the mobile menu. */
   serviceLinks: [
     {labelKey: 'nav.track', to: '/order-tracking'},

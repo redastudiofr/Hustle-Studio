@@ -6,7 +6,11 @@ import {
   type LegalSection,
 } from '~/data/legal';
 import {useT} from '~/lib/i18n';
-import {localeFromRequest} from '~/lib/i18n/locale';
+import {
+  HAS_LANGUAGE_CHOICE,
+  isLocale,
+  localeFromRequest,
+} from '~/lib/i18n/locale';
 import {originFromMatches, seoMeta} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({data, matches}) =>
@@ -20,7 +24,10 @@ export const meta: Route.MetaFunction = ({data, matches}) =>
 export async function loader({params, request}: Route.LoaderArgs) {
   // The documents exist in both languages under the same handles, so the page
   // follows the language the visitor chose — see app/data/legal.fr.ts.
-  const locale = localeFromRequest(request);
+  // ?lang=fr|en picks the document language explicitly: the site may run in
+  // English only, but consumer terms must also exist in French.
+  const lang = new URL(request.url).searchParams.get('lang');
+  const locale = isLocale(lang) ? lang : localeFromRequest(request);
   const document = findLegalDocument(locale, params.handle);
 
   if (!document) {
@@ -29,6 +36,9 @@ export async function loader({params, request}: Route.LoaderArgs) {
 
   return {
     document,
+    locale,
+    // With one site language, the other version of the text is a link away.
+    alternate: HAS_LANGUAGE_CHOICE ? null : locale === 'fr' ? 'en' : 'fr',
     // The other documents, for the sidebar — every legal page links to all
     // the others, which is what people actually do on these pages.
     others: LEGAL_DOCUMENTS[locale].map(({handle, navLabel}) => ({
@@ -39,7 +49,9 @@ export async function loader({params, request}: Route.LoaderArgs) {
 }
 
 export default function LegalPage() {
-  const {document, others} = useLoaderData<typeof loader>();
+  const {document, others, locale, alternate} =
+    useLoaderData<typeof loader>();
+  const query = alternate && locale !== 'en' ? `?lang=${locale}` : '';
   const t = useT();
 
   return (
@@ -51,6 +63,17 @@ export default function LegalPage() {
         <p className="legal__updated">
           {t('legal.updated')} {document.updated}
         </p>
+        {alternate && (
+          <p className="legal__alternate">
+            <Link
+              to={`/legal/${document.handle}?lang=${alternate}`}
+              hrefLang={alternate}
+              lang={alternate}
+            >
+              {alternate === 'fr' ? 'Version française' : 'English version'}
+            </Link>
+          </p>
+        )}
       </header>
 
       <div className="legal__layout">
@@ -61,7 +84,7 @@ export default function LegalPage() {
             {others.map((entry) => (
               <li key={entry.handle}>
                 <Link
-                  to={`/legal/${entry.handle}`}
+                  to={`/legal/${entry.handle}${query}`}
                   aria-current={
                     entry.handle === document.handle ? 'page' : undefined
                   }

@@ -46,6 +46,8 @@ export function ProductItem({
     !soldOut && compareAt && Number(compareAt.amount) > Number(price.amount);
 
   // Only when a review app publishes real ratings in Shopify.
+  const swatches = colorSwatches(product);
+
   const rating =
     'rating' in product
       ? parseRating(
@@ -99,6 +101,23 @@ export function ProductItem({
             </s>
           )}
         </div>
+        {swatches.length > 1 && (
+          <ul className="product-card__swatches" aria-label={t('product.colours')}>
+            {swatches.slice(0, 5).map((swatch) => (
+              <li
+                key={swatch.name}
+                className="product-card__swatch"
+                style={{background: swatch.color}}
+                title={swatch.name}
+              />
+            ))}
+            {swatches.length > 5 && (
+              <li className="product-card__swatch-more">
+                +{swatches.length - 5}
+              </li>
+            )}
+          </ul>
+        )}
         {rating && (
           <StarRating
             rating={rating.value}
@@ -109,4 +128,51 @@ export function ProductItem({
       </div>
     </Link>
   );
+}
+
+/** Common colour names → CSS, for colour options without a Shopify swatch. */
+const COLOUR_NAMES: Record<string, string> = {
+  black: '#111111',
+  noir: '#111111',
+  white: '#ffffff',
+  blanc: '#ffffff',
+  grey: '#9a9a96',
+  gray: '#9a9a96',
+  gris: '#9a9a96',
+  navy: '#1f2a44',
+  blue: '#2f4f8f',
+  bleu: '#2f4f8f',
+  red: '#8e1f24',
+  rouge: '#8e1f24',
+  burgundy: '#6b1f2a',
+  bordeaux: '#6b1f2a',
+  green: '#3d5a3a',
+  vert: '#3d5a3a',
+  beige: '#d8c8ad',
+  cream: '#efe7d6',
+  brown: '#5a3e2b',
+  marron: '#5a3e2b',
+  pink: '#e8b4c0',
+  rose: '#e8b4c0',
+};
+
+/**
+ * The product's colours, when Shopify gives it a colour option with more than
+ * one value: the swatch colour set in Shopify, or a known colour name.
+ * Products sold one colour per product show nothing.
+ */
+function colorSwatches(product: GridProduct): {name: string; color: string}[] {
+  if (!('options' in product) || !product.options) return [];
+  const option = product.options.find((o) =>
+    /^(colou?r|couleur)$/i.test(o.name.trim()),
+  );
+  if (!option) return [];
+  return option.optionValues.flatMap((value) => {
+    const swatch =
+      'swatch' in value
+        ? (value.swatch as {color?: string | null} | null)?.color
+        : undefined;
+    const color = swatch ?? COLOUR_NAMES[value.name.trim().toLowerCase()];
+    return color ? [{name: value.name, color}] : [];
+  });
 }

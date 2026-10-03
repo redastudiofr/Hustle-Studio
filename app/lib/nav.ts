@@ -63,3 +63,4 @@ export function buildNavGroups(collections: NavCollection[]): NavGroup[] {
 }
 
 export const NAV_SERVICE_LINKS = NAVIGATION.serviceLinks;
+export const NAV_HEADER_LINKS = NAVIGATION.headerLinks;

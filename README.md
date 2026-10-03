@@ -23,8 +23,9 @@ Tout ce qui est propre à la marque est regroupé ici :
 | Quoi | Où |
 | --- | --- |
 | Nom, description SEO, e-mail, réseaux sociaux, pays/devise, langue par défaut, seuil de livraison gratuite | `app/config/brand.ts` |
-| Couleurs, polices, ombres | `app/config/theme.css` |
-| Sections de la page d'accueil (ordre, titres, collections affichées, images) | `app/config/home.ts` |
+| Couleurs, polices (Inter Tight + Archivo, auto-hébergées dans `public/fonts/`), ombres | `app/config/theme.css` |
+| Sections de la page d'accueil (ordre, textes, images, photos « Family », bloc « About us ») | `app/config/home.ts` |
+| Langues du site (anglais seul par défaut ; les pages légales gardent leur version française) | `app/config/brand.ts` → `languages` |
 | Menu, ordre des collections, liens du footer | `app/config/navigation.ts` |
 | Promotions (2ᵉ pièce, pack, paliers, pop-up) — éteintes tant qu'aucun code n'est saisi | `app/config/promotions.ts` → guide : [`docs/PROMOTIONS.md`](docs/PROMOTIONS.md) |
 | Avis clients (réels uniquement) | `app/data/reviews.ts` |
@@ -43,9 +44,14 @@ Tout ce qui est propre à la marque est regroupé ici :
 ### Page d'accueil
 
 `app/config/home.ts` décrit la page de haut en bas. Types de sections :
-`hero`, `products` (rangée ou grille), `feature` (grande bannière de
-collection + rangée), `collections`, `editorial`, `pack`, `reviews`,
-`newsletter`.
+`hero`, `collections`, `products` (rangée ou grille), `family` (mur de
+photos sur deux lignes qui défilent en sens inverse), `about` (photo +
+texte), et aussi `feature`, `editorial`, `pack`, `reviews`, `newsletter`.
+
+Photos « Family » : déposez-les dans `public/brand/family/` et listez-les
+dans `photos` de la section `family`. Tant que la liste est vide, les photos
+des produits Shopify s'affichent à la place. N'utilisez que vos photos, ou
+celles des personnes qui vous ont donné leur accord.
 
 Les sections produits pointent vers une **collection Shopify** par son
 *handle* (la fin de l'URL de la collection). Si la collection n'existe pas

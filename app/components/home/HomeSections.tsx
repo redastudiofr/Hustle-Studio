@@ -3,10 +3,13 @@ import {Await, Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
 import type {HomeSection} from '~/config/home';
 import type {
+  FamilyTile,
   HomeFeatureData,
   HomeProductsData,
   HomeSectionData,
 } from '~/lib/homeSections';
+import {FamilyWall} from '~/components/home/FamilyWall';
+import {AboutSection} from '~/components/home/AboutSection';
 import {Hero} from '~/components/home/Hero';
 import {ProductRail} from '~/components/ProductRail';
 import {ProductItem} from '~/components/ProductItem';
@@ -170,6 +173,32 @@ function HomeSectionView({
           </div>
         </Reveal>
       );
+
+    case 'family': {
+      const title = l(section.title);
+      const text = section.text ? l(section.text) : undefined;
+      if (section.photos.length) {
+        const tiles: FamilyTile[] = section.photos.map((photo) => ({
+          key: photo.src,
+          src: photo.src,
+          alt: l(photo.alt),
+        }));
+        return <FamilyWall id={id} title={title} text={text} tiles={tiles} />;
+      }
+      if (data?.type !== 'family') return null;
+      return (
+        <Suspense fallback={null}>
+          <Await resolve={data.data}>
+            {(tiles: FamilyTile[]) => (
+              <FamilyWall id={id} title={title} text={text} tiles={tiles} />
+            )}
+          </Await>
+        </Suspense>
+      );
+    }
+
+    case 'about':
+      return <AboutSection id={id} section={section} />;
 
     case 'pack':
       if (data?.type !== 'pack') return null;
