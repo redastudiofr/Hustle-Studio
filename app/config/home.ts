@@ -93,19 +93,12 @@ export type HomeSection =
       title: Localized;
       text?: Localized;
       photos: FamilyPhoto[];
-    }
-  | {
       /**
-       * One product line put forward: a large photo, its story and its
-       * products, picked by Shopify handle (the end of the product URL).
-       * Handles Shopify does not know are skipped.
+       * 'marquee' (default): two rows scrolling in opposite directions.
+       * 'grid': a still grid — 4 photos on the first row, then 5 per row on
+       * desktop; 3 per row on tablet; 2 per row on phones.
        */
-      type: 'spotlight';
-      eyebrow?: Localized;
-      title: Localized;
-      text?: Localized;
-      products: string[];
-      cta?: HomeLink;
+      layout?: 'marquee' | 'grid';
     }
   | {
       /** Large photo + the brand story, side by side on desktop. */
@@ -123,6 +116,19 @@ export type HomeSection =
  * only use photos you own or have the wearer's permission to publish.
  */
 export type FamilyPhoto = {src: string; alt: Localized};
+
+/** The community photos (public/brand/family/), in display order. */
+const FAMILY_PHOTOS: FamilyPhoto[] = [
+  {src: '/brand/family/01.webp', alt: 'chloeestr in a black CY tracksuit, Paris'},
+  {src: '/brand/family/02.webp', alt: 'paauuul_ in a black CY tracksuit, Toulouse'},
+  {src: '/brand/family/03.webp', alt: 'Stacyhrf in a grey CY set, New York'},
+  {src: '/brand/family/04.webp', alt: 'muruafit_ in a black CY zip and jogging, Toulouse'},
+  {src: '/brand/family/05.webp', alt: 'paauuul_ in black CY with two dogs, Toulouse'},
+  {src: '/brand/family/06.webp', alt: 'Rach.K_ in a black CY zip and jogging, New York'},
+  {src: '/brand/family/07.webp', alt: 'Alan__ot in a black CY tracksuit, London'},
+  {src: '/brand/family/08.webp', alt: 'muruafit_ in CY by a graffiti wall, Toulouse'},
+  {src: '/brand/family/09.webp', alt: 'paauuul_ in a black CY tracksuit, Toulouse'},
+];
 
 export const HOME_SECTIONS: HomeSection[] = [
   {
@@ -143,14 +149,6 @@ export const HOME_SECTIONS: HomeSection[] = [
     title: 'Collections',
   },
   {
-    type: 'spotlight',
-    eyebrow: 'Spotlight',
-    title: 'CY Jogging',
-    text: 'The jogging that defines the CY line: a wide, relaxed cut and the CY patch on the leg. Two colours, same attitude.',
-    products: ['cy-jogging-black', 'cy-hoodie-gris-1'],
-    cta: {label: 'Shop CY Jogging', to: '/search?q=CY%20Jogging'},
-  },
-  {
     type: 'products',
     title: 'Our products',
     fallbackSort: 'newest',
@@ -161,10 +159,16 @@ export const HOME_SECTIONS: HomeSection[] = [
   },
   {
     type: 'family',
-    title: 'Family',
+    title: 'Community',
     text: 'Worn by the ones still building.',
-    // Your photos go here, e.g. {src: '/brand/family/01.webp', alt: '…'}.
-    photos: [],
+    photos: FAMILY_PHOTOS,
+    layout: 'marquee',
+  },
+  {
+    type: 'family',
+    title: 'Family',
+    photos: FAMILY_PHOTOS,
+    layout: 'grid',
   },
   {
     type: 'about',

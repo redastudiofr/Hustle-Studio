@@ -37,7 +37,6 @@ export type FamilyTile = {
 export type HomeSectionData =
   | {type: 'products'; data: Promise<HomeProductsData>}
   | {type: 'family'; data: Promise<FamilyTile[]>}
-  | {type: 'spotlight'; data: Promise<HomeProductFragment[]>}
   | {type: 'feature'; data: Promise<HomeFeatureData>}
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'pack'; data: Promise<PackData | null>}
@@ -85,13 +84,6 @@ export function loadHomeSections(
           .then(({collections}) => withoutAutoCollections(collections.nodes))
           .catch(logAndReturn([] as HomeCollectionFragment[]));
         return {type: 'collections', data: collections};
-      case 'spotlight':
-        return {
-          type: 'spotlight',
-          data: loadByHandles(storefront, section.products).catch(
-            logAndReturn([] as HomeProductFragment[]),
-          ),
-        };
       case 'family':
         // Photos from the config win; until there are some, the shop's own
         // product photos stand in, so the section is never empty or fake.
@@ -170,30 +162,6 @@ async function loadProducts(
   } while (after);
 
   return nodes.length ? {products: nodes, collection: null} : null;
-}
-
-async function loadByHandles(
-  storefront: Storefront,
-  handles: string[],
-): Promise<HomeProductFragment[]> {
-  const results = await Promise.all(
-    handles.map((handle) =>
-      storefront
-        .query(HOME_PRODUCT_BY_HANDLE_QUERY, {
-          variables: {handle},
-          cache: storefront.CacheShort(),
-        })
-        .then(({product}) => {
-          if (!product) {
-            console.warn(`Homepage: Shopify has no product "${handle}".`);
-          }
-          return product;
-        }),
-    ),
-  );
-  return results.filter(
-    (product): product is HomeProductFragment => product != null,
-  );
 }
 
 async function loadFamilyStandIns(
@@ -354,19 +322,6 @@ const HOME_COLLECTION_PRODUCTS_QUERY = `#graphql
     }
   }
   ${HOME_COLLECTION_FRAGMENT}
-  ${HOME_PRODUCT_FRAGMENT}
-` as const;
-
-const HOME_PRODUCT_BY_HANDLE_QUERY = `#graphql
-  query HomeProductByHandle(
-    $handle: String!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    product(handle: $handle) {
-      ...HomeProduct
-    }
-  }
   ${HOME_PRODUCT_FRAGMENT}
 ` as const;
 

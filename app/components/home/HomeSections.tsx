@@ -10,7 +10,6 @@ import type {
 } from '~/lib/homeSections';
 import {FamilyWall} from '~/components/home/FamilyWall';
 import {AboutSection} from '~/components/home/AboutSection';
-import {SpotlightSection} from '~/components/home/SpotlightSection';
 import {Hero} from '~/components/home/Hero';
 import {ProductRail} from '~/components/ProductRail';
 import {ProductItem} from '~/components/ProductItem';
@@ -184,14 +183,28 @@ function HomeSectionView({
           src: photo.src,
           alt: l(photo.alt),
         }));
-        return <FamilyWall id={id} title={title} text={text} tiles={tiles} />;
+        return (
+          <FamilyWall
+            id={id}
+            title={title}
+            text={text}
+            tiles={tiles}
+            layout={section.layout}
+          />
+        );
       }
       if (data?.type !== 'family') return null;
       return (
         <Suspense fallback={null}>
           <Await resolve={data.data}>
             {(tiles: FamilyTile[]) => (
-              <FamilyWall id={id} title={title} text={text} tiles={tiles} />
+              <FamilyWall
+                id={id}
+                title={title}
+                text={text}
+                tiles={tiles}
+                layout={section.layout}
+              />
             )}
           </Await>
         </Suspense>
@@ -200,18 +213,6 @@ function HomeSectionView({
 
     case 'about':
       return <AboutSection id={id} section={section} />;
-
-    case 'spotlight':
-      if (data?.type !== 'spotlight') return null;
-      return (
-        <Suspense fallback={<SectionSkeleton layout="rail" />}>
-          <Await resolve={data.data}>
-            {(products) => (
-              <SpotlightSection id={id} section={section} products={products} />
-            )}
-          </Await>
-        </Suspense>
-      );
 
     case 'pack':
       if (data?.type !== 'pack') return null;

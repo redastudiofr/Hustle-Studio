@@ -22,15 +22,47 @@ export function FamilyWall({
   title,
   text,
   tiles,
+  layout = 'marquee',
 }: {
   id: string;
   title: string;
   text?: string;
   tiles: FamilyTile[];
+  layout?: 'marquee' | 'grid';
 }) {
   const t = useT();
   const [paused, setPaused] = useState(false);
   if (!tiles.length) return null;
+
+  if (layout === 'grid') {
+    return (
+      <Reveal
+        as="section"
+        className="family family--grid"
+        aria-labelledby={`${id}-heading`}
+      >
+        <div className="section-head">
+          <div>
+            <h2 className="section-title" id={`${id}-heading`}>
+              {title}
+            </h2>
+            {text && <p className="section-head__text">{text}</p>}
+          </div>
+        </div>
+        <div className="family__grid">
+          {tiles.map((tile, index) => (
+            <figure
+              // eslint-disable-next-line react/no-array-index-key -- a photo may appear twice
+              key={`${tile.key}-${index}`}
+              className="family__tile"
+            >
+              <TileImage tile={tile} />
+            </figure>
+          ))}
+        </div>
+      </Reveal>
+    );
+  }
 
   // Alternate tiles between the rows; a short list feeds both rows whole.
   const split = tiles.length >= MIN_PER_ROW;
@@ -95,28 +127,33 @@ function FamilyRow({tiles, reverse}: {tiles: FamilyTile[]; reverse: boolean}) {
               className="family__tile"
               aria-hidden={set === 1 ? true : undefined}
             >
-              {tile.shopify ? (
-                <Image
-                  data={tile.shopify}
-                  alt={set === 1 ? '' : tile.alt}
-                  aspectRatio="4/5"
-                  sizes="(min-width: 64em) 18vw, (min-width: 48em) 26vw, 44vw"
-                  loading="lazy"
-                />
-              ) : (
-                <img
-                  src={tile.src}
-                  alt={set === 1 ? '' : tile.alt}
-                  loading="lazy"
-                  decoding="async"
-                  width={400}
-                  height={500}
-                />
-              )}
+              <TileImage tile={tile} hidden={set === 1} />
             </figure>
           )),
         )}
       </div>
     </div>
+  );
+}
+
+function TileImage({tile, hidden = false}: {tile: FamilyTile; hidden?: boolean}) {
+  const alt = hidden ? '' : tile.alt;
+  return tile.shopify ? (
+    <Image
+      data={tile.shopify}
+      alt={alt}
+      aspectRatio="4/5"
+      sizes="(min-width: 64em) 20vw, (min-width: 48em) 33vw, 50vw"
+      loading="lazy"
+    />
+  ) : (
+    <img
+      src={tile.src}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      width={900}
+      height={1125}
+    />
   );
 }

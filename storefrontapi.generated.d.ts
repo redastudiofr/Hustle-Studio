@@ -640,52 +640,6 @@ export type HomeCollectionProductsQuery = {
   >;
 };
 
-export type HomeProductByHandleQueryVariables = StorefrontAPI.Exact<{
-  handle: StorefrontAPI.Scalars['String']['input'];
-  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
-  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
-}>;
-
-export type HomeProductByHandleQuery = {
-  product?: StorefrontAPI.Maybe<
-    Pick<
-      StorefrontAPI.Product,
-      'id' | 'title' | 'handle' | 'availableForSale'
-    > & {
-      rating?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      ratingCount?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
-      priceRange: {
-        minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-      };
-      compareAtPriceRange: {
-        minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-      };
-      featuredImage?: StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
-      >;
-      options: Array<
-        Pick<StorefrontAPI.ProductOption, 'name'> & {
-          optionValues: Array<
-            Pick<StorefrontAPI.ProductOptionValue, 'name'> & {
-              swatch?: StorefrontAPI.Maybe<
-                Pick<StorefrontAPI.ProductOptionValueSwatch, 'color'>
-              >;
-            }
-          >;
-        }
-      >;
-      images: {
-        nodes: Array<
-          Pick<
-            StorefrontAPI.Image,
-            'id' | 'url' | 'altText' | 'width' | 'height'
-          >
-        >;
-      };
-    }
-  >;
-};
-
 export type HomeSortedProductsQueryVariables = StorefrontAPI.Exact<{
   first?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
   after?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['String']['input']>;
@@ -2073,10 +2027,6 @@ interface GeneratedQueryTypes {
   '#graphql\n  query HomeCollectionProducts(\n    $handle: String!\n    $first: Int\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    collection(handle: $handle) {\n      ...HomeCollection\n      description\n      products(first: $first) {\n        nodes {\n          ...HomeProduct\n        }\n      }\n    }\n  }\n  #graphql\n  fragment HomeCollection on Collection {\n    id\n    title\n    handle\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n\n  #graphql\n  fragment HomeMoney on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment HomeProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    rating: metafield(namespace: "reviews", key: "rating") {\n      value\n    }\n    ratingCount: metafield(namespace: "reviews", key: "rating_count") {\n      value\n    }\n    priceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    options(first: 3) {\n      name\n      optionValues {\n        name\n        swatch {\n          color\n        }\n      }\n    }\n    images(first: 2) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n\n': {
     return: HomeCollectionProductsQuery;
     variables: HomeCollectionProductsQueryVariables;
-  };
-  '#graphql\n  query HomeProductByHandle(\n    $handle: String!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...HomeProduct\n    }\n  }\n  #graphql\n  fragment HomeMoney on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment HomeProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    rating: metafield(namespace: "reviews", key: "rating") {\n      value\n    }\n    ratingCount: metafield(namespace: "reviews", key: "rating_count") {\n      value\n    }\n    priceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    options(first: 3) {\n      name\n      optionValues {\n        name\n        swatch {\n          color\n        }\n      }\n    }\n    images(first: 2) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n\n': {
-    return: HomeProductByHandleQuery;
-    variables: HomeProductByHandleQueryVariables;
   };
   '#graphql\n  query HomeSortedProducts(\n    $first: Int\n    $after: String\n    $sortKey: ProductSortKeys\n    $reverse: Boolean\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      after: $after\n      sortKey: $sortKey\n      reverse: $reverse\n    ) {\n      nodes {\n        ...HomeProduct\n      }\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment HomeMoney on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment HomeProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    rating: metafield(namespace: "reviews", key: "rating") {\n      value\n    }\n    ratingCount: metafield(namespace: "reviews", key: "rating_count") {\n      value\n    }\n    priceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    options(first: 3) {\n      name\n      optionValues {\n        name\n        swatch {\n          color\n        }\n      }\n    }\n    images(first: 2) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n\n': {
     return: HomeSortedProductsQuery;
