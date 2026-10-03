@@ -10,6 +10,7 @@ import {
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import type {
+  BundleProductFragment,
   ProductFragment,
   ProductVariantFragment,
 } from 'storefrontapi.generated';
@@ -28,11 +29,11 @@ import {sizeChartFor} from '~/config/sizeCharts';
 import {PRODUCT_PAGE} from '~/config/productPage';
 import {NAVIGATION} from '~/config/navigation';
 import {RelatedProductsRail} from '~/components/RelatedProductsRail';
-import {BundleOffer} from '~/components/BundleOffer';
+import {SmartBundle} from '~/components/product/SmartBundle';
 import {ProductWornVideos} from '~/components/ProductWornVideos';
 import {ProductReviews} from '~/components/ProductReviews';
 import {parseRating} from '~/lib/rating';
-import {OFFER_ENABLED} from '~/lib/offers';
+import {GIFT, offersFor} from '~/lib/bundles';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductFaq} from '~/data/faq';
 import {useT} from '~/lib/i18n';
@@ -94,7 +95,7 @@ const MAX_RECOMMENDATIONS = 16;
  * just hides the row.
  */
 function loadDeferredData(
-  {context}: Route.LoaderArgs,
+  {context, request}: Route.LoaderArgs,
   productId: string,
   handle: string,
 ) {
@@ -137,45 +138,44 @@ function loadDeferredData(
   });
 
   /*
-   * The pieces offered as the second half of the "take two" pair — real,
-   * buyable catalogue products. Only fetched while the offer is live.
+   * Bundle box: this product, the pieces offered alongside it and the free
+   * T-shirt, with their sizes — real catalogue products and variants. Only
+   * fetched when an offer is live, or in preview (?bundle=preview).
    */
-  const pairChoices = OFFER_ENABLED
+  const preview = new URL(request.url).searchParams.get('bundle') === 'preview';
+  const bundleOffers = offersFor(preview);
+  const giftHandle = GIFT.productHandle.trim();
+  const bundle = bundleOffers.length
     ? context.storefront
-        .query(PAIR_CHOICES_QUERY, {
-          variables: {first: 12},
+        .query(BUNDLE_QUERY, {
+          variables: {
+            handle,
+            first: 16,
+            giftHandle: giftHandle || handle,
+            withGift: giftHandle !== '',
+          },
           cache: context.storefront.CacheShort(),
         })
-        .then((data) =>
-          (data?.products?.nodes ?? [])
-            .filter(
-              (node) =>
-                node.handle !== handle &&
-                node.availableForSale &&
-                node.variants?.nodes?.some(
-                  (variant) => variant.availableForSale,
-                ),
-            )
-            .map((node) => {
-              const variant = node.variants.nodes.find(
-                (candidate) => candidate.availableForSale,
-              )!;
-              return {
-                id: node.id,
-                title: node.title,
-                handle: node.handle,
-                featuredImage: node.featuredImage,
-                variantId: variant.id,
-                price: variant.price,
-              };
-            })
-            .slice(0, MAX_PAIR_CHOICES),
-        )
+        .then((data) => {
+          const buyable = (node: BundleProductFragment | null | undefined) =>
+            node?.availableForSale &&
+            node.variants.nodes.some((variant) => variant.availableForSale);
+          if (!data?.current || !buyable(data.current)) return null;
+          return {
+            preview,
+            offerIds: bundleOffers.map((offer) => offer.id),
+            current: data.current,
+            others: (data.products?.nodes ?? [])
+              .filter((node) => node.handle !== handle && buyable(node))
+              .slice(0, MAX_BUNDLE_CHOICES),
+            gift: data.gift && buyable(data.gift) ? data.gift : null,
+          };
+        })
         .catch((error: Error) => {
           console.error(error);
-          return [];
+          return null;
         })
-    : Promise.resolve([]);
+    : Promise.resolve(null);
 
   // "Made to go with": the complementary piece set in Shopify Search &
   // Discovery, else the closest related product.
@@ -214,7 +214,7 @@ function loadDeferredData(
       return [];
     });
 
-  return {recommended, pairChoices, pairsWith, bandCollections};
+  return {recommended, bundle, pairsWith, bandCollections};
 }
 
 /** First sentence of the product description, for the short blurb in the buy box. */
@@ -227,7 +227,7 @@ function shortenDescription(description: string): string {
 }
 
 export default function Product() {
-  const {product, recommended, pairChoices, pairsWith, bandCollections, origin} =
+  const {product, recommended, bundle, pairsWith, bandCollections, origin} =
     useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
@@ -292,24 +292,18 @@ export default function Product() {
             sizeChart={sizeChart}
           />
 
-          {OFFER_ENABLED && (
-            <Suspense fallback={null}>
-              <Await resolve={pairChoices} errorElement={null}>
-                {(choices) => (
-                  <BundleOffer
-                    productTitle={title}
-                    productImage={
-                      product.images.nodes[0] ?? selectedVariant?.image
-                    }
-                    productPrice={selectedVariant?.price}
-                    productVariantId={selectedVariant?.id}
-                    choices={choices}
-                    available={available}
+          <Suspense fallback={null}>
+            <Await resolve={bundle} errorElement={null}>
+              {(data) =>
+                data ? (
+                  <SmartBundle
+                    data={data}
+                    selectedVariantId={selectedVariant?.id}
                   />
-                )}
-              </Await>
-            </Suspense>
-          )}
+                ) : null
+              }
+            </Await>
+          </Suspense>
 
           <Suspense fallback={null}>
             <Await resolve={pairsWith} errorElement={null}>
@@ -353,7 +347,10 @@ export default function Product() {
                   <SizeChartBody chart={sizeChart} sizes={sizes} />
                 </Accordion>
               )}
-              <Accordion title={PRODUCT_PAGE.info.shippingTitle} variant="block">
+              <Accordion
+                title={PRODUCT_PAGE.info.shippingTitle}
+                variant="block"
+              >
                 {PRODUCT_PAGE.info.shipping.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
@@ -669,42 +666,56 @@ const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
   ${RECO_PRODUCT_FRAGMENT}
 ` as const;
 
-/**
- * How many pieces the offer proposes. Enough to feel like a real choice,
- * few enough that the box stays a box rather than a second catalogue.
- */
-const MAX_PAIR_CHOICES = 6;
+/** Pieces offered in the bundle's pickers, besides this product. */
+const MAX_BUNDLE_CHOICES = 12;
 
-const PAIR_CHOICES_QUERY = `#graphql
-  query PdpPairChoices(
-    $first: Int
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    products(first: $first, sortKey: BEST_SELLING) {
+const BUNDLE_QUERY = `#graphql
+  fragment BundleProduct on Product {
+    id
+    title
+    handle
+    availableForSale
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    variants(first: 30) {
       nodes {
         id
         title
-        handle
         availableForSale
-        featuredImage {
-          id
-          url
-          altText
-          width
-          height
+        price {
+          amount
+          currencyCode
         }
-        variants(first: 10) {
-          nodes {
-            id
-            availableForSale
-            price {
-              amount
-              currencyCode
-            }
-          }
+        selectedOptions {
+          name
+          value
         }
       }
+    }
+  }
+  query PdpBundle(
+    $handle: String!
+    $first: Int
+    $giftHandle: String!
+    $withGift: Boolean!
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    current: product(handle: $handle) {
+      ...BundleProduct
+    }
+    products(first: $first, sortKey: BEST_SELLING) {
+      nodes {
+        ...BundleProduct
+      }
+    }
+    gift: product(handle: $giftHandle) @include(if: $withGift) {
+      ...BundleProduct
     }
   }
 ` as const;

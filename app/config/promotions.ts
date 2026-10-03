@@ -15,20 +15,71 @@
  */
 export const PROMOTIONS = {
   /**
-   * "Take two" — a percentage off the second piece in the basket. Shown as a
-   * box under the buy buttons on every product page; the code is attached to
-   * the cart automatically once it holds `minPieces` items.
+   * Bundles — the box on every product page where the customer builds a set
+   * and picks one of three offers (app/components/product/SmartBundle.tsx).
    *
-   * Shopify discount: Amount off products, percentage `percent`, minimum
-   * quantity `minPieces`, applies to the cheapest item — or Buy X get Y.
+   * Each offer goes live once its `code` is filled in (and `enabled` is
+   * true). Until then it is only visible in preview: add ?bundle=preview to
+   * any product URL. In Shopify Admin → Discounts, create for each code
+   * (step by step in docs/PROMOTIONS.md):
+   *   duo  — Buy X get Y: buys 1 item, gets 1 item at `percent`% off
+   *   trio — Buy X get Y: buys 2 items, gets 1 item at `percent`% off
+   *   best — Amount off order: `percent`%, minimum quantity `minItems`
+   *   gift — Buy X get Y: minimum purchase `threshold` €, gets the product
+   *          `gift.productHandle` free; allow it to combine with order
+   *          discounts.
+   * Shopify's "Buy X get Y" puts the reduction on the cheapest item; the
+   * product page computes its prices the same way.
    */
-  secondItem: {
-    enabled: false,
-    code: '',
-    percent: 30,
-    minPieces: 2,
-    /** Old codes still possibly sitting in shoppers' carts; swapped for `code`. */
-    retiredCodes: [] as string[],
+  bundles: {
+    enabled: true,
+    offers: [
+      {
+        id: 'duo',
+        code: '',
+        name: 'Duo',
+        rule: '2nd piece −20%',
+        items: 2,
+        percent: 20,
+        /** 'cheapest': on one piece (Buy X get Y). 'order': on every piece. */
+        appliesTo: 'cheapest',
+        badge: '',
+      },
+      {
+        id: 'trio',
+        code: '',
+        name: 'Trio',
+        rule: '3rd piece −30%',
+        items: 3,
+        percent: 30,
+        appliesTo: 'cheapest',
+        badge: 'Popular',
+      },
+      {
+        id: 'best',
+        code: '',
+        name: 'Best offer',
+        rule: '−30% on the whole order',
+        items: 2,
+        /** The customer may add pieces up to `maxItems`. */
+        maxItems: 4,
+        percent: 30,
+        appliesTo: 'order',
+        badge: 'Best offer',
+        /** This offer unlocks the free T-shirt below. */
+        gift: true,
+      },
+    ] as BundleOfferConfig[],
+
+    /** Free T-shirt, unlocked when the bundle total reaches `threshold` €. */
+    gift: {
+      code: '',
+      /** Shopify handle of the T-shirt given (end of its product URL). */
+      productHandle: '',
+      label: 'Free T-shirt',
+      /** In euros, measured on the bundle total after its discount. */
+      threshold: 100,
+    },
   },
 
   /**
@@ -45,17 +96,6 @@ export const PROMOTIONS = {
     collection: 'pack-essentiel',
     /** Handle of the product given for free (Shopify product URL, last part). */
     freeProductHandle: '',
-  },
-
-  /**
-   * Volume offer — −20% on the 2nd piece, −30% from the 3rd, on everything.
-   * Only a line of text on product and collection pages; the reduction comes
-   * from a tiered-discount app in Shopify Admin. Keep it off while `secondItem`
-   * is on — the two contradict each other.
-   */
-  tiers: {
-    enabled: false,
-    percents: [0, 20, 30] as const,
   },
 
   /**
@@ -77,3 +117,16 @@ export function isLive(offer: {enabled: boolean; code?: string}): boolean {
     offer.enabled && (offer.code === undefined || offer.code.trim() !== '')
   );
 }
+
+export type BundleOfferConfig = {
+  id: string;
+  code: string;
+  name: string;
+  rule: string;
+  items: number;
+  maxItems?: number;
+  percent: number;
+  appliesTo: 'cheapest' | 'order';
+  badge: string;
+  gift?: boolean;
+};

@@ -4,7 +4,6 @@ import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
 import {SortSelect} from '~/components/SortSelect';
-import {TierNote} from '~/components/TierNote';
 import {catalogSortKey, sortFromRequest} from '~/lib/sort';
 import {seoMeta, originFromMatches} from '~/lib/seo';
 import {useT} from '~/lib/i18n';
@@ -45,7 +44,6 @@ export default function Catalog() {
     <div className="collection-page">
       <div className="collection-head">
         <h1>{t('shop.title')}</h1>
-        <TierNote className="tier-note--collection" />
       </div>
       {products.nodes.length ? (
         <div className="collection-toolbar">

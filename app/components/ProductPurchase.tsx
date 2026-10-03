@@ -16,7 +16,6 @@ import {useLocalized} from '~/lib/i18n/localized';
 import {useAside} from '~/components/Aside';
 import {useT} from '~/lib/i18n';
 import {StarRating} from '~/components/StarRating';
-import {TierNote} from '~/components/TierNote';
 import type {ProductRating} from '~/lib/rating';
 
 /** Shopify's own count is called out as "low" at or under this many units. */
@@ -116,8 +115,6 @@ export function ProductPurchase({
           <span className="buybox__discount">−{discountPct}%</span>
         )}
       </div>
-
-      <TierNote />
 
       <ul className="buybox__features">
         {PRODUCT_PAGE.features.map((feature) => (

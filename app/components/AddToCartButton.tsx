@@ -1,7 +1,7 @@
 import {type FetcherWithComponents} from 'react-router';
 import {CartForm, type OptimisticCartLineInput} from '@shopify/hydrogen';
 import {useT} from '~/lib/i18n';
-import {BUNDLE_ADD_ACTION} from '~/lib/offers';
+import {BUNDLE_ADD_ACTION} from '~/lib/bundles';
 import {PACK_ADD_ACTION} from '~/lib/packOffer';
 import {cartFeedbackMessage} from '~/components/CartLineItem';
 
@@ -33,8 +33,8 @@ export function AddToCartButton({
   lines: Array<OptimisticCartLineInput>;
   onClick?: () => void;
   className?: string;
-  /** Adds through the "take two" action, which attaches that offer's code. */
-  bundle?: boolean;
+  /** Adds through the bundle action (offer and gift codes, server-side). */
+  bundle?: {offer: string; gift: boolean} | false;
   /** Adds through the pack action, which attaches the pack's own code. */
   pack?: boolean;
   /** Accepted for compatibility with the offer components; no effect. */
@@ -50,7 +50,9 @@ export function AddToCartButton({
   return (
     <CartForm
       route="/cart"
-      inputs={{lines}}
+      inputs={
+        bundle ? {lines, offer: bundle.offer, gift: bundle.gift} : {lines}
+      }
       action={action}
       fetcherKey={
         pack

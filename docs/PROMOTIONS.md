@@ -13,18 +13,49 @@ modification, poussez sur `main` : Vercel redéploie tout seul en ~3 minutes.
 
 ---
 
-## 1. « Prenez-en deux » — −30 % sur la 2ᵉ pièce
+## 1. Le bundle de la fiche produit — Duo, Trio, Meilleure offre
 
-Affiché sous les boutons d'achat de chaque fiche produit. Le code est ajouté
-automatiquement au panier dès 2 articles.
+Un bloc « Build your set » sur chaque fiche produit : le client choisit une
+offre, compose son lot (produit + taille pour chaque pièce) et voit le prix
+total, la réduction et l'économie en temps réel. Le bouton ajoute toutes les
+pièces au panier et y attache le code de l'offre (côté serveur).
 
-1. Shopify → **Réductions → Créer une réduction → Montant de réduction sur
-   les produits** (ou « Achetez X, obtenez Y »).
-2. Méthode : **Code de réduction**, par exemple `DUO30`.
-3. Valeur : **30 %**, s'applique à **tous les produits**.
-4. Conditions : **quantité minimale d'articles : 2**.
-5. Dans `promotions.ts` → `secondItem` : `enabled: true`, `code: 'DUO30'`,
-   `percent: 30` (le même chiffre que dans Shopify).
+**Aperçu avant de créer les codes :** ajoutez `?bundle=preview` à l'adresse
+d'une fiche produit (ex. `https://hustlestudio.store/products/…?bundle=preview`).
+Le bloc s'affiche, mais le bouton reste désactivé tant que les codes ne sont
+pas connectés. Sans `?bundle=preview`, les clients ne voient que les offres
+dont le code est renseigné.
+
+Dans Shopify → **Réductions → Créer une réduction**, créez un code par offre :
+
+| Offre | Type Shopify | Réglages | Code (exemple) |
+| --- | --- | --- | --- |
+| **Duo** — 2ᵉ pièce −20 % | Achetez X, obtenez Y | le client achète **1** article (tous les produits), obtient **1** article à **20 %** | `DUO20` |
+| **Trio** — 3ᵉ pièce −30 % | Achetez X, obtenez Y | le client achète **2** articles, obtient **1** article à **30 %** | `TRIO30` |
+| **Meilleure offre** — −30 % sur la commande | Montant de réduction sur la commande | **30 %**, quantité minimale **2** articles | `BEST30` |
+| **T-shirt offert** | Achetez X, obtenez Y | montant minimum d'achat = le seuil (`threshold`), le client obtient **le T-shirt** à **100 %** ; cochez « peut se combiner avec les réductions sur commande » | `TEE` |
+
+Puis, dans **`app/config/promotions.ts`** → `bundles` :
+- `offers` : renseignez le `code` de chaque offre (`DUO20`, `TRIO30`, `BEST30`) ;
+- `gift.code` : le code du T-shirt (`TEE`) ;
+- `gift.productHandle` : la fin de l'adresse du T-shirt offert (ex. `mugshot-tshirt-white`) ;
+- `gift.threshold` : le montant (en €) à atteindre **après réduction** pour
+  débloquer le T-shirt — le même que dans Shopify. Le site affiche
+  « Only €5 left to unlock your free t-shirt » quand il manque 5 €.
+
+Vous pouvez aussi changer les pourcentages, les noms, les badges
+(« Popular », « Best offer ») et le nombre de pièces maximum. **Gardez les
+pourcentages identiques à ceux de Shopify.**
+
+Sécurités en place :
+- le code est choisi par le serveur selon l'offre — un client ne peut pas
+  s'attribuer une autre réduction ;
+- si le code du T-shirt n'est pas accepté par Shopify (code absent, seuil
+  plus atteint après le retrait d'une pièce…), le T-shirt est retiré du
+  panier : il n'est jamais facturé ;
+- les codes saisis par le client lui-même ne sont jamais retirés.
+
+Testez chaque offre avec une commande test avant de la mettre en avant.
 
 ## 2. Le pack — 3 pièces achetées = 1 offerte
 
@@ -45,16 +76,7 @@ Page `/pack` + une section sur l'accueil + un lien dans le footer.
 Les pièces sont classées automatiquement (haut / bas / longsleeve) d'après leur
 nom et leur type de produit dans Shopify.
 
-## 3. Offre par paliers — 2ᵉ pièce −20 %, 3ᵉ −30 %
-
-Une simple ligne de texte sous les prix. La réduction elle-même doit venir
-d'une application de remises par paliers installée dans Shopify.
-**Ne l'activez pas en même temps que « Prenez-en deux »** : les deux offres
-se contredisent.
-
-Dans `promotions.ts` → `tiers` : `enabled: true` (et ajustez `percents`).
-
-## 4. Pop-up de bienvenue — −15 % contre un numéro de téléphone
+## 3. Pop-up de bienvenue — −15 % contre un numéro de téléphone
 
 S'ouvre une fois par visiteur. Les numéros sont enregistrés dans Notion.
 
@@ -73,7 +95,7 @@ S'ouvre une fois par visiteur. Les numéros sont enregistrés dans Notion.
 
 Tant que les variables Notion ne sont pas sur Vercel, la pop-up reste cachée.
 
-## 5. Avis clients
+## 4. Avis clients
 
 Deux sources, toutes deux **réelles uniquement** :
 
@@ -94,7 +116,7 @@ e-mail. Il faut pour cela, sur Vercel :
 commerciale trompeuse (Code de la consommation, art. L121-4) : ne publiez que
 de vrais avis Hustle Studio.
 
-## 6. Vidéos « portées »
+## 5. Vidéos « portées »
 
 Carrousel de vidéos verticales sur chaque fiche produit.
 

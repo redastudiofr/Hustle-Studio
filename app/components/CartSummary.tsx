@@ -4,12 +4,6 @@ import {CartForm, type OptimisticCart} from '@shopify/hydrogen';
 import {useRef} from 'react';
 import {useI18n, useT} from '~/lib/i18n';
 import {BRAND} from '~/config/brand';
-import {
-  nextTier,
-  THIRD_ITEM_PERCENT,
-  TIER_ENABLED,
-  TIER_PERCENTS,
-} from '~/lib/tierDiscount';
 import {Price} from '~/components/Price';
 
 type CartSummaryProps = {
@@ -103,8 +97,9 @@ function OfferNote({
   currency: string;
 }) {
   const {t, locale} = useI18n();
-  if (!TIER_ENABLED) return null;
 
+  // What Shopify actually took off (bundle, pack or a typed code) — never an
+  // estimate.
   const discounted = (lines ?? []).reduce(
     (total, line) =>
       total +
@@ -114,33 +109,14 @@ function OfferNote({
       ),
     0,
   );
-
-  const items = (lines ?? []).reduce(
-    (total, line) => total + (line.quantity ?? 0),
-    0,
-  );
-  const next = nextTier(items);
+  if (discounted <= 0) return null;
 
   return (
-    <>
-      {discounted > 0 && (
-        <p className="cap-offer cap-offer--active">
-          {t('cart.tierSaved', {
-            amount: formatMoney(discounted, currency, locale),
-          })}
-        </p>
-      )}
-
-      {next ? (
-        <p className="cap-offer">
-          {t('cart.tierNext', {percent: next.percent})}
-        </p>
-      ) : items >= TIER_PERCENTS.length && discounted === 0 ? (
-        <p className="cap-offer">
-          {t('cart.tierMax', {percent: THIRD_ITEM_PERCENT})}
-        </p>
-      ) : null}
-    </>
+    <p className="cap-offer cap-offer--active">
+      {t('cart.tierSaved', {
+        amount: formatMoney(discounted, currency, locale),
+      })}
+    </p>
   );
 }
 
