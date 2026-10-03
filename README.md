@@ -30,7 +30,7 @@ Tout ce qui est propre à la marque est regroupé ici :
 | Promotions (bundle Duo / Trio / Meilleure offre + T-shirt offert, pack, pop-up) — invisibles tant qu'aucun code n'est saisi (aperçu : `?bundle=preview`) | `app/config/promotions.ts` → guide : [`docs/PROMOTIONS.md`](docs/PROMOTIONS.md) |
 | Fiche produit : tuiles, histoire, points forts, infos livraison/paiement, bandeau collections | `app/config/productPage.ts` |
 | Guides des tailles (mesures réelles du vêtement, en cm) | `app/config/sizeCharts.ts`, ou par produit dans Shopify (métachamp `custom.size_chart`) |
-| Avis clients (réels uniquement) | `app/data/reviews.ts` |
+| Avis clients (réels uniquement) | Shopify → Contenu → Métaobjets → « Review » (sans code), ou `app/data/reviews.ts` — guide : `docs/PROMOTIONS.md` §4 |
 | Vidéos « portées » des fiches produits | `app/config/videos.ts` + `public/videos/` |
 | Logo, favicon, icône, image de partage | `public/brand/` + `public/favicon*.{ico,png}` + `public/apple-touch-icon.png` |
 | Pages légales (`/legal/…`) : coordonnées de l'entreprise, délais de livraison, délai de retour | `app/config/legal.ts` (textes : `app/data/legal.ts` et `legal.fr.ts`) |

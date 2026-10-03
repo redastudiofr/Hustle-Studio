@@ -15,8 +15,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 - Promotions live in `app/config/promotions.ts` and stay invisible until a
   Shopify code is set (`isLive`). Bundle maths in `app/lib/bundles.ts`; the
   cart attaches bundle codes server-side and drops an unbacked gift line.
-  Reviews come only from `app/data/reviews.ts` (real ones) or review-app
-  metafields; videos only from `app/config/videos.ts`.
+  Reviews come only from Shopify `review` metaobjects + `app/data/reviews.ts`
+  (real ones, app/lib/reviews.ts) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
   The site runs in English only (`BRAND.languages`); legal pages keep a
   French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.

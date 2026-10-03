@@ -80,7 +80,10 @@ export type HomeSection =
       type: 'pack';
     }
   | {
-      /** Customer reviews (app/data/reviews.ts). Hidden while there are none. */
+      /**
+       * Real customer reviews (Shopify "Review" metaobjects + app/data/
+       * reviews.ts, see app/lib/reviews.ts). None yet: "Be the first to review".
+       */
       type: 'reviews';
     }
   | {
@@ -174,5 +177,6 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
     cta: {label: 'Discover the studio', to: '/about'},
   },
+  {type: 'reviews'},
   {type: 'faq'},
 ];

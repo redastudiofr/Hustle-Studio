@@ -2210,3 +2210,179 @@ h1,
     animation: none;
   }
 }
+
+/* ══ Reviews — "What our customers say" ═════════════════════════════════ */
+.reviews {
+  padding: 4.5rem 0 5rem;
+}
+
+.reviews__title {
+  font-family: var(--font-display);
+  font-stretch: 72%;
+  font-weight: 800;
+  font-size: clamp(2.2rem, 1.5rem + 3vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+/* Green tiles, the colour customers know from review sites. */
+.reviews .stars {
+  --color-star: #00b67a;
+}
+
+.reviews-row__item {
+  flex-basis: 86%;
+}
+
+@media (min-width: 48em) {
+  .reviews-row__item {
+    flex-basis: 46%;
+  }
+}
+
+@media (min-width: 64em) {
+  .reviews-row__item {
+    flex-basis: calc((100% - 2 * 0.6rem) / 3);
+  }
+}
+
+/* Every card the same height: long reviews are clamped to five lines. */
+.review-card {
+  min-height: 15rem;
+  border-radius: 0;
+  transition:
+    border-color 300ms var(--ease-editorial),
+    transform 400ms var(--ease-editorial);
+}
+
+.review-card:hover {
+  border-color: var(--color-ink);
+}
+
+.review-card__name {
+  font-size: 0.8rem;
+}
+
+.review-card__text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.review-card__text--clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+.review-card__more {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.review-card__meta {
+  font-size: 0.72rem;
+}
+
+/* Arrows at every width (round, on the card edges), not desktop only. */
+.reviews .rail-arrow {
+  display: flex;
+  width: 2.6rem;
+  height: 2.6rem;
+  background: var(--color-paper);
+  box-shadow: var(--shadow-md);
+  transition:
+    transform 250ms var(--ease-editorial),
+    box-shadow 250ms;
+}
+
+.reviews .rail-arrow:hover {
+  transform: translateY(-50%) scale(1.06);
+}
+
+.reviews .rail-arrow:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+/* No review yet: an invitation, never placeholder cards. */
+.reviews__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+  border: 1px solid var(--color-line);
+  text-align: center;
+  animation: pdp-rise 600ms var(--ease-editorial) both;
+}
+
+.reviews__empty-title {
+  font-family: var(--font-display);
+  font-stretch: 72%;
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.reviews__empty-text {
+  font-size: 0.88rem;
+  color: var(--color-muted);
+}
+
+.reviews__empty .btn,
+.reviews__cta .btn {
+  margin-top: 0.4rem;
+  text-transform: uppercase;
+}
+
+.reviews__empty {
+  margin-inline: var(--gutter);
+}
+
+@media (min-width: 30.5em) {
+  .reviews__empty {
+    margin-inline: auto;
+  }
+}
+
+/* Phones and tablets: arrows under the row, side by side, never over a
+   review's text. */
+@media (max-width: 63.99em) {
+  .reviews .rail-wrap {
+    padding-bottom: 3.6rem;
+  }
+
+  .reviews .rail-arrow {
+    top: auto;
+    bottom: 0;
+    transform: none;
+  }
+
+  .reviews .rail-arrow:hover {
+    transform: scale(1.06);
+  }
+
+  .reviews .rail-arrow--prev {
+    left: calc(50% - 3.1rem);
+  }
+
+  .reviews .rail-arrow--next {
+    right: calc(50% - 3.1rem);
+  }
+}

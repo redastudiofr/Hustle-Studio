@@ -1,13 +1,10 @@
-import {getAllReviews} from '~/data/reviews';
+import type {Review} from '~/data/reviews';
 import {ReviewsSection} from '~/components/ReviewsSection';
 import {useT} from '~/lib/i18n';
 
-export function HomeReviews() {
+/** Every real review on the homepage (app/lib/reviews.ts). */
+export function HomeReviews({reviews}: {reviews: Review[]}) {
   const t = useT();
-  // Every real review (app/data/reviews.ts), dealt across the rows by
-  // ReviewsSection. Nothing is shown while there are none.
-  const reviews = getAllReviews();
-  if (!reviews.length) return null;
   return (
     <ReviewsSection
       heading={t('reviews.title')}

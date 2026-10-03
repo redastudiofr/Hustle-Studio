@@ -209,7 +209,14 @@ function HomeSectionView({
       return <PackOffer pack={data.data} />;
 
     case 'reviews':
-      return <HomeReviews />;
+      if (data?.type !== 'reviews') return null;
+      return (
+        <Suspense fallback={null}>
+          <Await resolve={data.data} errorElement={null}>
+            {(reviews) => <HomeReviews reviews={reviews} />}
+          </Await>
+        </Suspense>
+      );
 
     case 'newsletter':
       return (

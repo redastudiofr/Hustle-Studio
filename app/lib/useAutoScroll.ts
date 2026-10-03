@@ -42,6 +42,9 @@ export function useAutoScroll<T extends HTMLElement>(
     let paused = false;
     let onScreen = true;
     let resumeTimer = 0;
+    // Fractions of a pixel, kept until they add up to a whole one: browsers
+    // round scrollLeft, and 0.3px a frame written straight would never move.
+    let carry = 0;
 
     const step = (time: number) => {
       frame = requestAnimationFrame(step);
@@ -58,7 +61,12 @@ export function useAutoScroll<T extends HTMLElement>(
       if (paused || !onScreen || document.hidden) return;
 
       const distance = (pixelsPerSecond * elapsed) / 1000;
-      node.scrollLeft += direction === 'right' ? -distance : distance;
+      carry += direction === 'right' ? -distance : distance;
+      const whole = Math.trunc(carry);
+      if (whole !== 0) {
+        node.scrollLeft += whole;
+        carry -= whole;
+      }
     };
 
     const pause = () => {
@@ -76,8 +84,12 @@ export function useAutoScroll<T extends HTMLElement>(
 
     const controller = new AbortController();
     const {signal} = controller;
+    // Listened on the rail's wrapper, so the arrows beside the rail count as
+    // a hand on it too: a drift frame would otherwise cancel the smooth
+    // scroll an arrow just started.
+    const zone = node.parentElement ?? node;
     const on = (type: string, handler: () => void) =>
-      node.addEventListener(type, handler, {passive: true, signal});
+      zone.addEventListener(type, handler, {passive: true, signal});
 
     // Any sign of a hand on it stops the drift; it picks up again a couple of
     // seconds after that hand leaves.

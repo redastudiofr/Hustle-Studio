@@ -6,6 +6,8 @@ import type {
 } from 'storefrontapi.generated';
 import {HOME_SECTIONS, type HomeSection, type ProductSort} from '~/config/home';
 import {withoutAutoCollections} from '~/lib/collections';
+import {loadReviews} from '~/lib/reviews';
+import type {Review} from '~/data/reviews';
 import {PACK_ENABLED} from '~/lib/packOffer';
 import {loadPack, type PackData} from '~/lib/packProducts';
 
@@ -37,6 +39,7 @@ export type FamilyTile = {
 export type HomeSectionData =
   | {type: 'products'; data: Promise<HomeProductsData>}
   | {type: 'family'; data: Promise<FamilyTile[]>}
+  | {type: 'reviews'; data: Promise<Review[]>}
   | {type: 'feature'; data: Promise<HomeFeatureData>}
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'pack'; data: Promise<PackData | null>}
@@ -84,6 +87,8 @@ export function loadHomeSections(
           .then(({collections}) => withoutAutoCollections(collections.nodes))
           .catch(logAndReturn([] as HomeCollectionFragment[]));
         return {type: 'collections', data: collections};
+      case 'reviews':
+        return {type: 'reviews', data: loadReviews(storefront)};
       case 'family':
         // Photos from the config win; until there are some, the shop's own
         // product photos stand in, so the section is never empty or fake.

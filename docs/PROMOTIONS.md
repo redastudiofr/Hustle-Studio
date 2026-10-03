@@ -95,22 +95,46 @@ S'ouvre une fois par visiteur. Les numéros sont enregistrés dans Notion.
 
 Tant que les variables Notion ne sont pas sur Vercel, la pop-up reste cachée.
 
-## 4. Avis clients
+## 4. Avis clients — « What our customers say »
 
-Deux sources, toutes deux **réelles uniquement** :
+La section avis s'affiche sur l'accueil (avant la FAQ) et sur chaque fiche
+produit. **Uniquement de vrais avis.** Tant qu'il n'y en a aucun, elle
+affiche « Be the first to review » avec un bouton vers le formulaire
+`/reviews` (sur une fiche produit, le produit est déjà rempli).
 
-- **Étoiles** sur les fiches et les cartes produits : installez une app
-  d'avis Shopify (« Shopify Product Reviews », Judge.me…). Les notes
-  apparaissent automatiquement sur le site, sans code.
-- **Carrousel d'avis** (accueil et fiches produits) : ajoutez les avis de vos
-  clients dans **`app/data/reviews.ts`**, mot pour mot et avec leur accord.
-  Tant que la liste est vide, le carrousel est masqué.
+**Ajouter un avis sans toucher au code (recommandé)** — une seule fois,
+créez la définition :
+1. Shopify → **Paramètres → Données personnalisées → Métaobjets →
+   Ajouter une définition**, nom « Review », type **`review`** ;
+2. champs (clé exacte entre parenthèses) :
+   - Nom (`name`) — texte sur une ligne, obligatoire — ex. « Lucas M. » ;
+   - Avis (`text`) — texte multiligne, obligatoire — mot pour mot ;
+   - Note (`rating`) — évaluation 1 à 5 (vide = 5) ;
+   - Date (`date`) — date ;
+   - Lieu (`location`) — texte sur une ligne — « Paris, France », seulement
+     si le client l'a donné ;
+   - Produit (`product`) — référence produit — vide = avis sur la boutique ;
+3. dans **Accès**, activez **Storefront** (accès en lecture) ;
+4. activez le statut actif/publication si proposé.
 
-Le formulaire **`/reviews`** (« laisser un avis ») envoie les avis reçus par
-e-mail. Il faut pour cela, sur Vercel :
+Ensuite, pour chaque avis reçu : **Contenu → Métaobjets → Review →
+Ajouter une entrée**, statut **Actif**. Il apparaît sur le site en quelques
+minutes, sans redéploiement. Un champ laissé vide (lieu, date) n'est
+simplement pas affiché — rien n'est inventé à sa place.
+
+Les avis de `app/data/reviews.ts` (s'il y en a) s'ajoutent à ceux de Shopify.
+
+**Étoiles sur les fiches et cartes produits** : installez une app d'avis
+Shopify (Judge.me, Shopify Product Reviews…) — les notes moyennes qu'elle
+publie apparaissent automatiquement.
+
+Le formulaire **`/reviews`** envoie les avis reçus par e-mail. Il faut pour
+cela, sur Vercel :
 - `RESEND_API_KEY` : clé d'un compte https://resend.com (gratuit), créé avec
   l'adresse qui doit recevoir les avis ;
 - `NOTIFICATION_EMAIL` : cette même adresse.
+Recopiez ensuite l'avis reçu dans une entrée « Review » (avec l'accord du
+client).
 
 ⚠️ Des avis inventés, ou repris d'une autre marque, constituent une pratique
 commerciale trompeuse (Code de la consommation, art. L121-4) : ne publiez que

@@ -703,6 +703,41 @@ export type HomeSortedProductsQuery = {
   };
 };
 
+export type ShopReviewsQueryVariables = StorefrontAPI.Exact<{
+  first: StorefrontAPI.Scalars['Int']['input'];
+  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
+  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
+}>;
+
+export type ShopReviewsQuery = {
+  metaobjects: {
+    nodes: Array<
+      Pick<StorefrontAPI.Metaobject, 'id'> & {
+        name?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        text?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        rating?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        date?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        location?: StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.MetaobjectField, 'value'>
+        >;
+        product?: StorefrontAPI.Maybe<{
+          reference?: StorefrontAPI.Maybe<
+            Pick<StorefrontAPI.Product, 'handle'>
+          >;
+        }>;
+      }
+    >;
+  };
+};
+
 export type SuggestedProductFragment = Pick<
   StorefrontAPI.Product,
   'id' | 'title' | 'handle' | 'availableForSale'
@@ -2214,6 +2249,10 @@ interface GeneratedQueryTypes {
   '#graphql\n  query HomeSortedProducts(\n    $first: Int\n    $after: String\n    $sortKey: ProductSortKeys\n    $reverse: Boolean\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first\n      after: $after\n      sortKey: $sortKey\n      reverse: $reverse\n    ) {\n      nodes {\n        ...HomeProduct\n      }\n      pageInfo {\n        hasNextPage\n        endCursor\n      }\n    }\n  }\n  #graphql\n  fragment HomeMoney on MoneyV2 {\n    amount\n    currencyCode\n  }\n  fragment HomeProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    rating: metafield(namespace: "reviews", key: "rating") {\n      value\n    }\n    ratingCount: metafield(namespace: "reviews", key: "rating_count") {\n      value\n    }\n    priceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    compareAtPriceRange {\n      minVariantPrice {\n        ...HomeMoney\n      }\n    }\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    options(first: 3) {\n      name\n      optionValues {\n        name\n        swatch {\n          color\n        }\n      }\n    }\n    images(first: 2) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n\n': {
     return: HomeSortedProductsQuery;
     variables: HomeSortedProductsQueryVariables;
+  };
+  '#graphql\n  query ShopReviews(\n    $first: Int!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    metaobjects(type: "review", first: $first, sortKey: "updated_at", reverse: true) {\n      nodes {\n        id\n        name: field(key: "name") {\n          value\n        }\n        text: field(key: "text") {\n          value\n        }\n        rating: field(key: "rating") {\n          value\n        }\n        date: field(key: "date") {\n          value\n        }\n        location: field(key: "location") {\n          value\n        }\n        product: field(key: "product") {\n          reference {\n            ... on Product {\n              handle\n            }\n          }\n        }\n      }\n    }\n  }\n': {
+    return: ShopReviewsQuery;
+    variables: ShopReviewsQueryVariables;
   };
   '#graphql\n  fragment SuggestedProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    variants(first: 12) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n      }\n    }\n  }\n  query CartSuggestions($country: CountryCode, $language: LanguageCode, $first: Int)\n    @inContext(country: $country, language: $language) {\n    products(first: $first, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        ...SuggestedProduct\n      }\n    }\n  }\n': {
     return: CartSuggestionsQuery;

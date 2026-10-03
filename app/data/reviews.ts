@@ -7,7 +7,10 @@
  * reusing another brand's, is a deceptive commercial practice under French
  * and EU law (Code de la consommation L121-4, Omnibus directive).
  *
- * While this list is empty, the review sections are simply not shown.
+ * Reviews can also be written in Shopify Admin (Content → Metaobjects →
+ * "Review", see app/lib/reviews.ts): those appear on the site by themselves,
+ * merged with this list. With no review at all, the sections show a
+ * "Be the first to review" invitation instead.
  *
  * Star ratings on product cards and in the buy box do NOT come from here:
  * they come from Shopify's review metafields, written by a review app
@@ -18,10 +21,10 @@ export interface Review {
   id: string;
   /** Name as the customer agreed to have it shown (e.g. "Lucas M."). */
   name: string;
-  city: string;
-  country: string;
-  /** Date the review was left, DD/MM/YYYY, printed as-is. */
-  date: string;
+  /** "City, Country" — only when the customer gave it. */
+  location?: string;
+  /** Date the review was left, as printed (e.g. "28 Sep 2026"). */
+  date?: string;
   /** 1 to 5. */
   rating: number;
   /** The review, in the customer's own words — never translated or edited. */
@@ -38,9 +41,8 @@ const REVIEWS: Review[] = [
   // {
   //   id: 'r01',
   //   name: 'Prénom N.',
-  //   city: 'Paris',
-  //   country: 'France',
-  //   date: '01/10/2026',
+  //   location: 'Paris, France',
+  //   date: '1 Oct 2026',
   //   rating: 5,
   //   text: 'Le texte exact de l’avis.',
   //   productHandle: 'hustle-zip-black',
@@ -50,12 +52,4 @@ const REVIEWS: Review[] = [
 /** Every review, for the homepage carousel. */
 export function getAllReviews(): Review[] {
   return REVIEWS;
-}
-
-/** Reviews for one product: its own first, then those about the shop. */
-export function getReviewsForProduct(handle: string): Review[] {
-  return [
-    ...REVIEWS.filter((review) => review.productHandle === handle),
-    ...REVIEWS.filter((review) => !review.productHandle),
-  ];
 }

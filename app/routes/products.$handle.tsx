@@ -32,6 +32,7 @@ import {RelatedProductsRail} from '~/components/RelatedProductsRail';
 import {SmartBundle} from '~/components/product/SmartBundle';
 import {ProductWornVideos} from '~/components/ProductWornVideos';
 import {ProductReviews} from '~/components/ProductReviews';
+import {loadReviews, reviewsForProduct} from '~/lib/reviews';
 import {parseRating} from '~/lib/rating';
 import {GIFT, offersFor} from '~/lib/bundles';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
@@ -214,7 +215,12 @@ function loadDeferredData(
       return [];
     });
 
-  return {recommended, bundle, pairsWith, bandCollections};
+  // Real reviews: this product's, then the shop's (app/lib/reviews.ts).
+  const reviews = loadReviews(context.storefront).then((all) =>
+    reviewsForProduct(all, handle),
+  );
+
+  return {recommended, bundle, pairsWith, bandCollections, reviews};
 }
 
 /** First sentence of the product description, for the short blurb in the buy box. */
@@ -227,8 +233,15 @@ function shortenDescription(description: string): string {
 }
 
 export default function Product() {
-  const {product, recommended, bundle, pairsWith, bandCollections, origin} =
-    useLoaderData<typeof loader>();
+  const {
+    product,
+    recommended,
+    bundle,
+    pairsWith,
+    bandCollections,
+    reviews,
+    origin,
+  } = useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -376,7 +389,11 @@ export default function Product() {
       </Suspense>
 
       <div className="pdp__reviews">
-        <ProductReviews productHandle={product.handle} productTitle={title} />
+        <Suspense fallback={null}>
+          <Await resolve={reviews} errorElement={null}>
+            {(items) => <ProductReviews reviews={items} productTitle={title} />}
+          </Await>
+        </Suspense>
       </div>
 
       <Suspense fallback={null}>

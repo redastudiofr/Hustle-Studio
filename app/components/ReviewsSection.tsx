@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {Link} from 'react-router';
 import type {Review} from '~/data/reviews';
 import {StarRating} from '~/components/StarRating';
@@ -15,8 +16,12 @@ import {useI18n, useT} from '~/lib/i18n';
  * it.
  */
 function ReviewCard({review}: {review: Review}) {
-  const {locale} = useI18n();
-  const [open, close] = locale === 'fr' ? ['« ', ' »'] : ['“', '”'];
+  const t = useT();
+  const [expanded, setExpanded] = useState(false);
+  // Long reviews are clamped so every card keeps the same height; the full
+  // text is one tap away.
+  const long = review.text.length > 220;
+  const meta = [review.location, review.date].filter(Boolean).join(' · ');
 
   return (
     <article className="review-card">
@@ -25,15 +30,23 @@ function ReviewCard({review}: {review: Review}) {
         <span className="review-card__name">{review.name}</span>
       </header>
 
-      <p className="review-card__text">
-        {open}
-        {review.text}
-        {close}
+      <p
+        className={`review-card__text ${long && !expanded ? 'review-card__text--clamped' : ''}`}
+      >
+        “{review.text}”
       </p>
+      {long && (
+        <button
+          type="button"
+          className="review-card__more"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? t('reviews.readLess') : t('reviews.readMore')}
+        </button>
+      )}
 
-      <p className="review-card__meta">
-        {review.city}, {review.country} · {review.date}
-      </p>
+      {meta && <p className="review-card__meta">{meta}</p>}
     </article>
   );
 }
@@ -124,11 +137,11 @@ export function ReviewsSection({
 }: {
   heading: string;
   subheading?: string;
+  /** Real reviews only; an empty list shows the "be the first" invitation. */
   reviews: Review[];
   productTitle?: string;
 }) {
   const t = useT();
-  if (!reviews.length) return null;
 
   const writeReviewHref = productTitle
     ? `/reviews?product=${encodeURIComponent(productTitle)}`
@@ -141,16 +154,30 @@ export function ReviewsSection({
         {subheading ? <p className="reviews__subtitle">{subheading}</p> : null}
       </div>
 
-      <div className="reviews__rows">
-        <ReviewRow reviews={reviews} direction={ROW_DIRECTION} />
-      </div>
+      {reviews.length ? (
+        <>
+          <div className="reviews__rows">
+            <ReviewRow reviews={reviews} direction={ROW_DIRECTION} />
+          </div>
 
-      <div className="reviews__cta">
-        <p>{t('reviews.ctaText')}</p>
-        <Link to={writeReviewHref} className="btn btn--outline">
-          {t('reviews.ctaButton')}
-        </Link>
-      </div>
+          <div className="reviews__cta">
+            <p>{t('reviews.ctaText')}</p>
+            <Link to={writeReviewHref} className="btn btn--outline">
+              {t('reviews.ctaButton')}
+            </Link>
+          </div>
+        </>
+      ) : (
+        // No real review yet: an invitation, never placeholder cards.
+        <div className="reviews__empty">
+          <StarRating rating={0} className="review-card__stars" size={18} />
+          <p className="reviews__empty-title">{t('reviews.empty')}</p>
+          <p className="reviews__empty-text">{t('reviews.emptyText')}</p>
+          <Link to={writeReviewHref} className="btn btn--outline">
+            {t('reviews.ctaButton')}
+          </Link>
+        </div>
+      )}
     </section>
   );
 }
