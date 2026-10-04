@@ -22,6 +22,7 @@ export function ProductReviews({
       reviews={reviews}
       productTitle={productTitle}
       format="line"
+      quotes
     />
   );
 }
