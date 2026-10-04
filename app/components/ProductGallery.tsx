@@ -30,6 +30,10 @@ type GalleryImage = {
  * therefore progressive by construction and follows the finger exactly —
  * mid-swipe, both images sit between the two sizes.
  *
+ * Desktop (editorial.css) lays the same slides out as a two-column grid
+ * instead — every image visible, no slider; with an odd count the first
+ * image spans both columns so the grid never ends on a hole.
+ *
  * The image list is rendered once; nothing is duplicated or downloaded twice.
  * Each slide is a fixed-aspect box with `object-fit: contain`, so the space is
  * reserved before the image loads and no source ratio is stretched or cropped.
@@ -132,7 +136,9 @@ export function ProductGallery({
 
   return (
     <div
-      className={`gallery ${multiple ? 'gallery--multiple' : 'gallery--single'}`}
+      className={`gallery ${multiple ? 'gallery--multiple' : 'gallery--single'}${
+        images.length % 2 ? ' gallery--odd' : ''
+      }`}
       aria-roledescription={multiple ? t('gallery.carousel') : undefined}
       aria-label={multiple ? `${t('gallery.label')} — ${title}` : undefined}
     >

@@ -2386,3 +2386,61 @@ h1,
     right: calc(50% - 3.1rem);
   }
 }
+
+/*
+* Product gallery — desktop: a two-column grid of every image (tablet and
+* mobile keep the swipe slider of app.css). The same slides, re-laid out:
+* no thumbnails, no dots, no scaled neighbours. Each cell is a 4:5 box with
+* `contain`, so no image is cropped or stretched whatever its ratio. With an
+* odd number of images the first one spans both columns, so the grid never
+* ends on an empty cell.
+*/
+@media (min-width: 64em) {
+  .pdp__gallery .gallery {
+    display: block;
+    background: none;
+  }
+
+  .pdp__gallery .gallery__thumbs,
+  .pdp__gallery .gallery__dots {
+    display: none;
+  }
+
+  .pdp__gallery .gallery__track {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    overflow: visible;
+    scroll-snap-type: none;
+    cursor: auto;
+  }
+
+  .pdp__gallery .gallery--single .gallery__track {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pdp__gallery .gallery--multiple .gallery__track::before,
+  .pdp__gallery .gallery--multiple .gallery__track::after {
+    content: none;
+  }
+
+  .pdp__gallery .gallery__slide {
+    aspect-ratio: 4 / 5;
+    background: var(--color-tile);
+    overflow: hidden;
+  }
+
+  .pdp__gallery .gallery--odd .gallery__slide:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .pdp__gallery .gallery--multiple .gallery__slide-inner {
+    transform: none;
+    opacity: 1;
+    will-change: auto;
+  }
+
+  .pdp__gallery .gallery__slide img {
+    padding: 0;
+  }
+}
