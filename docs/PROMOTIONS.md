@@ -20,11 +20,10 @@ offre, compose son lot (produit + taille pour chaque pièce) et voit le prix
 total, la réduction et l'économie en temps réel. Le bouton ajoute toutes les
 pièces au panier et y attache le code de l'offre (côté serveur).
 
-**Aperçu avant de créer les codes :** ajoutez `?bundle=preview` à l'adresse
-d'une fiche produit (ex. `https://hustlestudio.store/products/…?bundle=preview`).
-Le bloc s'affiche, mais le bouton reste désactivé tant que les codes ne sont
-pas connectés. Sans `?bundle=preview`, les clients ne voient que les offres
-dont le code est renseigné.
+**Avant de créer les codes :** le bloc s'affiche déjà sur toutes les fiches
+produit, mais une offre sans code est marquée « Coming soon » et son bouton
+reste désactivé (aucun prix promis que Shopify ne facturerait pas). Pour
+masquer tout le bloc, passez `enabled: false`.
 
 Dans Shopify → **Réductions → Créer une réduction**, créez un code par offre :
 

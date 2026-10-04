@@ -33,7 +33,7 @@ export const LIVE_OFFERS: BundleOffer[] = config.offers.filter(
   (offer) => config.enabled && isLive({enabled: true, code: offer.code}),
 );
 
-/** Every offer, live or not — what ?bundle=preview shows the shop owner. */
+/** Every offer, live or not — those without a code show as "coming soon". */
 export const ALL_OFFERS: BundleOffer[] = config.offers;
 
 export function offersFor(preview: boolean): BundleOffer[] {

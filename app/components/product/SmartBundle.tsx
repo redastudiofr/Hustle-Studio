@@ -46,7 +46,7 @@ const variantLabel = (variant: Variant) =>
  * Prices are real Shopify variant prices; the reductions follow the
  * matching Shopify discounts (app/lib/bundles.ts). Adding sends the pieces
  * through the cart's bundle action, which attaches the offer's code on the
- * server. In preview (?bundle=preview, offers without a code yet) the box
+ * server. An offer without its code yet shows as "coming soon": the box
  * shows everything but cannot add: it never promises a price Shopify would
  * not charge.
  */
@@ -209,7 +209,7 @@ export function SmartBundle({
       </h2>
       <span className="bundle__rule" aria-hidden="true" />
 
-      {data.preview && (
+      {!live && (
         <p className="bundle__preview" role="note">
           {t('bundle.previewNote')}
         </p>

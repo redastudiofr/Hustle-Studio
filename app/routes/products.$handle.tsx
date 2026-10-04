@@ -34,7 +34,7 @@ import {ProductWornVideos} from '~/components/ProductWornVideos';
 import {ProductReviews} from '~/components/ProductReviews';
 import {loadReviews, reviewsForProduct} from '~/lib/reviews';
 import {parseRating} from '~/lib/rating';
-import {GIFT, offersFor} from '~/lib/bundles';
+import {GIFT, isOfferLive, offersFor} from '~/lib/bundles';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductFaq} from '~/data/faq';
 import {useT} from '~/lib/i18n';
@@ -140,11 +140,12 @@ function loadDeferredData(
 
   /*
    * Bundle box: this product, the pieces offered alongside it and the free
-   * T-shirt, with their sizes — real catalogue products and variants. Only
-   * fetched when an offer is live, or in preview (?bundle=preview).
+   * T-shirt, with their sizes — real catalogue products and variants. Shown
+   * on every product page while bundles are enabled; an offer without its
+   * Shopify code yet shows as "coming soon" and cannot be added.
    */
-  const preview = new URL(request.url).searchParams.get('bundle') === 'preview';
-  const bundleOffers = offersFor(preview);
+  const bundleOffers = offersFor(true);
+  const preview = bundleOffers.some((offer) => !isOfferLive(offer));
   const giftHandle = GIFT.productHandle.trim();
   const bundle = bundleOffers.length
     ? context.storefront
