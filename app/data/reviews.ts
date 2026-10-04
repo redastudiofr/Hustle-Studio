@@ -12,6 +12,12 @@
  * merged with this list. With no review at all, the sections show a
  * "Be the first to review" invitation instead.
  *
+ * On product pages each review reads:
+ *   ★★★★★
+ *   Name — City, Country — Date   (bold)
+ *   « The review »
+ * built from `rating`, `name`, `location`, `date` and `text` below.
+ *
  * Star ratings on product cards and in the buy box do NOT come from here:
  * they come from Shopify's review metafields, written by a review app
  * (Shopify Product Reviews, Judge.me…) — see app/lib/rating.ts.

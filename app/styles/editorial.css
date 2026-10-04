@@ -2296,3 +2296,23 @@ h1,
     padding: 0;
   }
 }
+
+/*
+* Review card, product-page layout (ReviewsSection format="line"):
+* ★★★★★ / Name — City, Country — Date in bold / « the review ».
+*/
+.review-card--line {
+  gap: 0.7rem;
+}
+
+.review-card__identity {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.review-card--line .review-card__text {
+  color: #3a3a38;
+}

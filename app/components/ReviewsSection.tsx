@@ -10,18 +10,64 @@ import {useCenterFocus} from '~/lib/useCenterFocus';
 import {useI18n, useT} from '~/lib/i18n';
 
 /**
+ * How a review card is laid out:
+ * - 'card' (homepage): stars and name on one line, the review, then where
+ *   and when;
+ * - 'line' (product pages): ★★★★★, then "Name — City, Country — Date" in
+ *   bold, then « the review ».
+ */
+export type ReviewFormat = 'card' | 'line';
+
+/**
  * One review: the stars and the customer's name on the same line, then the
  * review in the words it was written in, then where and when it was left.
  * No avatar, no badge — what the customer said, and nothing invented around
  * it.
  */
-function ReviewCard({review}: {review: Review}) {
+function ReviewCard({
+  review,
+  format = 'card',
+}: {
+  review: Review;
+  format?: ReviewFormat;
+}) {
   const t = useT();
   const [expanded, setExpanded] = useState(false);
   // Long reviews are clamped so every card keeps the same height; the full
   // text is one tap away.
   const long = review.text.length > 220;
   const meta = [review.location, review.date].filter(Boolean).join(' · ');
+
+  const moreButton = long && (
+    <button
+      type="button"
+      className="review-card__more"
+      aria-expanded={expanded}
+      onClick={() => setExpanded((value) => !value)}
+    >
+      {expanded ? t('reviews.readLess') : t('reviews.readMore')}
+    </button>
+  );
+
+  if (format === 'line') {
+    // ★★★★★ / Name — City, Country — Date (bold) / « Review ». Only the
+    // details the review actually has are joined; nothing is filled in.
+    const identity = [review.name, review.location, review.date]
+      .filter(Boolean)
+      .join(' — ');
+    return (
+      <article className="review-card review-card--line">
+        <StarRating rating={review.rating} className="review-card__stars" />
+        <p className="review-card__identity">{identity}</p>
+        <p
+          className={`review-card__text ${long && !expanded ? 'review-card__text--clamped' : ''}`}
+        >
+          « {review.text} »
+        </p>
+        {moreButton}
+      </article>
+    );
+  }
 
   return (
     <article className="review-card">
@@ -35,16 +81,7 @@ function ReviewCard({review}: {review: Review}) {
       >
         “{review.text}”
       </p>
-      {long && (
-        <button
-          type="button"
-          className="review-card__more"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((value) => !value)}
-        >
-          {expanded ? t('reviews.readLess') : t('reviews.readMore')}
-        </button>
-      )}
+      {moreButton}
 
       {meta && <p className="review-card__meta">{meta}</p>}
     </article>
@@ -72,9 +109,11 @@ function ReviewCard({review}: {review: Review}) {
 function ReviewRow({
   reviews,
   direction,
+  format,
 }: {
   reviews: Review[];
   direction: 'left' | 'right';
+  format?: ReviewFormat;
 }) {
   const t = useT();
   const {ref, scrollByCard} = useHorizontalRail<HTMLDivElement>({loop: true});
@@ -95,7 +134,7 @@ function ReviewRow({
               key={`${copy}-${review.id}`}
               aria-hidden={copy === 0 ? undefined : true}
             >
-              <ReviewCard review={review} />
+              <ReviewCard review={review} format={format} />
             </div>
           )),
         )}
@@ -134,12 +173,15 @@ export function ReviewsSection({
   // arrive with the product already filled in — see ProductReviews.tsx. Left
   // unset on the homepage, where there's no single product to attach it to.
   productTitle,
+  format,
 }: {
   heading: string;
   subheading?: string;
   /** Real reviews only; an empty list shows the "be the first" invitation. */
   reviews: Review[];
   productTitle?: string;
+  /** Card layout — see ReviewFormat. */
+  format?: ReviewFormat;
 }) {
   const t = useT();
 
@@ -157,7 +199,11 @@ export function ReviewsSection({
       {reviews.length ? (
         <>
           <div className="reviews__rows">
-            <ReviewRow reviews={reviews} direction={ROW_DIRECTION} />
+            <ReviewRow
+              reviews={reviews}
+              direction={ROW_DIRECTION}
+              format={format}
+            />
           </div>
 
           <div className="reviews__cta">

@@ -21,6 +21,7 @@ export function ProductReviews({
       subheading={t('reviews.subtitle')}
       reviews={reviews}
       productTitle={productTitle}
+      format="line"
     />
   );
 }
