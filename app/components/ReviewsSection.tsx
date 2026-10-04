@@ -73,7 +73,9 @@ function ReviewCard({
     <article className="review-card">
       <header className="review-card__head">
         <StarRating rating={review.rating} className="review-card__stars" />
-        <span className="review-card__name">{review.name}</span>
+        {review.name ? (
+          <span className="review-card__name">{review.name}</span>
+        ) : null}
       </header>
 
       <p

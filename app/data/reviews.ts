@@ -25,8 +25,12 @@
 export interface Review {
   /** Stable identifier, used as the React key. */
   id: string;
-  /** Name as the customer agreed to have it shown (e.g. "Lucas M."). */
-  name: string;
+  /**
+   * Name as the customer agreed to have it shown (e.g. "Lucas M."). Leave it
+   * out when the customer gave none: the card then shows no name, never an
+   * invented one.
+   */
+  name?: string;
   /** "City, Country" — only when the customer gave it. */
   location?: string;
   /** Date the review was left, as printed (e.g. "28 Sep 2026"). */
@@ -43,6 +47,26 @@ export interface Review {
 }
 
 const REVIEWS: Review[] = [
+  {
+    id: 'r01',
+    rating: 5,
+    text: 'J’ai commandé et j’ai reçu rapidement, je recommande.',
+  },
+  {
+    id: 'r02',
+    rating: 5,
+    text: 'Une qualité de fou, franchement je recommande.',
+  },
+  {
+    id: 'r03',
+    rating: 5,
+    text: 'Je suis déjà à ma seconde commande, je compte continuer à m’habiller là-bas.',
+  },
+  {
+    id: 'r04',
+    rating: 5,
+    text: 'Incroyable en termes de qualité-prix.',
+  },
   // Example of the expected shape — replace with real reviews:
   // {
   //   id: 'r01',
