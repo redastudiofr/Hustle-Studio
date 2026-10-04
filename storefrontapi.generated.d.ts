@@ -1843,75 +1843,6 @@ export type PdpBundleQuery = {
   >;
 };
 
-export type PairProductFragment = Pick<
-  StorefrontAPI.Product,
-  'id' | 'title' | 'handle' | 'availableForSale'
-> & {
-  priceRange: {
-    minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
-  };
-  images: {
-    nodes: Array<
-      Pick<StorefrontAPI.Image, 'id' | 'url' | 'altText' | 'width' | 'height'>
-    >;
-  };
-};
-
-export type PdpPairsWithQueryVariables = StorefrontAPI.Exact<{
-  productId: StorefrontAPI.Scalars['ID']['input'];
-  country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
-  language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
-}>;
-
-export type PdpPairsWithQuery = {
-  complementary?: StorefrontAPI.Maybe<
-    Array<
-      Pick<
-        StorefrontAPI.Product,
-        'id' | 'title' | 'handle' | 'availableForSale'
-      > & {
-        priceRange: {
-          minVariantPrice: Pick<
-            StorefrontAPI.MoneyV2,
-            'amount' | 'currencyCode'
-          >;
-        };
-        images: {
-          nodes: Array<
-            Pick<
-              StorefrontAPI.Image,
-              'id' | 'url' | 'altText' | 'width' | 'height'
-            >
-          >;
-        };
-      }
-    >
-  >;
-  related?: StorefrontAPI.Maybe<
-    Array<
-      Pick<
-        StorefrontAPI.Product,
-        'id' | 'title' | 'handle' | 'availableForSale'
-      > & {
-        priceRange: {
-          minVariantPrice: Pick<
-            StorefrontAPI.MoneyV2,
-            'amount' | 'currencyCode'
-          >;
-        };
-        images: {
-          nodes: Array<
-            Pick<
-              StorefrontAPI.Image,
-              'id' | 'url' | 'altText' | 'width' | 'height'
-            >
-          >;
-        };
-      }
-    >
-  >;
-};
-
 export type BandCollectionFragment = Pick<
   StorefrontAPI.Collection,
   'id' | 'title' | 'handle'
@@ -2305,10 +2236,6 @@ interface GeneratedQueryTypes {
   '#graphql\n  fragment BundleProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    featuredImage {\n      id\n      url\n      altText\n      width\n      height\n    }\n    variants(first: 30) {\n      nodes {\n        id\n        title\n        availableForSale\n        price {\n          amount\n          currencyCode\n        }\n        selectedOptions {\n          name\n          value\n        }\n      }\n    }\n  }\n  query PdpBundle(\n    $handle: String!\n    $first: Int\n    $giftHandle: String!\n    $withGift: Boolean!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    current: product(handle: $handle) {\n      ...BundleProduct\n    }\n    products(first: $first, sortKey: BEST_SELLING) {\n      nodes {\n        ...BundleProduct\n      }\n    }\n    gift: product(handle: $giftHandle) @include(if: $withGift) {\n      ...BundleProduct\n    }\n  }\n': {
     return: PdpBundleQuery;
     variables: PdpBundleQueryVariables;
-  };
-  '#graphql\n  fragment PairProduct on Product {\n    id\n    title\n    handle\n    availableForSale\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    images(first: 6) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n  }\n  query PdpPairsWith(\n    $productId: ID!\n    $country: CountryCode\n    $language: LanguageCode\n  ) @inContext(country: $country, language: $language) {\n    complementary: productRecommendations(\n      productId: $productId\n      intent: COMPLEMENTARY\n    ) {\n      ...PairProduct\n    }\n    related: productRecommendations(productId: $productId, intent: RELATED) {\n      ...PairProduct\n    }\n  }\n': {
-    return: PdpPairsWithQuery;
-    variables: PdpPairsWithQueryVariables;
   };
   '#graphql\n  fragment BandCollection on Collection {\n    id\n    title\n    handle\n    image {\n      id\n      url\n      altText\n      width\n      height\n    }\n  }\n  query PdpBandCollections($country: CountryCode, $language: LanguageCode)\n  @inContext(country: $country, language: $language) {\n    collections(first: 30, sortKey: UPDATED_AT, reverse: true) {\n      nodes {\n        ...BandCollection\n      }\n    }\n  }\n': {
     return: PdpBandCollectionsQuery;

@@ -18,7 +18,6 @@ import {ProductGallery} from '~/components/ProductGallery';
 import {ProductPurchase} from '~/components/ProductPurchase';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
 import {Accordion} from '~/components/Accordion';
-import {PairsWithCard} from '~/components/product/PairsWithCard';
 import {
   ProductHighlights,
   ProductStoryBlock,
@@ -179,21 +178,6 @@ function loadDeferredData(
         })
     : Promise.resolve(null);
 
-  // "Made to go with": the complementary piece set in Shopify Search &
-  // Discovery, else the closest related product.
-  const pairsWith = context.storefront
-    .query(PAIRS_WITH_QUERY, {variables: {productId}})
-    .then(
-      (data) =>
-        [...(data?.complementary ?? []), ...(data?.related ?? [])].find(
-          (item) => item.handle !== handle && item.availableForSale,
-        ) ?? null,
-    )
-    .catch((error: Error) => {
-      console.error(error);
-      return null;
-    });
-
   // Collections band closing the page.
   const bandCollections = context.storefront
     .query(BAND_COLLECTIONS_QUERY, {cache: context.storefront.CacheLong()})
@@ -221,7 +205,7 @@ function loadDeferredData(
     reviewsForProduct(all, handle),
   );
 
-  return {recommended, bundle, pairsWith, bandCollections, reviews};
+  return {recommended, bundle, bandCollections, reviews};
 }
 
 /** First sentence of the product description, for the short blurb in the buy box. */
@@ -234,15 +218,8 @@ function shortenDescription(description: string): string {
 }
 
 export default function Product() {
-  const {
-    product,
-    recommended,
-    bundle,
-    pairsWith,
-    bandCollections,
-    reviews,
-    origin,
-  } = useLoaderData<typeof loader>();
+  const {product, recommended, bundle, bandCollections, reviews, origin} =
+    useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -316,12 +293,6 @@ export default function Product() {
                   />
                 ) : null
               }
-            </Await>
-          </Suspense>
-
-          <Suspense fallback={null}>
-            <Await resolve={pairsWith} errorElement={null}>
-              {(pair) => (pair ? <PairsWithCard product={pair} /> : null)}
             </Await>
           </Suspense>
 
@@ -734,45 +705,6 @@ const BUNDLE_QUERY = `#graphql
     }
     gift: product(handle: $giftHandle) @include(if: $withGift) {
       ...BundleProduct
-    }
-  }
-` as const;
-
-const PAIRS_WITH_QUERY = `#graphql
-  fragment PairProduct on Product {
-    id
-    title
-    handle
-    availableForSale
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    images(first: 6) {
-      nodes {
-        id
-        url
-        altText
-        width
-        height
-      }
-    }
-  }
-  query PdpPairsWith(
-    $productId: ID!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    complementary: productRecommendations(
-      productId: $productId
-      intent: COMPLEMENTARY
-    ) {
-      ...PairProduct
-    }
-    related: productRecommendations(productId: $productId, intent: RELATED) {
-      ...PairProduct
     }
   }
 ` as const;
