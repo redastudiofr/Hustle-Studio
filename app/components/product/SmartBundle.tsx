@@ -4,6 +4,7 @@ import type {OptimisticCartLineInput} from '@shopify/hydrogen';
 import type {MoneyV2} from '@shopify/hydrogen/storefront-api-types';
 import type {BundleProductFragment} from 'storefrontapi.generated';
 import {AddToCartButton} from '~/components/AddToCartButton';
+import {BuyNowButton} from '~/components/BuyNowButton';
 import {useAside} from '~/components/Aside';
 import {Price} from '~/components/Price';
 import {
@@ -148,9 +149,26 @@ export function SmartBundle({
 
   const pricesFor = (n: number) =>
     Array.from({length: n}, (_, i) => priceOf(shown[i] ?? defaultSlot(i)));
-  const current = quote(offer, pricesFor(count));
+  /*
+   * An offer without its Shopify code cannot be discounted at checkout, so
+   * it is priced — and sold — at full price: no strike-through, no saving,
+   * no gift promise. Only a live offer shows its reduction.
+   */
+  const priced = (candidate: BundleOffer, prices: number[]) => {
+    const q = quote(candidate, prices);
+    return isOfferLive(candidate)
+      ? q
+      : {
+          ...q,
+          total: q.full,
+          saving: 0,
+          percentSaved: 0,
+          discountedIndex: null,
+        };
+  };
+  const current = priced(offer, pricesFor(count));
 
-  const giftOffer = offer.gift && (GIFT_LIVE || data.preview);
+  const giftOffer = offer.gift && GIFT_LIVE;
   const progress = giftOffer ? giftProgress(current.total) : null;
   const giftUnlocked = Boolean(progress?.unlocked);
   const giftVariant = data.gift?.variants.nodes.find(
@@ -223,7 +241,8 @@ export function SmartBundle({
         {offers.map((candidate) => {
           const selected = candidate.id === offer.id;
           const n = selected ? count : Math.max(candidate.items, 1);
-          const q = quote(candidate, pricesFor(n));
+          const q = priced(candidate, pricesFor(n));
+          const candidateLive = isOfferLive(candidate);
           return (
             <div
               key={candidate.id}
@@ -251,14 +270,18 @@ export function SmartBundle({
                 <span className="bundle-offer__radio" aria-hidden="true" />
                 <span className="bundle-offer__names">
                   <strong>{candidate.name}</strong>
-                  <span>{candidate.rule}</span>
+                  <span>
+                    {candidateLive ? candidate.rule : t('bundle.soonRule')}
+                  </span>
                 </span>
                 <span className="bundle-offer__prices">
                   <strong>{money(q.total)}</strong>
                   {q.saving > 0 && <s>{money(q.full)}</s>}
-                  <span className="bundle-offer__percent">
-                    −{q.percentSaved}%
-                  </span>
+                  {q.saving > 0 && (
+                    <span className="bundle-offer__percent">
+                      −{q.percentSaved}%
+                    </span>
+                  )}
                 </span>
               </button>
 
@@ -267,6 +290,7 @@ export function SmartBundle({
                   {selected && (
                     <OfferBody
                       offer={candidate}
+                      live={candidateLive}
                       shown={shown}
                       quoteIndex={q.discountedIndex}
                       products={products}
@@ -365,28 +389,38 @@ export function SmartBundle({
         )}
       </div>
 
-      <AddToCartButton
-        className="btn btn--full bundle__cta"
-        lines={lines}
-        bundle={{offer: offer.id, gift: giftUnlocked && GIFT_LIVE}}
-        disabled={!live || !allAvailable}
-        onClick={() => openAside('cart')}
-      >
-        {!live
-          ? t('bundle.previewCta')
-          : giftUnlocked && GIFT_LIVE
+      {!live ? (
+        // No code yet: the pieces go straight to checkout, at full price.
+        <BuyNowButton
+          className="btn btn--full bundle__cta"
+          lines={lines}
+          disabled={!allAvailable}
+        >
+          {t('bundle.buyNow', {count: shown.length})}
+        </BuyNowButton>
+      ) : (
+        <AddToCartButton
+          className="btn btn--full bundle__cta"
+          lines={lines}
+          bundle={{offer: offer.id, gift: giftUnlocked && GIFT_LIVE}}
+          disabled={!allAvailable}
+          onClick={() => openAside('cart')}
+        >
+          {giftUnlocked && GIFT_LIVE
             ? t('bundle.addWithGift', {
                 offer: offer.name,
                 gift: GIFT.label.toLowerCase(),
               })
             : t('bundle.add', {offer: offer.name, count: shown.length})}
-      </AddToCartButton>
+        </AddToCartButton>
+      )}
     </section>
   );
 }
 
 function OfferBody({
   offer,
+  live,
   shown,
   quoteIndex,
   products,
@@ -398,6 +432,7 @@ function OfferBody({
   priceOf,
 }: {
   offer: BundleOffer;
+  live: boolean;
   shown: Slot[];
   quoteIndex: number | null;
   products: BundleProductFragment[];
@@ -419,7 +454,7 @@ function OfferBody({
           if (!product) return null;
           const price = priceOf(slot);
           const discounted =
-            offer.appliesTo === 'order' || index === quoteIndex;
+            live && (offer.appliesTo === 'order' || index === quoteIndex);
           return (
             // eslint-disable-next-line react/no-array-index-key -- slots are positional
             <li key={index} className="bundle-slot">

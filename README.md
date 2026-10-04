@@ -27,7 +27,7 @@ Tout ce qui est propre à la marque est regroupé ici :
 | Sections de la page d'accueil (ordre, textes, images, photos « Family », bloc « About us ») | `app/config/home.ts` |
 | Langues du site (anglais seul par défaut ; les pages légales gardent leur version française) | `app/config/brand.ts` → `languages` |
 | Menu, ordre des collections, liens du footer | `app/config/navigation.ts` |
-| Promotions (bundle Duo / Trio / Meilleure offre + T-shirt offert, pack, pop-up) — bundle visible en « Coming soon » tant que ses codes ne sont pas saisis ; pack et pop-up invisibles sans code | `app/config/promotions.ts` → guide : [`docs/PROMOTIONS.md`](docs/PROMOTIONS.md) |
+| Promotions (bundle Duo / Trio / Meilleure offre + T-shirt offert, pack, pop-up) — bundle vendu au prix normal (achat direct) tant que ses codes ne sont pas saisis ; pack et pop-up invisibles sans code | `app/config/promotions.ts` → guide : [`docs/PROMOTIONS.md`](docs/PROMOTIONS.md) |
 | Fiche produit : tuiles, histoire, points forts, infos livraison/paiement, bandeau collections | `app/config/productPage.ts` |
 | Guides des tailles (mesures réelles du vêtement, en cm) | `app/config/sizeCharts.ts`, ou par produit dans Shopify (métachamp `custom.size_chart`) |
 | Avis clients (réels uniquement) | Shopify → Contenu → Métaobjets → « Review » (sans code), ou `app/data/reviews.ts` — guide : `docs/PROMOTIONS.md` §4 |

@@ -20,7 +20,9 @@ export function BuyNowButton({
   disabled,
   lines,
   children,
+  className = 'btn btn--full',
 }: {
+  className?: string;
   disabled?: boolean;
   lines: Array<OptimisticCartLineInput>;
   children: React.ReactNode;
@@ -37,7 +39,7 @@ export function BuyNowButton({
       />
       {/* Tells the cart action to answer with a redirect to checkout. */}
       <input type="hidden" name="checkoutAfterAdd" value="true" />
-      <button type="submit" className="btn btn--full" disabled={disabled}>
+      <button type="submit" className={className} disabled={disabled}>
         {children}
       </button>
     </Form>

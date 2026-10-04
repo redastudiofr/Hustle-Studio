@@ -21,8 +21,9 @@ total, la réduction et l'économie en temps réel. Le bouton ajoute toutes les
 pièces au panier et y attache le code de l'offre (côté serveur).
 
 **Avant de créer les codes :** le bloc s'affiche déjà sur toutes les fiches
-produit, mais une offre sans code est marquée « Coming soon » et son bouton
-reste désactivé (aucun prix promis que Shopify ne facturerait pas). Pour
+produit, mais une offre sans code est vendue au prix normal : aucune remise
+affichée (« discount coming soon »), et le bouton « Buy now » envoie les
+pièces directement au paiement Shopify, au plein tarif. Pour
 masquer tout le bloc, passez `enabled: false`.
 
 Dans Shopify → **Réductions → Créer une réduction**, créez un code par offre :

@@ -19,7 +19,8 @@ export const PROMOTIONS = {
    * and picks one of three offers (app/components/product/SmartBundle.tsx).
    *
    * Each offer goes live once its `code` is filled in (and `enabled` is
-   * true). Until then it shows as "coming soon" with its button disabled
+   * true). Until then it sells the set at full price ("discount coming soon",
+   * "Buy now" straight to checkout)
    * (set `enabled: false` to hide the whole box). In Shopify Admin → Discounts, create for each code
    * (step by step in docs/PROMOTIONS.md):
    *   duo  — Buy X get Y: buys 1 item, gets 1 item at `percent`% off
