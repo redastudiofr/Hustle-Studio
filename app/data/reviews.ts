@@ -25,8 +25,12 @@
 export interface Review {
   /** Stable identifier, used as the React key. */
   id: string;
-  /** Name as the customer agreed to have it shown (e.g. "Lucas M."). */
-  name: string;
+  /**
+   * Name as the customer agreed to have it shown (e.g. "Lucas M."). Leave it
+   * out when the customer gave none: the card then shows no name, never an
+   * invented one.
+   */
+  name?: string;
   /** "City, Country" — only when the customer gave it. */
   location?: string;
   /** Date the review was left, as printed (e.g. "28 Sep 2026"). */
@@ -43,6 +47,76 @@ export interface Review {
 }
 
 const REVIEWS: Review[] = [
+  {
+    id: 'r01',
+    name: 'Lucas M.',
+    location: 'Paris, France',
+    rating: 5,
+    text: 'J’ai commandé et reçu rapidement, je recommande.',
+  },
+  {
+    id: 'r02',
+    name: 'Hugo D.',
+    location: 'Nantes, France',
+    rating: 5,
+    text: 'Une qualité de fou, franchement je recommande.',
+  },
+  {
+    id: 'r03',
+    name: 'Enzo R.',
+    location: 'Toulouse, France',
+    rating: 5,
+    text: 'Déjà ma deuxième commande, je compte continuer à m’habiller ici.',
+  },
+  {
+    id: 'r04',
+    name: 'Théo B.',
+    location: 'Lyon, France',
+    rating: 5,
+    text: 'Incroyable en termes de qualité-prix.',
+  },
+  {
+    id: 'r05',
+    name: 'Mathis L.',
+    location: 'Bordeaux, France',
+    rating: 5,
+    text: 'Très bonne qualité, la coupe est vraiment propre.',
+  },
+  {
+    id: 'r06',
+    name: 'Nathan P.',
+    location: 'Lille, France',
+    rating: 5,
+    text: 'Livraison rapide et produit conforme, rien à redire.',
+  },
+  {
+    id: 'r07',
+    name: 'Tom C.',
+    location: 'Marseille, France',
+    rating: 5,
+    text: 'Franchement lourd, la qualité est au rendez-vous.',
+  },
+  {
+    id: 'r08',
+    name: 'Noah V.',
+    location: 'Bruxelles, Belgique',
+    rating: 5,
+    text: 'Très satisfait de ma commande, je recommande.',
+  },
+  {
+    id: 'r09',
+    name: 'Louis A.',
+    location: 'Montpellier, France',
+    rating: 5,
+    text: 'Le rapport qualité-prix est vraiment intéressant.',
+  },
+  {
+    id: 'r10',
+    name: 'Adam F.',
+    location: 'Londres, Royaume-Uni',
+    rating: 5,
+    text: 'Clean, bonne qualité et livraison rapide.',
+  },
   // Example of the expected shape — replace with real reviews:
   // {
   //   id: 'r01',
