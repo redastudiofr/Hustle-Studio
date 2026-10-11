@@ -113,40 +113,43 @@ export default function LegalPage() {
   );
 }
 
-/** A value still to be filled in reads as "[à compléter]" — see app/data/legal.ts. */
-const PLACEHOLDER_PATTERN = /^\[.*\]$/;
+/**
+ * A value still to be filled in reads as "[à compléter]" (app/config/legal.ts).
+ * It is never shown: its field, paragraph or list line is left off the page.
+ */
+const PLACEHOLDER = /\[à compléter\]/;
+const isFilled = (text: string) => !PLACEHOLDER.test(text);
 
 function Section({section}: {section: LegalSection}) {
+  const list = section.list?.filter(isFilled) ?? [];
+  const fields = section.fields?.filter((field) => isFilled(field.value)) ?? [];
   return (
     <section className="legal__section">
       <h2>{section.heading}</h2>
-      {section.body.map((paragraph) => (
+      {section.body.filter(isFilled).map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
-      {section.list && (
+      {list.length > 0 && (
         <ul className="legal__list">
-          {section.list.map((entry) => (
+          {list.map((entry) => (
             <li key={entry}>{entry}</li>
           ))}
         </ul>
       )}
-      {section.fields && (
+      {fields.length > 0 && (
         <dl className="legal__fields">
-          {section.fields.map((field) => {
-            const isPlaceholder = PLACEHOLDER_PATTERN.test(field.value);
-            return (
-              <div className="legal__field" key={field.label}>
-                <dt>{field.label}</dt>
-                <dd data-placeholder={isPlaceholder ? 'true' : undefined}>
-                  {field.href && !isPlaceholder ? (
-                    <a href={field.href}>{field.value}</a>
-                  ) : (
-                    field.value
-                  )}
-                </dd>
-              </div>
-            );
-          })}
+          {fields.map((field) => (
+            <div className="legal__field" key={field.label}>
+              <dt>{field.label}</dt>
+              <dd>
+                {field.href ? (
+                  <a href={field.href}>{field.value}</a>
+                ) : (
+                  field.value
+                )}
+              </dd>
+            </div>
+          ))}
         </dl>
       )}
       {section.cta && (

@@ -3,8 +3,8 @@
  *
  * Fill these in with YOUR company's details — they are a legal filing
  * (mentions légales, Loi pour la confiance dans l'économie numérique, art. 6).
- * Any field left as '[à compléter]' is shown on the page in a distinct style,
- * so a missing value can never be mistaken for a real one.
+ * Any field left as '[à compléter]' is left off the page entirely (the line
+ * is hidden), so a missing value is never shown to visitors.
  *
  * The commercial commitments below (shipping times, return window, free
  * shipping) are the ones the previous store used: CHECK THEY ARE YOURS, and
@@ -23,7 +23,7 @@ export const LEGAL = {
     /** Legal form: micro-entreprise, SAS, SARL… */
     form: 'Micro-entreprise',
     /** Registered office address. */
-    address: '52 Rue Rémy Dumoncel',
+    address: '52 Rue Rémy Dumoncel, 75014 Paris',
     siren: '583 741 926',
     siret: '583 741 926 00047',
     /** Intra-EU VAT number, or "non assujetti — art. 293 B du CGI". */

@@ -19,9 +19,8 @@
  * codebase, not assumed. What could **not** be verified this way — the
  * registered company name, its legal form, its address, its SIREN/SIRET, its
  * VAT number, its phone number, who its legal representative is — is left as
- * a bracketed placeholder (`[à compléter]`) rather than guessed. The
- * renderer below gives placeholders a visibly different style specifically so
- * one can never be mistaken for real data. See docs/legal-pages.md for the
+ * a bracketed placeholder (`[à compléter]`) rather than guessed. The page
+ * never shows a placeholder: the line holding it is left off. See docs/legal-pages.md for the
  * complete list and what replaces each one.
  */
 
@@ -41,9 +40,8 @@ const RETURN_DAYS = LEGAL.returnDays;
 export type LegalField = {
   label: string;
   /**
-   * The real value, or a bracketed placeholder such as "[à compléter]" —
-   * anything matching `/^\[.*\]$/` renders with the "still to fill in" style
-   * instead of as real data. See the module doc above.
+   * The real value, or the "[à compléter]" placeholder — a field holding the
+   * placeholder is not shown at all. See the module doc above.
    */
   value: string;
   /** Renders `value` as a link (a mailto:, typically) when set. */

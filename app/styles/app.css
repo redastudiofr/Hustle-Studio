@@ -3423,19 +3423,6 @@ html {
   text-align: right;
 }
 
-/*
- * A value still to be filled in — never mistaken for real data. Dashed
- * rather than solid, lower contrast than the rest of the page: it should
- * read as unfinished at a glance, the way a form field does before anyone
- * has typed into it.
- */
-.legal__field dd[data-placeholder='true'] {
-  color: var(--color-muted);
-  font-style: italic;
-  border-bottom: 1px dashed var(--color-muted);
-  padding-bottom: 0.1rem;
-}
-
 .legal__cta {
   margin-top: 1.5rem;
   display: inline-flex;
