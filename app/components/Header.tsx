@@ -1,4 +1,4 @@
-import {Suspense, useId, useState} from 'react';
+import {Suspense, useState} from 'react';
 import {Await, NavLink, useAsyncValue} from 'react-router';
 import {
   type CartViewPayload,
@@ -17,6 +17,8 @@ import {
   buildNavGroups,
   NAV_HEADER_LINKS,
   NAV_SERVICE_LINKS,
+  NAV_MOBILE_LINKS,
+  NAV_LEGAL_LINKS,
   type NavCollection,
   type NavGroup,
 } from '~/lib/nav';
@@ -143,28 +145,39 @@ export function HeaderMenu({
     );
   }
 
+  // Burger menu: every page as a plain link — no "shop" dropdown to open.
   return (
     <nav className="mobile-nav" role="navigation">
-      <NavLink to="/" end onClick={close} prefetch="intent">
-        {t('nav.home')}
-      </NavLink>
-
-      {groups.map((group) => (
-        <MobileGroup key={group.id} group={group} onNavigate={close} />
-      ))}
-
-      {NAV_HEADER_LINKS.map((link) => (
-        <NavLink key={link.to} to={link.to} onClick={close} prefetch="intent">
+      {NAV_MOBILE_LINKS.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          end
+          onClick={close}
+          prefetch="intent"
+        >
           {t(link.labelKey)}
         </NavLink>
       ))}
 
-      {/* Service links sit under the categories, not among them. */}
-      {NAV_SERVICE_LINKS.map((link) => (
+      {/* Service links sit under the main pages, not among them. */}
+      {NAV_SERVICE_LINKS.map((link, index) => (
         <NavLink
           key={link.to}
           to={link.to}
-          className="mobile-nav__service"
+          className={`mobile-nav__service ${index === 0 ? 'mobile-nav__first' : ''}`}
+          onClick={close}
+          prefetch="intent"
+        >
+          {t(link.labelKey)}
+        </NavLink>
+      ))}
+
+      {NAV_LEGAL_LINKS.map((link, index) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          className={`mobile-nav__service ${index === 0 ? 'mobile-nav__first' : ''}`}
           onClick={close}
           prefetch="intent"
         >
@@ -215,52 +228,6 @@ function DesktopGroup({group}: {group: NavGroup}) {
             </li>
           ))}
         </ul>
-      </div>
-    </div>
-  );
-}
-
-/**
- * Mobile: a collapsible group. `grid-template-rows: 0fr → 1fr` opens it to the
- * height of its own contents, so the panel never needs a guessed max-height.
- */
-function MobileGroup({
-  group,
-  onNavigate,
-}: {
-  group: NavGroup;
-  onNavigate: () => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const panelId = useId();
-  const t = useT();
-
-  return (
-    <div className={`mobile-group ${open ? 'mobile-group--open' : ''}`}>
-      <button
-        type="button"
-        className="mobile-group__trigger"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((current) => !current)}
-      >
-        <span>{t(group.labelKey)}</span>
-        <span className="mobile-group__chevron" aria-hidden="true" />
-      </button>
-
-      <div className="mobile-group__panel" id={panelId}>
-        <div className="mobile-group__panel-inner">
-          {group.collections.map((collection) => (
-            <NavLink
-              key={collection.id}
-              to={`/collections/${collection.handle}`}
-              onClick={onNavigate}
-              prefetch="intent"
-            >
-              {collection.title.toLowerCase()}
-            </NavLink>
-          ))}
-        </div>
       </div>
     </div>
   );

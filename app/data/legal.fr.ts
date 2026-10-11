@@ -343,7 +343,7 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
       {
         heading: 'paiement',
         body: [
-          `Les paiements effectués sur ce site sont traités de manière sécurisée par Shopify Payments. ${B} ne stocke ni ne traite directement les données de carte bancaire : elles sont transmises directement à ce prestataire de paiement.`,
+          `Les paiements effectués sur ce site sont traités de manière sécurisée par Shopify Payments. ${B} ne stocke ni ne traite directement les données de carte bancaire : celles-ci sont transmises au prestataire de paiement concerné.`,
         ],
       },
       {
@@ -356,49 +356,55 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
       {
         heading: 'données personnelles',
         body: [
-          `Dans le cadre du fonctionnement du site, ${B} est amené à collecter et traiter certaines données personnelles, uniquement dans les cas suivants :`,
+          `Dans le cadre du fonctionnement du site, ${B} est susceptible de collecter et de traiter certaines données personnelles, notamment dans les situations suivantes :`,
         ],
         list: [
-          'commandes et livraison — nom, adresse, e-mail et téléphone, transmis à notre transporteur pour l’expédition',
-          `paiement — traité directement par Shopify Payments ; ${B} n’accède à aucune donnée bancaire`,
-          'service client et avis clients — informations transmises via la page contact ou le formulaire d’avis, pour répondre à une demande ou publier un retour d’expérience',
-          'newsletter et offres — e-mail ou numéro de téléphone laissés volontairement, pour l’envoi d’offres commerciales, uniquement avec le consentement de la personne concernée',
-          'sécurité — données techniques nécessaires au bon fonctionnement du site et à la prévention des abus',
+          'Commandes et livraison : nom, adresse, adresse e-mail et numéro de téléphone nécessaires au traitement et à l’expédition des commandes.',
+          'Paiement : paiements traités par Shopify Payments ou le prestataire concerné, selon les modalités applicables.',
+          'Service client et avis clients : informations transmises via la page de contact ou les formulaires d’avis afin de répondre aux demandes ou de gérer les retours d’expérience.',
+          'Newsletter et offres commerciales : adresse e-mail ou numéro de téléphone communiqué volontairement, sous réserve du consentement requis.',
+          'Sécurité : données techniques nécessaires au fonctionnement du site, à sa sécurisation et à la prévention des abus.',
         ],
       },
       {
         heading: 'données personnelles — vos droits',
         body: [
-          `Ces données sont conservées le temps nécessaire à ces finalités, dans le respect du Règlement Général sur la Protection des Données (RGPD). Vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de vos données, ainsi que du droit de retirer à tout moment votre consentement aux communications marketing.`,
-          `Le détail complet — ce qui est collecté, pourquoi, combien de temps et avec qui c'est partagé — figure dans notre Politique de confidentialité. Pour exercer ces droits, écrivez-nous à ${EMAIL} ou depuis la page contact.`,
+          `Les données personnelles sont conservées pendant la durée nécessaire aux finalités pour lesquelles elles sont collectées, conformément à la réglementation applicable, notamment au Règlement général sur la protection des données (RGPD).`,
+          `Conformément à la réglementation, vous disposez, selon les conditions applicables, de droits d'accès, de rectification, d'effacement, de limitation du traitement, d'opposition et de portabilité de vos données. Vous pouvez également retirer votre consentement aux communications marketing à tout moment.`,
+          `Pour exercer vos droits, vous pouvez nous contacter à l'adresse suivante : ${EMAIL}, ou utiliser la page de contact du site.`,
+          `Pour connaître précisément les données collectées, leurs finalités, leurs durées de conservation et leurs destinataires, veuillez consulter notre Politique de confidentialité.`,
         ],
       },
       {
         heading: 'cookies',
         body: [
-          `Ce site utilise des cookies strictement nécessaires à son fonctionnement — panier, session de navigation et préférence de langue — qui ne nécessitent pas de consentement.`,
-          `Il utilise également l'outil de mesure d'audience natif fourni par Shopify, pour nos propres statistiques de visites et de commandes. Aucun pixel publicitaire tiers (Meta, TikTok, Google Ads ou équivalent) n'est utilisé à ce jour.`,
-          `Vous pouvez configurer votre navigateur pour refuser les cookies à tout moment ; certaines fonctionnalités, notamment le panier, peuvent alors ne plus fonctionner correctement.`,
+          `Ce site utilise des cookies et autres traceurs nécessaires à son fonctionnement, notamment pour le panier, la session de navigation et les préférences de l'utilisateur.`,
+          `Des outils de mesure d'audience peuvent également être utilisés afin d'analyser les visites et les commandes, selon leur configuration. Lorsque la réglementation l'exige, le consentement préalable de l'utilisateur est recueilli avant le dépôt de cookies ou traceurs non essentiels.`,
+          `Vous pouvez gérer vos préférences depuis le dispositif de gestion des cookies du site, lorsqu'il est disponible, ainsi que depuis les paramètres de votre navigateur. Le refus de certains cookies peut affecter le fonctionnement de certaines fonctionnalités.`,
         ],
       },
       {
         heading: 'responsabilité',
         body: [
-          `${B} s'efforce de maintenir les informations présentes sur ce site aussi exactes et à jour que possible. Ces informations — notamment les produits, les prix et les délais — peuvent néanmoins évoluer sans préavis.`,
-          `${B} ne saurait être tenu responsable des interruptions temporaires du site liées à la maintenance, à des causes techniques ou à des événements indépendants de sa volonté.`,
+          `${B} s'efforce de maintenir les informations présentes sur ce site aussi exactes et à jour que possible. Les informations relatives aux produits, aux prix et aux délais sont susceptibles d'évoluer.`,
+          `${B} ne saurait être tenu responsable des interruptions temporaires du site liées à la maintenance, à des problèmes techniques ou à des événements indépendants de sa volonté, dans les limites prévues par la loi.`,
         ],
       },
       {
-        heading: 'médiation et résolution des litiges en ligne',
+        heading: 'médiation et résolution des litiges',
         body: [
-          `Conformément à l'article L.612-1 du Code de la consommation, vous pouvez recourir gratuitement à un médiateur de la consommation en cas de litige. La Commission européenne met également à disposition une plateforme de résolution des litiges en ligne, accessible à l'adresse ec.europa.eu/consumers/odr.`,
+          `Conformément au Code de la consommation, tout consommateur peut, sous réserve des conditions légales applicables, recourir gratuitement à un médiateur de la consommation en vue de la résolution amiable d'un litige avec un professionnel.`,
+          `Les coordonnées du médiateur compétent doivent être communiquées après désignation effective de celui-ci et conformément aux obligations légales applicables.`,
+          `Pour les litiges transfrontaliers, les consommateurs peuvent également consulter les informations et services officiels de l'Union européenne relatifs à la résolution des litiges de consommation.`,
         ],
       },
       {
         heading: 'nous contacter',
-        body: [`Une question sur ces mentions, une commande ou vos données ?`],
+        body: [
+          `Pour toute question concernant ces mentions légales, une commande ou vos données personnelles, vous pouvez nous contacter :`,
+        ],
         fields: [
-          {label: 'Email', value: EMAIL, href: MAILTO},
+          {label: 'E-mail', value: EMAIL, href: MAILTO},
           {label: 'Téléphone', value: C.phone},
           {label: 'Adresse', value: C.address},
         ],

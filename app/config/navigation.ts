@@ -45,7 +45,19 @@ export const NAVIGATION = {
     {labelKey: 'footer.about', to: '/about'},
   ] as NavLinkConfig[],
 
-  /** Extra links under the collections in the mobile menu. */
+  /**
+   * Main pages of the burger menu, one per line, no dropdown: every page of
+   * the site is one tap away. Service and legal links follow, smaller.
+   */
+  mobileLinks: [
+    {labelKey: 'nav.home', to: '/'},
+    {labelKey: 'nav.shop', to: '/collections/all'},
+    {labelKey: 'nav.collections', to: '/collections'},
+    {labelKey: 'footer.about', to: '/about'},
+    {labelKey: 'footer.faq', to: '/faq'},
+  ] as NavLinkConfig[],
+
+  /** Service links under the main pages in the burger menu. */
   serviceLinks: [
     {labelKey: 'nav.track', to: '/order-tracking'},
     {labelKey: 'footer.contact', to: '/contact'},

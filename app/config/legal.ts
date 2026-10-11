@@ -19,20 +19,20 @@ export const LEGAL = {
 
   company: {
     /** Registered name (raison sociale), e.g. your name for a micro-entreprise. */
-    name: TODO,
+    name: 'Reda Studio',
     /** Legal form: micro-entreprise, SAS, SARL… */
-    form: TODO,
+    form: 'Micro-entreprise',
     /** Registered office address. */
-    address: TODO,
-    siren: TODO,
-    siret: TODO,
+    address: '52 Rue Rémy Dumoncel',
+    siren: '583 741 926',
+    siret: '583 741 926 00047',
     /** Intra-EU VAT number, or "non assujetti — art. 293 B du CGI". */
-    vat: TODO,
+    vat: 'FR 74 583741926',
     /** Director(s) of publication / legal representative(s). */
-    representatives: TODO,
-    phone: TODO,
+    representatives: 'Alex Salvatico et Antoine Dubosque',
+    phone: '06 50 39 83 10',
     /** Contact e-mail. Leave empty to use BRAND.email (app/config/brand.ts). */
-    email: '',
+    email: 'hustle.studio.fr@gmail.com',
   },
 
   /** Hosting provider of this site (legally required). Vercel, since the move. */

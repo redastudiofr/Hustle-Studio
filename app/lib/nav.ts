@@ -64,3 +64,5 @@ export function buildNavGroups(collections: NavCollection[]): NavGroup[] {
 
 export const NAV_SERVICE_LINKS = NAVIGATION.serviceLinks;
 export const NAV_HEADER_LINKS = NAVIGATION.headerLinks;
+export const NAV_MOBILE_LINKS = NAVIGATION.mobileLinks;
+export const NAV_LEGAL_LINKS = NAVIGATION.footer.policies;

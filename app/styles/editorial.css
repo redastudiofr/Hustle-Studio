@@ -771,6 +771,12 @@ h1,
 
 .mobile-nav .mobile-nav__service {
   border-top: none;
+  margin-top: 0;
+}
+
+/* A gap before each small group (service, then legal) of the burger menu. */
+.mobile-nav .mobile-nav__first {
+  margin-top: 1.5rem;
 }
 
 .aside header h3 {
