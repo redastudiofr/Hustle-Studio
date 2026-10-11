@@ -18,10 +18,7 @@ import {ProductGallery} from '~/components/ProductGallery';
 import {ProductPurchase} from '~/components/ProductPurchase';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
 import {Accordion} from '~/components/Accordion';
-import {
-  ProductHighlights,
-  ProductStoryBlock,
-} from '~/components/product/ProductStory';
+import {ProductHighlights} from '~/components/product/ProductStory';
 import {CollectionsBand} from '~/components/product/CollectionsBand';
 import {SizeChartBody} from '~/components/product/SizeChartDialog';
 import {sizeChartFor} from '~/config/sizeCharts';
@@ -299,20 +296,18 @@ export default function Product() {
           <div className="pdp__details">
             <ProductHighlights value={product.highlights?.value} />
 
-            <ProductStoryBlock title={title} value={product.story?.value} />
-
+            {/* The merchant's own description from Shopify Admin (Shopify
+                sanitises product HTML), folded behind a "Description" row
+                that opens with the accordion animation. */}
             {descriptionHtml && (
-              <section className="pdp-block pdp__section">
-                <p className="pdp-block__eyebrow">
-                  {t('pdp.descriptionEyebrow')}
-                </p>
-                {/* Written by the merchant in Shopify Admin (Shopify sanitises
-                    product HTML). */}
-                <div
-                  className="pdp__prose pdp-description"
-                  dangerouslySetInnerHTML={{__html: descriptionHtml}}
-                />
-              </section>
+              <div className="pdp__info pdp__section">
+                <Accordion title={t('pdp.descriptionEyebrow')} variant="block">
+                  <div
+                    className="pdp-description"
+                    dangerouslySetInnerHTML={{__html: descriptionHtml}}
+                  />
+                </Accordion>
+              </div>
             )}
 
             <section className="pdp-block pdp__section">
@@ -501,10 +496,7 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     productType
     # Optional per-product content, written in Shopify Admin (see
-    # app/config/productPage.ts): story, highlights, size chart.
-    story: metafield(namespace: "custom", key: "story") {
-      value
-    }
+    # app/config/productPage.ts): highlights, size chart.
     highlights: metafield(namespace: "custom", key: "highlights") {
       value
     }

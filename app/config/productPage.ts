@@ -4,8 +4,6 @@
  * Product-specific content comes from Shopify, per product, in metafields
  * (Shopify Admin → Settings → Custom data → Products → Add definition):
  *
- *   custom.story       Multi-line text — the product's story. Replaces
- *                      `story.text` below for that product.
  *   custom.highlights  List of single-line texts, "Title — detail" each.
  *                      Replaces `highlights` below for that product.
  *   custom.size_chart  JSON (see SizeChart in app/config/sizeCharts.ts).
@@ -53,15 +51,6 @@ export const PRODUCT_PAGE = {
       detail: 'Paid on Shopify — card details never touch this site',
     },
   ] as Highlight[],
-
-  /** Default story when the product has no custom.story. `{title}` = product. */
-  story: {
-    eyebrow: 'The story',
-    text: [
-      '{title} started where every Hustle Studio piece starts: in our Paris studio, with one question — would we wear it on the days that count?',
-      'Not the photo-shoot days. The early mornings, the late nights, the work nobody sees. Clean lines, nothing that does not need to be there, made to keep up with you while you build.',
-    ],
-  },
 
   /** The three grey accordions at the bottom of the details column. */
   info: {

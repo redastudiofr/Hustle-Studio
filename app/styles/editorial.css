@@ -1182,7 +1182,7 @@ h1,
   text-decoration: line-through;
 }
 
-/* Details column blocks: highlights, story, description, FAQ. */
+/* Details column blocks: highlights, description, FAQ. */
 .pdp-block__title {
   font-family: var(--font-display);
   font-stretch: 72%;
@@ -1220,16 +1220,6 @@ h1,
 
 .pdp-highlights__item:hover .pdp-highlights__icon {
   transform: rotate(-8deg) scale(1.06);
-}
-
-.pdp-story__text {
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: #3a3a38;
-}
-
-.pdp-story__text + .pdp-story__text {
-  margin-top: 0.9rem;
 }
 
 /* Accordions: + that turns into −, height animated, text rising in. */

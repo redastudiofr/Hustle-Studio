@@ -4,7 +4,14 @@ import {Reveal} from '~/components/Reveal';
 import {useLocalized} from '~/lib/i18n/localized';
 import {useT} from '~/lib/i18n';
 
-const ICONS: Highlight['icon'][] = ['pin', 'spark', 'needle', 'box', 'return', 'lock'];
+const ICONS: Highlight['icon'][] = [
+  'pin',
+  'spark',
+  'needle',
+  'box',
+  'return',
+  'lock',
+];
 
 /**
  * Highlights ("Designed in Paris…") as icon rows, from the product's
@@ -44,38 +51,6 @@ export function ProductHighlights({value}: {value?: string | null}) {
   );
 }
 
-/**
- * The product's story: custom.story when written in Shopify (one paragraph
- * per line), else the brand story around this product.
- */
-export function ProductStoryBlock({
-  title,
-  value,
-}: {
-  title: string;
-  value?: string | null;
-}) {
-  const l = useLocalized();
-  const paragraphs = value?.trim()
-    ? value
-        .split(/\n+/)
-        .map((p) => p.trim())
-        .filter(Boolean)
-    : PRODUCT_PAGE.story.text.map((p) => l(p).replaceAll('{title}', title));
-
-  return (
-    <Reveal as="section" className="pdp-block pdp-story">
-      <p className="pdp-block__eyebrow">{l(PRODUCT_PAGE.story.eyebrow)}</p>
-      <h2 className="pdp-block__title">{title}</h2>
-      {paragraphs.map((paragraph) => (
-        <p key={paragraph} className="pdp-story__text">
-          {paragraph}
-        </p>
-      ))}
-    </Reveal>
-  );
-}
-
 /** custom.highlights: a list metafield (JSON array) or plain lines. */
 function parseHighlights(value?: string | null) {
   if (!value) return [];
@@ -91,6 +66,10 @@ function parseHighlights(value?: string | null) {
     .slice(0, 6)
     .map((line, i) => {
       const [head, ...rest] = line.split(/\s+[—–-]\s+/);
-      return {icon: ICONS[i % ICONS.length], title: head.trim(), detail: rest.join(' — ').trim()};
+      return {
+        icon: ICONS[i % ICONS.length],
+        title: head.trim(),
+        detail: rest.join(' — ').trim(),
+      };
     });
 }

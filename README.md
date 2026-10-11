@@ -38,7 +38,6 @@ Tout ce qui est propre à la marque est regroupé ici :
 
 **Contenu propre à chaque produit (facultatif)** — Shopify → *Paramètres →
 Données personnalisées → Produits → Ajouter une définition* :
-`custom.story` (texte multiligne : l'histoire du produit),
 `custom.highlights` (liste de textes « Titre — détail »),
 `custom.size_chart` (JSON : `{"columns":["Chest","Length"],"rows":[["S",56,70],["M",59,72]]}`).
 Sans ces champs, la fiche utilise les textes de `app/config/productPage.ts`.
