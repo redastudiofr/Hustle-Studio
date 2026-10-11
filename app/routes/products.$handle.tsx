@@ -205,15 +205,6 @@ function loadDeferredData(
   return {recommended, bundle, bandCollections, reviews};
 }
 
-/** First sentence of the product description, for the short blurb in the buy box. */
-function shortenDescription(description: string): string {
-  const trimmed = description.trim();
-  if (!trimmed) return '';
-  const firstSentence = trimmed.split(/(?<=[.!?])\s/)[0];
-  const blurb = firstSentence.length > 20 ? firstSentence : trimmed;
-  return blurb.length > 180 ? `${blurb.slice(0, 177).trimEnd()}…` : blurb;
-}
-
 export default function Product() {
   const {product, recommended, bundle, bandCollections, reviews, origin} =
     useLoaderData<typeof loader>();
@@ -271,7 +262,7 @@ export default function Product() {
             sizes={sizes}
             available={available}
             quantityAvailable={selectedVariant?.quantityAvailable ?? null}
-            shortDescription={shortenDescription(description ?? '')}
+            descriptionHtml={descriptionHtml}
             variantId={selectedVariant?.id}
             selectedVariant={selectedVariant}
             // Only a real review app's score (Shopify metafields) — never an
@@ -295,20 +286,6 @@ export default function Product() {
 
           <div className="pdp__details">
             <ProductHighlights value={product.highlights?.value} />
-
-            {/* The merchant's own description from Shopify Admin (Shopify
-                sanitises product HTML), folded behind a "Description" row
-                that opens with the accordion animation. */}
-            {descriptionHtml && (
-              <div className="pdp__info pdp__section">
-                <Accordion title={t('pdp.descriptionEyebrow')} variant="block">
-                  <div
-                    className="pdp-description"
-                    dangerouslySetInnerHTML={{__html: descriptionHtml}}
-                  />
-                </Accordion>
-              </div>
-            )}
 
             <section className="pdp-block pdp__section">
               <h2 className="pdp-block__title">{t('product.faqTitle')}</h2>

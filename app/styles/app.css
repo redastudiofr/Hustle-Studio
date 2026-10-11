@@ -1927,10 +1927,7 @@ html {
   text-underline-offset: 3px;
 }
 
-.buybox__blurb {
-  font-size: 0.82rem;
-  line-height: 1.6;
-  overflow-wrap: break-word;
+.buybox__description {
   margin-top: 0.85rem;
 }
 

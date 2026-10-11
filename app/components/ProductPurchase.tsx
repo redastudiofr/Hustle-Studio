@@ -16,6 +16,7 @@ import {useLocalized} from '~/lib/i18n/localized';
 import {useAside} from '~/components/Aside';
 import {useT} from '~/lib/i18n';
 import {StarRating} from '~/components/StarRating';
+import {Accordion} from '~/components/Accordion';
 import type {ProductRating} from '~/lib/rating';
 
 /** Shopify's own count is called out as "low" at or under this many units. */
@@ -35,7 +36,7 @@ export function ProductPurchase({
   sizes,
   available,
   quantityAvailable,
-  shortDescription,
+  descriptionHtml,
   variantId,
   selectedVariant,
   rating,
@@ -49,7 +50,8 @@ export function ProductPurchase({
   available: boolean;
   /** Shopify's figure, or null when the store does not publish inventory. */
   quantityAvailable: number | null;
-  shortDescription: string;
+  /** The merchant's description from Shopify Admin (sanitised by Shopify). */
+  descriptionHtml?: string | null;
   variantId?: string;
   /** Lets the cart drawer show the line instantly, before Shopify answers. */
   selectedVariant?: ProductVariantFragment | null;
@@ -134,7 +136,18 @@ export function ProductPurchase({
         {t('product.calculatedAtCheckout')}
       </p>
 
-      {shortDescription && <p className="buybox__blurb">{shortDescription}</p>}
+      {/* Folded behind a "Description" row: nothing of it shows until the
+          shopper opens it, then it unfolds with the accordion animation. */}
+      {descriptionHtml && (
+        <div className="buybox__description">
+          <Accordion title={t('pdp.descriptionEyebrow')} variant="block">
+            <div
+              className="pdp-description"
+              dangerouslySetInnerHTML={{__html: descriptionHtml}}
+            />
+          </Accordion>
+        </div>
+      )}
 
       <ProductForm productOptions={productOptions} />
 
