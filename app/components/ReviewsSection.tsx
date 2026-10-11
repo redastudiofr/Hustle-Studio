@@ -2,7 +2,6 @@ import {useState} from 'react';
 import {Link} from 'react-router';
 import type {Review} from '~/data/reviews';
 import {StarRating} from '~/components/StarRating';
-import {ReviewQuotes} from '~/components/ReviewQuotes';
 import {RailArrows} from '~/components/RailArrows';
 import {Reveal} from '~/components/Reveal';
 import {useHorizontalRail} from '~/lib/useHorizontalRail';
@@ -74,7 +73,9 @@ function ReviewCard({
     <article className="review-card">
       <header className="review-card__head">
         <StarRating rating={review.rating} className="review-card__stars" />
-        <span className="review-card__name">{review.name}</span>
+        {review.name ? (
+          <span className="review-card__name">{review.name}</span>
+        ) : null}
       </header>
 
       <p
@@ -175,7 +176,6 @@ export function ReviewsSection({
   // unset on the homepage, where there's no single product to attach it to.
   productTitle,
   format,
-  quotes = false,
 }: {
   heading: string;
   subheading?: string;
@@ -184,8 +184,6 @@ export function ReviewsSection({
   productTitle?: string;
   /** Card layout — see ReviewFormat. */
   format?: ReviewFormat;
-  /** Adds the quote slider (ReviewQuotes) above "Leave a review". */
-  quotes?: boolean;
 }) {
   const t = useT();
 
@@ -209,8 +207,6 @@ export function ReviewsSection({
               format={format}
             />
           </div>
-
-          {quotes && <ReviewQuotes reviews={reviews} />}
 
           <div className="reviews__cta">
             <p>{t('reviews.ctaText')}</p>
