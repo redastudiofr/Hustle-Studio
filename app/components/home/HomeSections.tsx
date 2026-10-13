@@ -12,6 +12,7 @@ import {FamilyWall} from '~/components/home/FamilyWall';
 import {AboutSection} from '~/components/home/AboutSection';
 import {HelpFaq} from '~/components/HelpFaq';
 import {Hero} from '~/components/home/Hero';
+import {WaitlistSection} from '~/components/home/WaitlistSection';
 import {ProductRail} from '~/components/ProductRail';
 import {ProductItem} from '~/components/ProductItem';
 import {CollectionsSlider} from '~/components/CollectionsSlider';
@@ -64,6 +65,16 @@ function HomeSectionView({
   switch (section.type) {
     case 'hero':
       return <Hero {...section} />;
+
+    case 'waitlist':
+      return (
+        <WaitlistSection
+          id={id}
+          title={l(section.title)}
+          text={l(section.text)}
+          submitLabel={l(section.submitLabel)}
+        />
+      );
 
     case 'products': {
       if (data?.type !== 'products') return null;

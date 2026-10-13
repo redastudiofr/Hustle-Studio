@@ -2312,3 +2312,492 @@ h1,
 .review-card--line .review-card__text {
   color: #3a3a38;
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+ * Drop redesign — serif voice, launch hero, countdown, waitlist, story.
+ * One serif (Cormorant Garamond, --font-serif) for the brand's own words;
+ * Inter Tight stays the interface voice. Thin lines, no fills, no effects.
+ * ══════════════════════════════════════════════════════════════════════════ */
+
+/* Section titles move to the brand serif: quieter, more considered. */
+.section-title,
+.home-about__title,
+.editorial__title {
+  font-family: var(--font-serif);
+  font-stretch: normal;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.section-title {
+  font-size: clamp(1.9rem, 1.3rem + 2.2vw, 3.2rem);
+}
+
+/* ── Launch hero ───────────────────────────────────────────────────────── */
+.hero--launch .hero__media::after {
+  /* Even veil, lighter than the old one: the photo stays luminous. */
+  background: rgb(8 8 8 / 0.16);
+}
+
+.hero--launch .hero__img {
+  object-position: 50% 50%;
+}
+
+.hero--launch .hero__scrim {
+  /* Mobile: dark at the top (title over the glass roof) and at the bottom
+     (countdown and button over the jeans), clear across the subject. */
+  background:
+    linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0.62) 0%,
+      rgb(0 0 0 / 0.32) 26%,
+      transparent 44%
+    ),
+    linear-gradient(
+      to top,
+      rgb(0 0 0 / 0.72) 0%,
+      rgb(0 0 0 / 0.38) 24%,
+      transparent 45%
+    );
+}
+
+.hero__content--launch {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-width: none;
+  width: 100%;
+  margin: 0;
+  padding: calc(var(--header-height) + 1.75rem) var(--gutter) 2rem;
+  text-align: center;
+}
+
+.hero__head,
+.hero__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.hero__foot {
+  gap: 1.5rem;
+}
+
+.hero__title--serif {
+  max-width: 14ch;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-stretch: normal;
+  font-weight: 500;
+  font-size: clamp(2.35rem, 1.4rem + 4.6vw, 5.4rem);
+  line-height: 0.98;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.hero--launch .hero__text {
+  max-width: 30ch;
+  margin-top: 1rem;
+  font-size: clamp(0.92rem, 0.85rem + 0.3vw, 1.05rem);
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  opacity: 0.92;
+  text-wrap: balance;
+}
+
+/* Phones: the four lines of the entrance animation become two groups. */
+.hero__content--launch > * {
+  animation: hero-item 1000ms var(--ease-out-soft) both;
+}
+
+.hero__content--launch > :nth-child(2) {
+  animation-delay: 200ms;
+}
+
+@media (min-width: 48em) {
+  /* Desktop: the subject stands in the middle of the panorama, so the copy
+     sits bottom-left over the gallery and never crosses him. */
+  .hero--launch .hero__scrim {
+    background:
+      linear-gradient(
+        to right,
+        rgb(0 0 0 / 0.62) 0%,
+        rgb(0 0 0 / 0.36) 28%,
+        transparent 50%
+      ),
+      linear-gradient(to top, rgb(0 0 0 / 0.45) 0%, transparent 40%);
+  }
+
+  .hero__content--launch {
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 2.25rem;
+    max-width: var(--page-max);
+    margin: 0 auto;
+    padding-bottom: clamp(3rem, 8vh, 5.5rem);
+    text-align: left;
+  }
+
+  .hero__head,
+  .hero__foot {
+    align-items: flex-start;
+    width: auto;
+    max-width: min(40rem, 42vw);
+  }
+
+  .hero__foot {
+    gap: 1.75rem;
+  }
+
+  .hero__title--serif {
+    font-size: clamp(2.8rem, 1.2rem + 3.6vw, 5.4rem);
+  }
+
+  .hero--launch .hero__text {
+    max-width: 34ch;
+    margin-top: 1.25rem;
+  }
+}
+
+/* ── Countdown ─────────────────────────────────────────────────────────── */
+.countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: inherit;
+  gap: 0.75rem;
+  color: var(--color-paper);
+}
+
+.countdown__label {
+  font-size: var(--label-size);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.countdown__grid {
+  display: flex;
+  margin: 0;
+}
+
+.countdown__cell {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  min-width: 4.1rem;
+  padding: 0 0.85rem;
+  border-left: 1px solid rgb(255 255 255 / 0.35);
+}
+
+.countdown__cell:first-child {
+  border-left: none;
+}
+
+.countdown__value {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.6rem + 1.6vw, 3rem);
+  line-height: 1;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.countdown__unit {
+  margin-top: 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.countdown--ended .countdown__label {
+  font-family: var(--font-serif);
+  font-size: clamp(1.3rem, 1.1rem + 0.8vw, 1.8rem);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  opacity: 1;
+}
+
+@media (min-width: 48em) {
+  .countdown__cell:first-child {
+    padding-left: 0;
+    align-items: flex-start;
+  }
+}
+
+/* ── Hero button (outlined, thin, with an arrow) ──────────────────────── */
+.hero__cta-line,
+.hero__cta-line:hover {
+  color: var(--color-paper);
+  text-decoration: none;
+}
+
+.hero__cta-line {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  min-height: 52px;
+  padding: 0 1.6rem 0 1.75rem;
+  border: 1px solid rgb(255 255 255 / 0.85);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition:
+    background-color 300ms var(--ease-editorial),
+    color 300ms var(--ease-editorial);
+}
+
+.hero__cta-line:hover,
+.hero__cta-line:focus-visible {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.hero__cta-arrow {
+  font-size: 1rem;
+  letter-spacing: 0;
+  transition: transform 300ms var(--ease-editorial);
+}
+
+.hero__cta-line:hover .hero__cta-arrow {
+  transform: translateX(4px);
+}
+
+/* ── Waitlist ("Be first") ─────────────────────────────────────────────── */
+.waitlist {
+  background: var(--color-ink);
+  color: var(--color-paper);
+  scroll-margin-top: var(--header-height);
+}
+
+.waitlist__inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 5rem var(--gutter) 5.5rem;
+  text-align: center;
+}
+
+.waitlist__title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(3rem, 2rem + 4.5vw, 5.6rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.waitlist__text {
+  max-width: 34ch;
+  margin: 1.25rem auto 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.78);
+  text-wrap: balance;
+}
+
+.waitlist__form {
+  margin-top: 2.75rem;
+  text-align: left;
+}
+
+.waitlist__fields {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 48em) {
+  .waitlist__inner {
+    padding-block: 7rem 7.5rem;
+  }
+
+  .waitlist__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.waitlist__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.waitlist__field > span {
+  font-size: var(--label-size);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.7);
+}
+
+.waitlist__field input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 0.1rem;
+  border: none;
+  border-bottom: 1px solid rgb(255 255 255 / 0.4);
+  border-radius: 0;
+  background: transparent;
+  color: var(--color-paper);
+  /* 16px minimum: iOS would zoom into a smaller field. */
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.waitlist__field input::placeholder {
+  color: rgb(255 255 255 / 0.35);
+}
+
+.waitlist__field input:focus {
+  border-bottom-color: var(--color-paper);
+}
+
+.waitlist__field input[aria-invalid='true'] {
+  border-bottom-color: #e5806f;
+}
+
+.waitlist__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.waitlist__consents {
+  display: grid;
+  gap: 0.85rem;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  border: none;
+}
+
+.waitlist__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgb(255 255 255 / 0.78);
+  cursor: pointer;
+}
+
+.waitlist__check input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.1rem;
+  accent-color: var(--color-paper);
+}
+
+.waitlist__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  margin-top: 2rem;
+  padding: 0 1.5rem;
+  border: 1px solid var(--color-paper);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background-color 300ms var(--ease-editorial),
+    color 300ms var(--ease-editorial);
+}
+
+.waitlist__submit:hover:not(:disabled) {
+  background: transparent;
+  color: var(--color-paper);
+}
+
+.waitlist__submit:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.waitlist__error {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #f0a294;
+}
+
+.waitlist__legal {
+  margin-top: 1.5rem;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.55);
+}
+
+.waitlist__legal a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.waitlist__success {
+  margin-top: 2.5rem;
+  padding: 2rem 1.5rem;
+  border: 1px solid rgb(255 255 255 / 0.3);
+}
+
+.waitlist__success-title {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.waitlist__success p:not(.waitlist__success-title) {
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: rgb(255 255 255 / 0.8);
+}
+
+/* ── Our story ─────────────────────────────────────────────────────────── */
+.home-about__title {
+  font-size: clamp(2.6rem, 1.8rem + 3.2vw, 4.8rem);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.home-about__eyebrow {
+  letter-spacing: 0.24em;
+}
+
+.home-about__text {
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.home-about__title + .home-about__text {
+  font-family: var(--font-serif);
+  font-size: clamp(1.3rem, 1.15rem + 0.6vw, 1.6rem);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__content--launch > *,
+  .hero__cta-line,
+  .hero__cta-arrow {
+    animation: none;
+    transition: none;
+  }
+}

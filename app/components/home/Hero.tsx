@@ -1,10 +1,12 @@
 import {useEffect, useRef} from 'react';
 import {Link} from 'react-router';
-import type {HomeImage, HomeLink} from '~/config/home';
+import type {CountdownCopy, HomeImage, HomeLink} from '~/config/home';
 import type {Localized} from '~/lib/i18n/localized';
 import {useLocalized} from '~/lib/i18n/localized';
 import {useHeaderTone} from '~/lib/header-tone';
 import {BRAND} from '~/config/brand';
+import {LAUNCH_TIME} from '~/config/launch';
+import {Countdown} from '~/components/home/Countdown';
 
 // Matches the fixed header's height so it turns solid exactly as its bottom
 // edge clears the hero.
@@ -18,6 +20,12 @@ const HEADER_OFFSET_PX = 64;
  *   downloaded), bottom scrim, text and buttons bottom-left;
  * - typographic: text on black, used until brand photography is added.
  *
+ * With a `countdown`, it becomes the drop hero ("hero--launch"): serif title
+ * and subtitle in one group, the countdown and the button in another, so each
+ * format can place them where its own photo leaves room (desktop: stacked
+ * bottom-left beside the subject; phone: title over the glass roof, countdown
+ * and button at the bottom).
+ *
  * The header sits transparent over it while it is in view. The entrance is a
  * CSS animation on transform only, so the content is visible even if
  * JavaScript never runs.
@@ -29,6 +37,7 @@ export function Hero({
   image,
   cta,
   secondaryCta,
+  countdown,
 }: {
   eyebrow?: Localized;
   title?: Localized;
@@ -36,6 +45,7 @@ export function Hero({
   image?: HomeImage;
   cta?: HomeLink;
   secondaryCta?: HomeLink;
+  countdown?: CountdownCopy;
 }) {
   const l = useLocalized();
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -57,7 +67,7 @@ export function Hero({
 
   return (
     <section
-      className={`hero ${image ? 'hero--photo' : 'hero--type'}`}
+      className={`hero ${image ? 'hero--photo' : 'hero--type'} ${countdown ? 'hero--launch' : ''}`}
       ref={sectionRef}
       aria-label={BRAND.name}
     >
@@ -78,39 +88,73 @@ export function Hero({
         </div>
       )}
 
-      <div className="hero__content">
-        {eyebrow && <p className="hero__eyebrow">{l(eyebrow)}</p>}
-        {title ? (
-          <h1 className="hero__title">{l(title)}</h1>
-        ) : (
-          // The logo lives in the header only; the page still has a real
-          // heading for search engines and screen readers.
-          <h1 className="sr-only">{BRAND.name}</h1>
-        )}
-        {text && <p className="hero__text">{l(text)}</p>}
-        {(cta || secondaryCta) && (
-          <div className="hero__actions">
-            {cta && (
-              <Link
-                to={cta.to}
-                prefetch="intent"
-                className="hero__cta hero__cta--primary"
-              >
-                {l(cta.label)}
-              </Link>
+      {countdown ? (
+        <div className="hero__content hero__content--launch">
+          <div className="hero__head">
+            {title ? (
+              <h1 className="hero__title hero__title--serif">{l(title)}</h1>
+            ) : (
+              <h1 className="sr-only">{BRAND.name}</h1>
             )}
-            {secondaryCta && (
-              <Link
-                to={secondaryCta.to}
-                prefetch="intent"
-                className="hero__cta"
-              >
-                {l(secondaryCta.label)}
+            {text && <p className="hero__text">{l(text)}</p>}
+          </div>
+          <div className="hero__foot">
+            <Countdown
+              target={LAUNCH_TIME}
+              label={l(countdown.label)}
+              endedLabel={l(countdown.endedLabel)}
+              units={{
+                days: l(countdown.units.days),
+                hours: l(countdown.units.hours),
+                minutes: l(countdown.units.minutes),
+                seconds: l(countdown.units.seconds),
+              }}
+            />
+            {cta && (
+              <Link to={cta.to} prefetch="intent" className="hero__cta-line">
+                <span>{l(cta.label)}</span>
+                <span className="hero__cta-arrow" aria-hidden="true">
+                  →
+                </span>
               </Link>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div className="hero__content">
+          {eyebrow && <p className="hero__eyebrow">{l(eyebrow)}</p>}
+          {title ? (
+            <h1 className="hero__title">{l(title)}</h1>
+          ) : (
+            // The logo lives in the header only; the page still has a real
+            // heading for search engines and screen readers.
+            <h1 className="sr-only">{BRAND.name}</h1>
+          )}
+          {text && <p className="hero__text">{l(text)}</p>}
+          {(cta || secondaryCta) && (
+            <div className="hero__actions">
+              {cta && (
+                <Link
+                  to={cta.to}
+                  prefetch="intent"
+                  className="hero__cta hero__cta--primary"
+                >
+                  {l(cta.label)}
+                </Link>
+              )}
+              {secondaryCta && (
+                <Link
+                  to={secondaryCta.to}
+                  prefetch="intent"
+                  className="hero__cta"
+                >
+                  {l(secondaryCta.label)}
+                </Link>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }

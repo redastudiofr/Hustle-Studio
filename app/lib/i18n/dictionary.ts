@@ -38,7 +38,7 @@ export const en = {
   'collections.eyebrow': 'shop',
   'collections.title': 'all collections',
   'collections.intro':
-    'every piece we carry, sorted by category. tap a collection to see what’s in it.',
+    'every piece, sorted by category. tap a collection to see what’s in it.',
   'collections.empty': 'no collections published yet. everything we have is in',
   'collections.browseAll': 'browse all products',
 
@@ -179,27 +179,24 @@ export const en = {
   'policies.title': 'information',
   'blogs.title': 'blog',
   'about.eyebrowStory': 'our story',
-  'about.lead':
-    '{brand} is a streetwear store in Nantes and online, dedicated to independent labels.',
-  'about.manifesto':
-    'we don’t make the clothes. we find the ones worth wearing.',
-  'about.pillar1Title': 'selection',
+  'about.lead': '{brand} is an independent streetwear brand, born in Nantes.',
+  'about.manifesto': 'built for the ambitious.',
+  'about.pillar1Title': 'nantes',
   'about.pillar1Body':
-    'every label is chosen one by one — for its cut, its fabrics and what it stands for.',
-  'about.pillar2Title': 'independent',
+    'born here, built here. an independent brand, with no group behind it.',
+  'about.pillar2Title': 'ambition',
   'about.pillar2Body':
-    'young designers and small labels side by side: the ones you rarely find in the big chains.',
-  'about.pillar3Title': 'nantes',
+    'for the ones who build their own path and look further than the next season.',
+  'about.pillar3Title': 'minimalism',
   'about.pillar3Body':
-    'a real store where you can try the pieces on, and an online shop that ships them to your door.',
-  'about.ctaTitle': 'discover the selection',
-  'about.ctaBody':
-    'every piece available right now, from every label we carry.',
-  'about.ctaButton': 'shop the selection',
+    'clean cuts, a strong identity, details you notice up close.',
+  'about.ctaTitle': 'discover the collection',
+  'about.ctaBody': 'every piece available right now.',
+  'about.ctaButton': 'shop the collection',
   'about.storeEyebrow': 'the store',
   'about.storeTitle': 'come see us in nantes',
   'about.storeBody':
-    '{brand} is also a streetwear store in Nantes. come try the pieces on, discover the labels in person and talk streetwear with us.',
+    '{brand} also has a store in Nantes. come try the pieces on and talk streetwear with us.',
   'about.storeAddress': 'address',
   'about.storeHours': 'opening hours',
   'about.storeMaps': 'open in maps',
@@ -300,8 +297,7 @@ export const en = {
   // — pre-order waitlist (royal longsleeve — white only, see app/lib/preorder.ts) —
 
   // — footer —
-  'footer.blurb':
-    '{brand} — independent streetwear labels, in store in Nantes and online.',
+  'footer.blurb': '{brand} — independent streetwear, born in Nantes.',
   'footer.info': 'help',
   'footer.policies': 'policies',
   'footer.faq': 'faq',
@@ -440,7 +436,7 @@ export const en = {
   'pack.free': '+ one piece on us',
   'pack.freeSlot': 'the piece we add',
   'pack.freeTag': 'free',
-  'pack.imageAlt': 'An outfit put together at {brand}',
+  'pack.imageAlt': 'A {brand} outfit worn together',
   'pack.intro':
     'Pick a top, a bottom and a longsleeve, each in your size. Three pieces that go together, and a fourth on us.',
   'pack.model': 'model',
@@ -506,7 +502,7 @@ export const en = {
   'reviews.title': 'What our customers say',
   'reviews.empty': 'Be the first to review',
   'reviews.emptyText':
-    'Bought a piece from {brand}? Tell us how it fits and feels.',
+    'Wearing a {brand} piece? Tell us how it fits and feels.',
   'reviews.readMore': 'Read more',
   'reviews.readLess': 'Show less',
   'tier.second': 'second piece −{percent}%',
@@ -548,7 +544,7 @@ export const fr: Record<TranslationKey, string> = {
   'collections.eyebrow': 'boutique',
   'collections.title': 'toutes les collections',
   'collections.intro':
-    'toutes les pièces que nous proposons, classées par catégorie. touchez une collection pour voir ce qu’elle contient.',
+    'toutes les pièces, classées par catégorie. touchez une collection pour voir ce qu’elle contient.',
   'collections.empty':
     'aucune collection publiée pour l’instant. tout ce que nous avons est dans',
   'collections.browseAll': 'voir tous les produits',
@@ -692,26 +688,24 @@ export const fr: Record<TranslationKey, string> = {
   'blogs.title': 'journal',
   'about.eyebrowStory': 'notre histoire',
   'about.lead':
-    '{brand} est un magasin de streetwear à Nantes et en ligne, dédié aux marques indépendantes.',
-  'about.manifesto':
-    'nous ne fabriquons pas les vêtements. nous trouvons ceux qui valent la peine d’être portés.',
-  'about.pillar1Title': 'sélection',
+    '{brand} est une marque de streetwear indépendante, née à Nantes.',
+  'about.manifesto': 'built for the ambitious.',
+  'about.pillar1Title': 'nantes',
   'about.pillar1Body':
-    'chaque marque est choisie une par une — pour sa coupe, ses matières et ce qu’elle défend.',
-  'about.pillar2Title': 'indépendant',
+    'née ici, construite ici. une marque indépendante, sans groupe derrière elle.',
+  'about.pillar2Title': 'ambition',
   'about.pillar2Body':
-    'jeunes créateurs et petites marques côte à côte : celles qu’on trouve rarement dans les grandes enseignes.',
-  'about.pillar3Title': 'nantes',
+    'pour celles et ceux qui tracent leur propre chemin et voient plus loin que la prochaine saison.',
+  'about.pillar3Title': 'minimalisme',
   'about.pillar3Body':
-    'un vrai magasin pour essayer les pièces, et une boutique en ligne qui vous les livre.',
-  'about.ctaTitle': 'découvrir la sélection',
-  'about.ctaBody':
-    'toutes les pièces disponibles en ce moment, de toutes nos marques.',
-  'about.ctaButton': 'voir la sélection',
+    'des coupes nettes, une identité affirmée, des détails qu’on remarque de près.',
+  'about.ctaTitle': 'découvrir la collection',
+  'about.ctaBody': 'toutes les pièces disponibles en ce moment.',
+  'about.ctaButton': 'voir la collection',
   'about.storeEyebrow': 'le magasin',
   'about.storeTitle': 'venez nous voir à nantes',
   'about.storeBody':
-    '{brand}, c’est aussi un magasin de streetwear à Nantes. venez essayer les pièces, découvrir les marques en vrai et parler streetwear avec nous.',
+    '{brand} a aussi un magasin à Nantes. venez essayer les pièces et parler streetwear avec nous.',
   'about.storeAddress': 'adresse',
   'about.storeHours': 'horaires',
   'about.storeMaps': 'ouvrir dans maps',
@@ -812,8 +806,7 @@ export const fr: Record<TranslationKey, string> = {
   // — liste d'attente précommande (royal longsleeve — white uniquement, voir app/lib/preorder.ts) —
 
   // — pied de page —
-  'footer.blurb':
-    '{brand} — des marques de streetwear indépendantes, en magasin à Nantes et en ligne.',
+  'footer.blurb': '{brand} — streetwear indépendant, né à Nantes.',
   'footer.info': 'aide',
   'footer.policies': 'informations légales',
   'footer.faq': 'faq',
@@ -954,7 +947,7 @@ export const fr: Record<TranslationKey, string> = {
   'pack.free': '+ une pièce offerte',
   'pack.freeSlot': 'la pièce offerte',
   'pack.freeTag': 'offert',
-  'pack.imageAlt': 'Une tenue composée chez {brand}',
+  'pack.imageAlt': 'Une tenue {brand} portée',
   'pack.intro':
     'Choisissez un haut, un bas et un longsleeve, chacun dans votre taille. Trois pièces qui vont ensemble, et une quatrième offerte.',
   'pack.model': 'modèle',
@@ -1024,7 +1017,7 @@ export const fr: Record<TranslationKey, string> = {
   'reviews.title': 'Ce que disent nos clients',
   'reviews.empty': 'Soyez le premier à donner votre avis',
   'reviews.emptyText':
-    'Vous avez acheté une pièce chez {brand} ? Dites-nous comment elle tombe.',
+    'Vous portez une pièce {brand} ? Dites-nous comment elle tombe.',
   'reviews.readMore': 'Lire la suite',
   'reviews.readLess': 'Réduire',
   'tier.second': '2e article −{percent} %',

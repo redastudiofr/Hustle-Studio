@@ -16,13 +16,16 @@ export async function sendNotificationEmail({
   env,
   subject,
   text,
+  to: defaultTo,
 }: {
   env: Env;
   subject: string;
   text: string;
+  /** Inbox used when NOTIFICATION_EMAIL is not set (else BRAND.email). */
+  to?: string;
 }): Promise<boolean> {
   const apiKey = env.RESEND_API_KEY;
-  const to = env.NOTIFICATION_EMAIL || BRAND.email;
+  const to = env.NOTIFICATION_EMAIL || defaultTo || BRAND.email;
   if (!apiKey || !to) return false;
 
   try {

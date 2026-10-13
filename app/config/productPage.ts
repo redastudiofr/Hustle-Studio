@@ -26,8 +26,8 @@ export const PRODUCT_PAGE = {
   features: [
     {
       icon: 'pin',
-      title: 'Selected in Nantes',
-      detail: 'Independent labels only',
+      title: 'Designed in Nantes',
+      detail: 'Independent brand',
     },
     {icon: 'box', title: 'Ships in 1–3 days', detail: 'Tracked delivery'},
   ] as Highlight[],
@@ -36,12 +36,12 @@ export const PRODUCT_PAGE = {
   shipsNote: 'Order today — ships within 1 to 3 business days',
 
   /** Default highlights when the product has no custom.highlights. */
-  highlightsTitle: 'Independent labels, hand-picked in Nantes.',
+  highlightsTitle: 'Designed in Nantes, built for the ambitious.',
   highlights: [
     {
       icon: 'pin',
-      title: 'Independent label',
-      detail: 'Picked one by one by our Nantes store',
+      title: 'Independent brand',
+      detail: 'Born in Nantes',
     },
     {
       icon: 'box',

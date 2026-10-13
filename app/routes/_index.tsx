@@ -8,9 +8,12 @@ import {seoMeta, originFromMatches} from '~/lib/seo';
 export const meta: Route.MetaFunction = ({matches}) =>
   seoMeta({path: '/', origin: originFromMatches(matches)});
 
+/** The homepage minus the sections switched off with `hidden: true`. */
+const SECTIONS = HOME_SECTIONS.filter((section) => !section.hidden);
+
 /** Preloads the hero photo (the page's LCP element) when one is configured. */
 export function links() {
-  const hero = HOME_SECTIONS.find((section) => section.type === 'hero');
+  const hero = SECTIONS.find((section) => section.type === 'hero');
   if (!hero || hero.type !== 'hero' || !hero.image) return [];
   const {desktop, mobile} = hero.image;
   return [
@@ -30,7 +33,7 @@ export function links() {
  * product section fills in as its data arrives.
  */
 export async function loader({context}: Route.LoaderArgs) {
-  return {sections: loadHomeSections(context.storefront, HOME_SECTIONS)};
+  return {sections: loadHomeSections(context.storefront, SECTIONS)};
 }
 
 export default function Homepage() {
@@ -38,7 +41,7 @@ export default function Homepage() {
 
   return (
     <div className="home">
-      <HomeSections sections={HOME_SECTIONS} data={sections} />
+      <HomeSections sections={SECTIONS} data={sections} />
     </div>
   );
 }

@@ -42,7 +42,7 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
         heading: '2. les produits',
         body: [
           `Nous décrivons et photographions chaque pièce avec le plus de fidélité possible. Les écrans restituent les couleurs différemment : une légère variation entre la photo et le vêtement est normale et ne constitue pas un défaut.`,
-          `Une grande partie des pièces que nous proposons viennent de marques indépendantes, en quantités limitées. La disponibilité affichée sur le site est indicative : si un article est épuisé entre votre commande et sa préparation, nous vous prévenons et vous remboursons intégralement cet article.`,
+          `Nos pièces sont produites en séries limitées. La disponibilité affichée sur le site est indicative : si un article est épuisé entre votre commande et sa préparation, nous vous prévenons et vous remboursons intégralement cet article.`,
         ],
       },
       {
@@ -91,8 +91,8 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
       {
         heading: '9. propriété intellectuelle',
         body: [
-          `Le nom et le logo ${B}, les textes, les photographies et le code de ce site appartiennent à ${B} ou sont utilisés avec autorisation. Vous ne pouvez ni les copier, ni les reproduire, ni les exploiter commercialement sans notre accord écrit.`,
-          `Les noms, logos et créations des marques que nous vendons appartiennent à leurs propriétaires respectifs. Acheter un vêtement vous donne le vêtement. Cela ne vous accorde aucune licence pour en reproduire la création.`,
+          `L’ensemble des éléments de ce site — le nom, le logo, les photographies, les créations, les textes et le code — appartient à ${B} ou est utilisé avec autorisation. Vous ne pouvez ni les copier, ni les reproduire, ni les exploiter commercialement sans notre accord écrit.`,
+          `Acheter un vêtement vous donne le vêtement. Cela ne vous accorde aucune licence pour en reproduire la création.`,
         ],
       },
       {

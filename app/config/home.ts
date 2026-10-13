@@ -30,7 +30,20 @@ export type HomeLink = {label: Localized; to: string};
 
 export type ProductSort = 'newest' | 'best-selling';
 
-export type HomeSection =
+/** Texts of the countdown to the next drop (date: app/config/launch.ts). */
+export type CountdownCopy = {
+  label: Localized;
+  /** Shown instead of the figures once the launch time is reached. */
+  endedLabel: Localized;
+  units: {
+    days: Localized;
+    hours: Localized;
+    minutes: Localized;
+    seconds: Localized;
+  };
+};
+
+export type HomeSection = (
   | {
       type: 'hero';
       eyebrow?: Localized;
@@ -40,6 +53,8 @@ export type HomeSection =
       image?: HomeImage;
       cta?: HomeLink;
       secondaryCta?: HomeLink;
+      /** Countdown to LAUNCH.date, between the text and the button. */
+      countdown?: CountdownCopy;
     }
   | {
       /** A row or grid of product cards. */
@@ -118,7 +133,24 @@ export type HomeSection =
       /** "Need help?": shipping, returns, terms, support (HelpFaq). */
       type: 'faq';
     }
-  | {type: 'newsletter'};
+  | {type: 'newsletter'}
+  | {
+      /**
+       * "Be first": the drop waitlist (e-mail + phone). Sign-ups are saved
+       * in Shopify and e-mailed to LAUNCH.notifyEmail (app/config/launch.ts).
+       */
+      type: 'waitlist';
+      title: Localized;
+      text: Localized;
+      submitLabel: Localized;
+    }
+) & {
+  /**
+   * true: the section is not rendered, nor its data loaded — its code and
+   * content stay here, ready to come back by removing the flag.
+   */
+  hidden?: boolean;
+};
 
 /**
  * A photo of the "family" wall. Put the file in public/brand/family/ and
@@ -159,15 +191,30 @@ export const HOME_SECTIONS: HomeSection[] = [
   {
     type: 'hero',
     image: {
-      desktop: '/brand/hero-desktop-studio.webp',
-      mobile: '/brand/hero-mobile-desert.webp',
-      alt: 'Black hoodie and wide joggers, worn in a concrete studio',
+      // Two different photos, one per format — not one photo cropped twice.
+      desktop: '/brand/hero-desktop-passage.webp',
+      mobile: '/brand/hero-mobile-passage.webp',
+      alt: 'White embroidered henley and black jeans, in the Passage Pommeraye, Nantes',
     },
-    eyebrow: 'Streetwear store — Nantes',
-    title: 'Independent labels, hand-picked.',
-    text: 'The streetwear labels worth knowing, in store in Nantes and online.',
-    cta: {label: 'Shop now', to: '/collections/all'},
-    secondaryCta: {label: 'Collections', to: '/collections'},
+    title: 'BUILT FOR THE AMBITIOUS.',
+    text: 'Une marque indépendante née à Nantes, pour ceux qui voient plus loin.',
+    countdown: {
+      label: 'Prochain drop',
+      endedLabel: 'Le drop est en ligne.',
+      units: {
+        days: 'Jours',
+        hours: 'Heures',
+        minutes: 'Min',
+        seconds: 'Sec',
+      },
+    },
+    cta: {label: 'DÉCOUVRIR LA COLLECTION', to: '/collections/all'},
+  },
+  {
+    type: 'waitlist',
+    title: 'BE FIRST.',
+    text: '30 pièces. Un seul drop. Inscris-toi pour être parmi les premiers informés du lancement de Hustle Studio.',
+    submitLabel: 'REJOINDRE LA LISTE D’ATTENTE',
   },
   {
     type: 'collections',
@@ -187,6 +234,9 @@ export const HOME_SECTIONS: HomeSection[] = [
     title: 'Our independent labels',
   },
   {
+    // Hidden for now (not rendered, no data loaded). Remove `hidden` to
+    // bring the community wall back exactly as it was.
+    hidden: true,
     type: 'family',
     title: 'Community',
     text: 'Our selection, worn on the street.',
@@ -194,24 +244,24 @@ export const HOME_SECTIONS: HomeSection[] = [
   },
   {
     type: 'about',
-    eyebrow: 'About us',
+    eyebrow: 'Notre histoire — Nantes',
     title: 'Hustle Studio.',
     paragraphs: [
-      'The best streetwear is often made by small, independent labels: young designers, short runs, pieces you will not see on everyone. They are also the hardest to find — and almost never stocked side by side.',
-      'Hustle Studio is the place we wanted to shop in: a streetwear store in Nantes, and this site, where independent labels are picked one by one, for their cut, their fabrics and what they stand for.',
-      'We do not make the clothes — the labels do. Our job is to find the ones worth wearing and bring them to you: in store in Nantes, or delivered to your door.',
+      'Hustle Studio est une marque indépendante, née à Nantes. Pas de grand groupe derrière, pas de raccourci : juste une idée, et le travail pour la faire exister.',
+      'On la fait pour ceux qui avancent. Ceux qui construisent leur propre chemin, qui voient plus loin que la prochaine saison et qui n’attendent pas qu’on leur ouvre la porte.',
+      'Notre streetwear est minimaliste par choix. Des coupes nettes, une identité affirmée, des détails qu’on remarque de près. Peu de pièces, chacune pensée pour durer.',
     ],
     image: {
-      desktop: '/brand/about.webp',
-      alt: 'White long-sleeve and raw denim jeans, worn in a Paris street',
+      desktop: '/brand/about-street.webp',
+      alt: 'White waffle henley with red embroidered sleeves and raw denim, worn in the street',
     },
-    cta: {label: 'Our story', to: '/about'},
+    cta: {label: 'Lire notre histoire', to: '/about'},
   },
   {
     type: 'editorial',
     eyebrow: 'The store',
     title: 'Come see us in Nantes.',
-    text: 'Hustle Studio is also a real streetwear store in Nantes. Come try the pieces on, discover the labels in person and talk streetwear with us.',
+    text: 'Hustle Studio is also a streetwear store in Nantes. Come try the pieces on and talk streetwear with us.',
     cta: {label: 'Visit the store', to: '/about#store'},
   },
   {type: 'reviews'},

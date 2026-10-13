@@ -14,7 +14,7 @@ export const BRAND = {
 
   /** Default SEO description, used when a page has none of its own. */
   description:
-    'Hustle Studio — streetwear store in Nantes and online. A hand-picked selection of independent streetwear labels.',
+    'Hustle Studio — independent streetwear brand born in Nantes. Minimal pieces, built for the ambitious.',
 
   /**
    * Public URL of the live site, without a trailing slash. Used for canonical

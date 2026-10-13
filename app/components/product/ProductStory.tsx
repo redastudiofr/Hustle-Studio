@@ -14,7 +14,7 @@ const ICONS: Highlight['icon'][] = [
 ];
 
 /**
- * Highlights ("Independent label…") as icon rows, from the product's
+ * Highlights ("Designed in Nantes…") as icon rows, from the product's
  * custom.highlights metafield ("Title — detail" per line) or the brand-wide
  * defaults in app/config/productPage.ts.
  */

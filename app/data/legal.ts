@@ -90,7 +90,7 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
         heading: '2. the products',
         body: [
           `We describe and photograph each piece as accurately as we can. Screens render colour differently, so a small variation between the photograph and the garment is normal and is not a defect.`,
-          `Many of the pieces we carry come from independent labels in limited quantities. Availability shown on the site is indicative: if an item sells out between your order and its preparation, we will tell you and refund that item in full.`,
+          `Our pieces are produced in limited runs. Availability shown on the site is indicative: if an item sells out between your order and its preparation, we will tell you and refund that item in full.`,
         ],
       },
       {
@@ -139,8 +139,8 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: '9. intellectual property',
         body: [
-          `The ${B} name and logo, the texts, the photographs and the code of this site belong to ${B} or are used with permission. You may not copy, reproduce or reuse them commercially without our written agreement.`,
-          `The names, logos and designs of the labels we sell belong to their respective owners. Buying a garment gives you the garment. It does not give you a licence to reproduce its design.`,
+          `Everything on this site — the name, the logo, the photographs, the garment designs, the texts and the code — belongs to ${B} or is used with permission. You may not copy, reproduce or reuse it commercially without our written agreement.`,
+          `Buying a garment gives you the garment. It does not give you a licence to reproduce its design.`,
         ],
       },
       {
