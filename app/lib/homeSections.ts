@@ -5,7 +5,11 @@ import type {
   HomeSortedProductsQuery,
 } from 'storefrontapi.generated';
 import {HOME_SECTIONS, type HomeSection, type ProductSort} from '~/config/home';
-import {isBrandCollection, withoutAutoCollections} from '~/lib/collections';
+import {
+  isBrandCollection,
+  normalizeName,
+  withoutAutoCollections,
+} from '~/lib/collections';
 import {loadReviews} from '~/lib/reviews';
 import type {Review} from '~/data/reviews';
 import {PACK_ENABLED} from '~/lib/packOffer';
@@ -91,7 +95,10 @@ export function loadHomeSections(
         return {
           type: 'collections',
           data: allCollections().then((all) =>
-            all.filter((c) => !isBrandCollection(c)),
+            pickCollections(
+              all.filter((c) => !isBrandCollection(c)),
+              section.only,
+            ),
           ),
         };
       case 'brands':
@@ -121,6 +128,25 @@ export function loadHomeSections(
         return {type: 'static'};
     }
   });
+}
+
+/**
+ * `only` set: just those collections, in the order listed, matched on handle
+ * or title. Unset: every collection, in Shopify's order.
+ */
+function pickCollections(
+  collections: HomeCollectionFragment[],
+  only?: string[],
+): HomeCollectionFragment[] {
+  if (!only?.length) return collections;
+  const wanted = only.map(normalizeName);
+  const rank = (c: HomeCollectionFragment) => {
+    const byHandle = wanted.indexOf(normalizeName(c.handle));
+    return byHandle !== -1 ? byHandle : wanted.indexOf(normalizeName(c.title));
+  };
+  return collections
+    .filter((c) => rank(c) !== -1)
+    .sort((a, b) => rank(a) - rank(b));
 }
 
 async function loadProducts(

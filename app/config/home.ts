@@ -23,6 +23,13 @@ export type HomeImage = {
   desktop: string;
   /** Portrait crop for phones. Falls back to `desktop`. */
   mobile?: string;
+  /**
+   * [width, height] of each file. When set, a text-free hero takes the
+   * photo's own ratio instead of filling the screen: the image is shown
+   * whole — no crop, no forced enlargement.
+   */
+  desktopSize?: [number, number];
+  mobileSize?: [number, number];
   alt: Localized;
 };
 
@@ -80,6 +87,13 @@ export type HomeSection = (
       /** Tiles of every Shopify collection, each with its Shopify image. */
       type: 'collections';
       title: Localized;
+      /**
+       * Show only these collections, in this order (title or handle; case,
+       * spaces and hyphens ignored: "T-shirt" = "tshirt"). The others are
+       * only hidden from this slider — still in Shopify, still on
+       * /collections. Remove the list to show every collection again.
+       */
+      only?: string[];
     }
   | {
       /**
@@ -194,30 +208,16 @@ export const HOME_SECTIONS: HomeSection[] = [
       // Two different photos, one per format — not one photo cropped twice.
       desktop: '/brand/hero-desktop-passage.webp',
       mobile: '/brand/hero-mobile-passage.webp',
+      // Native pixel sizes: each format is shown whole, at its own ratio.
+      desktopSize: [1983, 793],
+      mobileSize: [940, 1672],
       alt: {
         en: 'White embroidered henley and black jeans, in the Passage Pommeraye, Nantes',
         fr: 'Henley blanc brodé et jean noir, dans le passage Pommeraye, à Nantes',
       },
     },
-    title: 'BUILT FOR THE AMBITIOUS.',
-    text: {
-      en: 'An independent brand born in Nantes, for those who see further.',
-      fr: 'Une marque indépendante née à Nantes, pour ceux qui voient plus loin.',
-    },
-    countdown: {
-      label: {en: 'Next drop', fr: 'Prochain drop'},
-      endedLabel: {en: 'The drop is live.', fr: 'Le drop est en ligne.'},
-      units: {
-        days: {en: 'Days', fr: 'Jours'},
-        hours: {en: 'Hours', fr: 'Heures'},
-        minutes: 'Min',
-        seconds: 'Sec',
-      },
-    },
-    cta: {
-      label: {en: 'DISCOVER THE COLLECTION', fr: 'DÉCOUVRIR LA COLLECTION'},
-      to: '/collections/all',
-    },
+    // Purely visual: no title, text, countdown or button. To bring the
+    // drop countdown back, add `countdown` (see CountdownCopy) and a `cta`.
   },
   {
     type: 'waitlist',
@@ -234,6 +234,8 @@ export const HOME_SECTIONS: HomeSection[] = [
   {
     type: 'collections',
     title: {en: 'Shop by category', fr: 'Par catégorie'},
+    // For now: Longsleeve and T-shirt only. Remove `only` to show them all.
+    only: ['longsleeve', 'tshirt'],
   },
   {
     type: 'products',

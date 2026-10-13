@@ -48,6 +48,9 @@ export function Hero({
   countdown?: CountdownCopy;
 }) {
   const l = useLocalized();
+  // Nothing written on it: the photo alone, at its own ratio, no veil.
+  const bare =
+    !eyebrow && !title && !text && !cta && !secondaryCta && !countdown;
   const sectionRef = useRef<HTMLElement | null>(null);
   const {setTransparent} = useHeaderTone();
 
@@ -67,24 +70,44 @@ export function Hero({
 
   return (
     <section
-      className={`hero ${image ? 'hero--photo' : 'hero--type'} ${countdown ? 'hero--launch' : ''}`}
+      className={`hero ${image ? 'hero--photo' : 'hero--type'} ${countdown ? 'hero--launch' : ''} ${bare ? 'hero--bare' : ''}`}
+      style={
+        bare && image
+          ? ({
+              '--hero-ratio-desktop': image.desktopSize
+                ? `${image.desktopSize[0]} / ${image.desktopSize[1]}`
+                : undefined,
+              '--hero-ratio-mobile':
+                (image.mobileSize ?? image.desktopSize)
+                  ? `${(image.mobileSize ?? image.desktopSize)![0]} / ${(image.mobileSize ?? image.desktopSize)![1]}`
+                  : undefined,
+            } as React.CSSProperties)
+          : undefined
+      }
       ref={sectionRef}
       aria-label={BRAND.name}
     >
       {image && (
         <div className="hero__media">
           <picture>
-            <source media="(min-width: 48em)" srcSet={image.desktop} />
+            <source
+              media="(min-width: 48em)"
+              srcSet={image.desktop}
+              width={image.desktopSize?.[0]}
+              height={image.desktopSize?.[1]}
+            />
             <img
               src={image.mobile ?? image.desktop}
               alt={l(image.alt)}
+              width={(image.mobileSize ?? image.desktopSize)?.[0]}
+              height={(image.mobileSize ?? image.desktopSize)?.[1]}
               fetchPriority="high"
               loading="eager"
               decoding="async"
               className="hero__img"
             />
           </picture>
-          <div className="hero__scrim" />
+          {!bare && <div className="hero__scrim" />}
         </div>
       )}
 

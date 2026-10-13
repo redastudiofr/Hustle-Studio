@@ -37,7 +37,13 @@ export function CollectionsSlider({
   if (!collections.length) return null;
 
   return (
-    <Reveal as="section" className="collections-slider" aria-labelledby={id}>
+    <Reveal
+      as="section"
+      // Two collections or fewer: equal columns instead of a rail that
+      // would leave most of the row empty.
+      className={`collections-slider ${collections.length <= 2 ? 'collections-slider--pair' : ''}`}
+      aria-labelledby={id}
+    >
       <div className="section-head">
         <h2 className="section-title" id={id}>
           {title}

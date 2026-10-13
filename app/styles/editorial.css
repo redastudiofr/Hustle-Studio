@@ -2858,3 +2858,84 @@ h1,
 .popup input {
   border-radius: 0;
 }
+
+/* ── Collections slider with two collections: two equal columns ────────── */
+.collections-slider--pair .collections-slider__track {
+  overflow: visible;
+  scroll-snap-type: none;
+  cursor: auto;
+}
+
+.collections-slider--pair .collections-slider__tile {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+@media (max-width: 47.99em) {
+  .collections-slider--pair .collections-slider__track {
+    gap: 0.5rem;
+  }
+
+  .collections-slider--pair .collections-slider__label {
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    font-size: 1.15rem;
+  }
+}
+
+/* ── Text-free hero: the photo alone, whole, at its own ratio ─────────────
+ * No veil, no gradient, no zoom: nothing between the visitor and the
+ * photograph. The block takes each file's native ratio (set inline from
+ * app/config/home.ts), so `cover` never crops or enlarges beyond what the
+ * screen width requires; only a screen shorter than the photo trims it,
+ * evenly from the centre. */
+.home .hero.hero--bare {
+  height: auto;
+  min-height: 0;
+  max-height: 100svh;
+  aspect-ratio: var(--hero-ratio-mobile, 9 / 16);
+  background: var(--color-ink);
+}
+
+@media (min-width: 48em) {
+  .home .hero.hero--bare {
+    aspect-ratio: var(--hero-ratio-desktop, 21 / 9);
+  }
+}
+
+.hero--bare .hero__media {
+  background: var(--color-ink);
+}
+
+.hero--bare .hero__media::after {
+  display: none;
+}
+
+.hero--bare .hero__img,
+.hero--bare.hero--photo .hero__img {
+  animation: none;
+  transform: none;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+/* Only the screen-reader heading lives here: keep it out of the layout. */
+.hero--bare .hero__content {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+/* Only the header's strip: keeps the white logo and icons legible over a
+   bright sky, without dimming the photograph itself. */
+.hero--bare .hero__media::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 1;
+  height: calc(var(--header-height) + 2.5rem);
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.28), transparent);
+  pointer-events: none;
+}
