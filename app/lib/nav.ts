@@ -1,10 +1,11 @@
 import type {TranslationKey} from './i18n/dictionary';
 import {NAVIGATION} from '~/config/navigation';
-import {normalizeName} from '~/lib/collections';
+import {isBrandCollection, normalizeName} from '~/lib/collections';
 
 /**
  * Turns the flat list of Shopify collections into the menu: one "shop" group,
- * plus a "drops" group when collection titles match NAVIGATION.dropPattern.
+ * a "brands" group for the brand collections (handle "marque-…"), plus a
+ * "drops" group when collection titles match NAVIGATION.dropPattern.
  * Data-driven on purpose — a collection created in Shopify lands in the menu
  * without a code change. Order and grouping are set in app/config/navigation.ts.
  */
@@ -52,12 +53,21 @@ export function buildNavGroups(collections: NavCollection[]): NavGroup[] {
     {
       id: 'shop',
       labelKey: 'nav.shop' as const,
-      collections: sorted(collections.filter((c) => !isDrop(c))),
+      collections: sorted(
+        collections.filter((c) => !isDrop(c) && !isBrandCollection(c)),
+      ),
+    },
+    {
+      id: 'brands',
+      labelKey: 'nav.brands' as const,
+      collections: collections.filter(isBrandCollection),
     },
     {
       id: 'drops',
       labelKey: 'nav.drops' as const,
-      collections: sorted(collections.filter(isDrop)),
+      collections: sorted(
+        collections.filter((c) => isDrop(c) && !isBrandCollection(c)),
+      ),
     },
   ].filter((group) => group.collections.length > 0);
 }

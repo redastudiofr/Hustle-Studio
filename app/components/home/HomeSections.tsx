@@ -131,6 +131,22 @@ function HomeSectionView({
         </Suspense>
       );
 
+    case 'brands':
+      if (data?.type !== 'brands') return null;
+      return (
+        <Suspense fallback={null}>
+          <Await resolve={data.data}>
+            {(brands) => (
+              <CollectionsSlider
+                id={`${id}-heading`}
+                title={l(section.title)}
+                collections={brands}
+              />
+            )}
+          </Await>
+        </Suspense>
+      );
+
     case 'editorial':
       return (
         <Reveal

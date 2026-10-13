@@ -25,25 +25,28 @@ type SliderCollection = {
 export function CollectionsSlider({
   title,
   collections,
+  id = 'collections-heading',
 }: {
   title: string;
   collections: SliderCollection[];
+  /** Heading id, unique per slider on the page. */
+  id?: string;
 }) {
   const t = useT();
   const {ref} = useHorizontalRail<HTMLDivElement>();
   if (!collections.length) return null;
 
   return (
-    <Reveal
-      as="section"
-      className="collections-slider"
-      aria-labelledby="collections-heading"
-    >
+    <Reveal as="section" className="collections-slider" aria-labelledby={id}>
       <div className="section-head">
-        <h2 className="section-title" id="collections-heading">
+        <h2 className="section-title" id={id}>
           {title}
         </h2>
-        <Link to="/collections" prefetch="intent" className="section-head__link">
+        <Link
+          to="/collections"
+          prefetch="intent"
+          className="section-head__link"
+        >
           {t('home.viewAll')}
         </Link>
       </div>

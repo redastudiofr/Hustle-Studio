@@ -271,7 +271,7 @@ export const FOOTER_QUERY = `#graphql
 export const NAV_COLLECTIONS_QUERY = `#graphql
   query NavCollections($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    collections(first: 50, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         id
         title

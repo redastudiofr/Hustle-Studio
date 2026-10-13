@@ -9,6 +9,13 @@ export function normalizeName(value: string): string {
     .replace(/[^a-z0-9]+/g, '');
 }
 
+/** A brand collection (handle "marque-…"), as opposed to a category. */
+export function isBrandCollection(collection: {handle: string}): boolean {
+  return collection.handle
+    .toLowerCase()
+    .startsWith(NAVIGATION.brandHandlePrefix);
+}
+
 const HIDDEN = new Set(NAVIGATION.hiddenCollections.map(normalizeName));
 
 /**

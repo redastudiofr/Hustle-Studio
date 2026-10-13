@@ -36,6 +36,15 @@ export const NAVIGATION = {
    */
   dropPattern: /\bdrops?\b/i as RegExp | null,
 
+  /**
+   * Brands: a Shopify collection whose URL handle starts with this prefix is
+   * a brand (e.g. "marque-808vision"), not a category. Brands get their own
+   * homepage row ("our independent labels") and their own menu group, and
+   * stay out of the categories. Set the handle in Shopify Admin → Products →
+   * Collections → the collection → Search engine listing → URL handle.
+   */
+  brandHandlePrefix: 'marque-',
+
   /** Collections never shown in the menu or on /collections (handle or title). */
   hiddenCollections: ['frontpage', 'home page'],
 

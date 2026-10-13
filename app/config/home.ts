@@ -67,6 +67,14 @@ export type HomeSection =
       title: Localized;
     }
   | {
+      /**
+       * Tiles of the brand collections (handle "marque-…", see
+       * NAVIGATION.brandHandlePrefix). Hidden while no brand exists.
+       */
+      type: 'brands';
+      title: Localized;
+    }
+  | {
       /** Photo + text, or text alone. */
       type: 'editorial';
       eyebrow?: Localized;
@@ -173,6 +181,10 @@ export const HOME_SECTIONS: HomeSection[] = [
     limit: 'all',
     layout: 'grid',
     link: {label: 'View all', to: '/collections/all'},
+  },
+  {
+    type: 'brands',
+    title: 'Our independent labels',
   },
   {
     type: 'family',

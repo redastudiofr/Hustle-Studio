@@ -5,7 +5,7 @@ import type {
   HomeSortedProductsQuery,
 } from 'storefrontapi.generated';
 import {HOME_SECTIONS, type HomeSection, type ProductSort} from '~/config/home';
-import {withoutAutoCollections} from '~/lib/collections';
+import {isBrandCollection, withoutAutoCollections} from '~/lib/collections';
 import {loadReviews} from '~/lib/reviews';
 import type {Review} from '~/data/reviews';
 import {PACK_ENABLED} from '~/lib/packOffer';
@@ -42,6 +42,7 @@ export type HomeSectionData =
   | {type: 'reviews'; data: Promise<Review[]>}
   | {type: 'feature'; data: Promise<HomeFeatureData>}
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
+  | {type: 'brands'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'pack'; data: Promise<PackData | null>}
   | {type: 'static'};
 
@@ -66,8 +67,13 @@ export function loadHomeSections(
   storefront: Storefront,
   sections: HomeSection[] = HOME_SECTIONS,
 ): HomeSectionData[] {
-  // One collections request, shared by every "collections" section.
+  // One collections request, shared by the "collections" and "brands" sections.
   let collections: Promise<HomeCollectionFragment[]> | null = null;
+  const allCollections = () =>
+    (collections ??= storefront
+      .query(HOME_COLLECTIONS_QUERY, {cache: storefront.CacheLong()})
+      .then(({collections}) => withoutAutoCollections(collections.nodes))
+      .catch(logAndReturn([] as HomeCollectionFragment[])));
 
   return sections.map((section) => {
     switch (section.type) {
@@ -82,11 +88,17 @@ export function loadHomeSections(
           data: loadFeature(storefront, section).catch(logAndReturn(null)),
         };
       case 'collections':
-        collections ??= storefront
-          .query(HOME_COLLECTIONS_QUERY, {cache: storefront.CacheLong()})
-          .then(({collections}) => withoutAutoCollections(collections.nodes))
-          .catch(logAndReturn([] as HomeCollectionFragment[]));
-        return {type: 'collections', data: collections};
+        return {
+          type: 'collections',
+          data: allCollections().then((all) =>
+            all.filter((c) => !isBrandCollection(c)),
+          ),
+        };
+      case 'brands':
+        return {
+          type: 'brands',
+          data: allCollections().then((all) => all.filter(isBrandCollection)),
+        };
       case 'reviews':
         return {type: 'reviews', data: loadReviews(storefront)};
       case 'family':
@@ -300,7 +312,7 @@ const HOME_COLLECTION_FRAGMENT = `#graphql
 const HOME_COLLECTIONS_QUERY = `#graphql
   query HomeCollections($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    collections(first: 30, sortKey: UPDATED_AT, reverse: true) {
+    collections(first: 100, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...HomeCollection
       }

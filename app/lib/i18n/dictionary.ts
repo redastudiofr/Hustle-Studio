@@ -20,6 +20,7 @@ export const en = {
   // — header / nav —
   'nav.home': 'home',
   'nav.drops': 'drops',
+  'nav.brands': 'brands',
   'nav.track': 'track my order',
   'nav.menu': 'menu',
   'nav.openMenu': 'Open menu',
@@ -529,6 +530,7 @@ export const fr: Record<TranslationKey, string> = {
   // — en-tête / navigation —
   'nav.home': 'accueil',
   'nav.drops': 'drops',
+  'nav.brands': 'marques',
   'nav.track': 'suivre ma commande',
   'nav.menu': 'menu',
   'nav.openMenu': 'Ouvrir le menu',
