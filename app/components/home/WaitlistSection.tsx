@@ -1,22 +1,24 @@
 import {useEffect, useId, useRef, useState} from 'react';
 import {Link} from 'react-router';
 import {normalizePhone} from '~/lib/phone';
+import {useT} from '~/lib/i18n';
+import type {TranslationKey} from '~/lib/i18n/dictionary';
 
 type Status = 'idle' | 'loading' | 'done' | 'error';
 
-/** What the visitor reads for each failure the server (or this form) reports. */
-const ERRORS: Record<string, string> = {
-  email: 'Cette adresse e-mail ne semble pas valide.',
-  phone:
-    'Ce numéro ne semble pas valide. Exemple : 06 12 34 56 78 ou +33 6 12 34 56 78.',
-  too_fast: 'Un instant… vérifie tes informations puis réessaie.',
-  rate: 'Trop de tentatives. Réessaie dans quelques minutes.',
-  unavailable:
-    'Les inscriptions ne sont pas encore ouvertes. Réessaie un peu plus tard.',
-  send: 'L’inscription n’a pas pu être enregistrée. Réessaie dans un instant.',
-  spam: 'L’inscription n’a pas pu être enregistrée. Réessaie dans un instant.',
-  network: 'Connexion impossible. Vérifie ta connexion internet puis réessaie.',
-};
+/** Dictionary key of the message shown for each failure code. */
+const ERROR_KEYS = {
+  email: 'waitlist.errorEmail',
+  phone: 'waitlist.errorPhone',
+  too_fast: 'waitlist.errorTooFast',
+  rate: 'waitlist.errorRate',
+  unavailable: 'waitlist.errorUnavailable',
+  send: 'waitlist.errorSend',
+  spam: 'waitlist.errorSend',
+  network: 'waitlist.errorNetwork',
+} as const satisfies Record<string, TranslationKey>;
+
+type ErrorCode = keyof typeof ERROR_KEYS;
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -38,11 +40,12 @@ export function WaitlistSection({
   submitLabel: string;
 }) {
   const [status, setStatus] = useState<Status>('idle');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ErrorCode | null>(null);
   const [fieldError, setFieldError] = useState<'email' | 'phone' | null>(null);
   const startedAt = useRef<number>(0);
   const sending = useRef(false);
   const formId = useId();
+  const t = useT();
 
   // When the form became usable — the server rejects instant submissions.
   useEffect(() => {
@@ -57,12 +60,12 @@ export function WaitlistSection({
 
     if (!EMAIL_PATTERN.test(email)) {
       setFieldError('email');
-      setError(ERRORS.email);
+      setError('email');
       return;
     }
     if (!normalizePhone(phone)) {
       setFieldError('phone');
-      setError(ERRORS.phone);
+      setError('phone');
       return;
     }
 
@@ -83,12 +86,14 @@ export function WaitlistSection({
         form.reset();
         return;
       }
-      const code = body?.error ?? 'send';
+      const code = (
+        body?.error && body.error in ERROR_KEYS ? body.error : 'send'
+      ) as ErrorCode;
       if (code === 'email' || code === 'phone') setFieldError(code);
-      setError(ERRORS[code] ?? ERRORS.send);
+      setError(code);
       setStatus('error');
     } catch {
-      setError(ERRORS.network);
+      setError('network');
       setStatus('error');
     } finally {
       sending.current = false;
@@ -116,17 +121,16 @@ export function WaitlistSection({
 
         {status === 'done' ? (
           <div className="waitlist__success" role="status">
-            <p className="waitlist__success-title">C’est noté.</p>
-            <p>
-              Tu fais partie de la liste d’attente. On te prévient dès
-              l’ouverture du drop.
+            <p className="waitlist__success-title">
+              {t('waitlist.successTitle')}
             </p>
+            <p>{t('waitlist.successText')}</p>
           </div>
         ) : (
           <form className="waitlist__form" onSubmit={onSubmit} noValidate>
             <div className="waitlist__fields">
               <label className="waitlist__field" htmlFor={`${formId}-email`}>
-                <span>E-mail</span>
+                <span>{t('waitlist.emailLabel')}</span>
                 <input
                   id={`${formId}-email`}
                   type="email"
@@ -135,13 +139,13 @@ export function WaitlistSection({
                   maxLength={254}
                   autoComplete="email"
                   inputMode="email"
-                  placeholder="ton@email.com"
+                  placeholder={t('waitlist.emailPlaceholder')}
                   aria-invalid={fieldError === 'email' || undefined}
                   disabled={loading}
                 />
               </label>
               <label className="waitlist__field" htmlFor={`${formId}-phone`}>
-                <span>Téléphone</span>
+                <span>{t('waitlist.phoneLabel')}</span>
                 <input
                   id={`${formId}-phone`}
                   type="tel"
@@ -150,7 +154,7 @@ export function WaitlistSection({
                   maxLength={30}
                   autoComplete="tel"
                   inputMode="tel"
-                  placeholder="06 12 34 56 78"
+                  placeholder={t('waitlist.phonePlaceholder')}
                   aria-invalid={fieldError === 'phone' || undefined}
                   disabled={loading}
                 />
@@ -171,20 +175,16 @@ export function WaitlistSection({
             </div>
 
             <fieldset className="waitlist__consents" disabled={loading}>
-              <legend className="sr-only">Communications facultatives</legend>
+              <legend className="sr-only">
+                {t('waitlist.optionalLegend')}
+              </legend>
               <label className="waitlist__check">
                 <input type="checkbox" name="emailOptIn" />
-                <span>
-                  J’accepte de recevoir les nouveautés et offres de Hustle
-                  Studio par e-mail (facultatif).
-                </span>
+                <span>{t('waitlist.optInEmail')}</span>
               </label>
               <label className="waitlist__check">
                 <input type="checkbox" name="smsOptIn" />
-                <span>
-                  J’accepte de recevoir les nouveautés et offres de Hustle
-                  Studio par SMS (facultatif).
-                </span>
+                <span>{t('waitlist.optInSms')}</span>
               </label>
             </fieldset>
 
@@ -194,21 +194,18 @@ export function WaitlistSection({
               disabled={loading}
               aria-busy={loading}
             >
-              {loading ? 'Inscription en cours…' : submitLabel}
+              {loading ? t('waitlist.sending') : submitLabel}
             </button>
 
             {error && (
               <p className="waitlist__error" role="alert">
-                {error}
+                {t(ERROR_KEYS[error])}
               </p>
             )}
 
             <p className="waitlist__legal">
-              Ton e-mail et ton numéro servent à te prévenir du lancement de ce
-              drop. Les offres commerciales ne te sont envoyées que si tu as
-              coché la case correspondante, et tu peux te désinscrire à tout
-              moment. Détails dans notre{' '}
-              <Link to="/legal/privacy">politique de confidentialité</Link>.
+              {t('waitlist.legal')}{' '}
+              <Link to="/legal/privacy">{t('waitlist.privacy')}</Link>.
             </p>
           </form>
         )}

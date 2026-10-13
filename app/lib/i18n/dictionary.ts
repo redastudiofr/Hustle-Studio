@@ -514,6 +514,26 @@ export const en = {
   'pack.slot.top': 'top',
   'pack.slot.bottom': 'bottom',
   'pack.slot.longsleeve': 'longsleeve',
+  // — drop waitlist —
+  'waitlist.emailLabel': 'Email',
+  'waitlist.phoneLabel': 'Phone',
+  'waitlist.emailPlaceholder': 'you@email.com',
+  'waitlist.phonePlaceholder': '+33 6 12 34 56 78',
+  'waitlist.optInEmail': 'I agree to receive news and offers from Hustle Studio by email (optional).',
+  'waitlist.optInSms': 'I agree to receive news and offers from Hustle Studio by text message (optional).',
+  'waitlist.optionalLegend': 'Optional communications',
+  'waitlist.sending': 'Signing you up…',
+  'waitlist.legal': 'Your email and number are used to let you know when this drop launches. Offers are only sent if you ticked the matching box, and you can unsubscribe at any time. Details in our',
+  'waitlist.privacy': 'privacy policy',
+  'waitlist.successTitle': 'You’re in.',
+  'waitlist.successText': 'You’re on the waitlist. We’ll let you know the moment the drop opens.',
+  'waitlist.errorEmail': 'This email address doesn’t look right.',
+  'waitlist.errorPhone': 'This number doesn’t look right. Example: +33 6 12 34 56 78 or 06 12 34 56 78.',
+  'waitlist.errorTooFast': 'One moment… check your details and try again.',
+  'waitlist.errorRate': 'Too many attempts. Please try again in a few minutes.',
+  'waitlist.errorUnavailable': 'Sign-ups aren’t open yet. Please try again a little later.',
+  'waitlist.errorSend': 'Your sign-up couldn’t be saved. Please try again in a moment.',
+  'waitlist.errorNetwork': 'Can’t connect. Check your internet connection and try again.',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -1029,6 +1049,26 @@ export const fr: Record<TranslationKey, string> = {
   'pack.slot.top': 'haut',
   'pack.slot.bottom': 'bas',
   'pack.slot.longsleeve': 'longsleeve',
+  // — drop waitlist —
+  'waitlist.emailLabel': 'E-mail',
+  'waitlist.phoneLabel': 'Téléphone',
+  'waitlist.emailPlaceholder': 'ton@email.com',
+  'waitlist.phonePlaceholder': '06 12 34 56 78',
+  'waitlist.optInEmail': 'J’accepte de recevoir les nouveautés et offres de Hustle Studio par e-mail (facultatif).',
+  'waitlist.optInSms': 'J’accepte de recevoir les nouveautés et offres de Hustle Studio par SMS (facultatif).',
+  'waitlist.optionalLegend': 'Communications facultatives',
+  'waitlist.sending': 'Inscription en cours…',
+  'waitlist.legal': 'Ton e-mail et ton numéro servent à te prévenir du lancement de ce drop. Les offres commerciales ne te sont envoyées que si tu as coché la case correspondante, et tu peux te désinscrire à tout moment. Détails dans notre',
+  'waitlist.privacy': 'politique de confidentialité',
+  'waitlist.successTitle': 'C’est noté.',
+  'waitlist.successText': 'Tu fais partie de la liste d’attente. On te prévient dès l’ouverture du drop.',
+  'waitlist.errorEmail': 'Cette adresse e-mail ne semble pas valide.',
+  'waitlist.errorPhone': 'Ce numéro ne semble pas valide. Exemple : 06 12 34 56 78 ou +33 6 12 34 56 78.',
+  'waitlist.errorTooFast': 'Un instant… vérifie tes informations puis réessaie.',
+  'waitlist.errorRate': 'Trop de tentatives. Réessaie dans quelques minutes.',
+  'waitlist.errorUnavailable': 'Les inscriptions ne sont pas encore ouvertes. Réessaie un peu plus tard.',
+  'waitlist.errorSend': 'L’inscription n’a pas pu être enregistrée. Réessaie dans un instant.',
+  'waitlist.errorNetwork': 'Connexion impossible. Vérifie ta connexion internet puis réessaie.',
 };
 
 export const DICTIONARIES: Record<Locale, Record<TranslationKey, string>> = {

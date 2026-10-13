@@ -90,6 +90,12 @@ export function Header({
       </NavLink>
 
       <div className="site-header__side site-header__side--end">
+        {/* Desktop only: on phones the switch lives in the menu drawer. */}
+        {HAS_LANGUAGE_CHOICE && (
+          <div className="site-header__lang">
+            <LanguageSwitcher />
+          </div>
+        )}
         <button
           className="site-header__icon-btn"
           onClick={() => open('search')}

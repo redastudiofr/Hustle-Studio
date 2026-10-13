@@ -1,4 +1,4 @@
-# Drop waitlist ("BE FIRST.")
+# Drop waitlist ("BE FIRST.") and the -15% pop-up
 
 The homepage waitlist (`app/components/home/WaitlistSection.tsx`, served by
 `app/routes/waitlist.tsx`) asks for an e-mail and a phone number. Every
@@ -52,3 +52,25 @@ instance). For heavier protection, enable Vercel's Bot Protection
 
 `app/config/launch.ts` → `date`. The hero countdown reads it; at zero it
 shows "Le drop est en ligne." and stops.
+
+## Pop-up -15% on the first order
+
+Built and translated (EN/FR), shown once per visitor after the language /
+cookies dialog. It asks for a phone number and gives the code at once.
+Each number is e-mailed to the same inbox through the same `RESEND_API_KEY`
+(or stored in Notion if `NOTION_API_KEY` + `NOTION_PHONE_DATABASE_ID` are
+set). The code is given only once the number is recorded.
+
+It stays hidden until **both**:
+
+1. **Resend is configured** (set-up above), and
+2. **the discount exists in Shopify and its code is in the config.**
+   Shopify Admin → Discounts → Create discount → *Amount off order*:
+   - Code: `WELCOME15` (any name, write it down exactly)
+   - Value: Percentage, `15`
+   - Eligibility: *Specific customer segments* → "Customers who haven't
+     purchased" (first order only)
+   - Maximum uses: tick *Limit to one use per customer*
+   - Active dates: from today, no end date
+   Then put the same code in `app/config/promotions.ts` →
+   `welcomePopup.code` (or ask Claude to), and redeploy.

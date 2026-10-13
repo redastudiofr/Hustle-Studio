@@ -35,7 +35,14 @@ export function LanguageSwitcher() {
       aria-label={t('nav.language')}
       onSubmit={(event) => {
         event.preventDefault();
-        void submit(event.currentTarget);
+        // Submit through the clicked button, so its locale=en|fr travels with
+        // the form — submitting the form element alone would drop it.
+        const submitter = (event.nativeEvent as SubmitEvent).submitter;
+        void submit(
+          submitter instanceof HTMLButtonElement
+            ? submitter
+            : event.currentTarget,
+        );
       }}
     >
       <input type="hidden" name="redirectTo" value={redirectTo} />

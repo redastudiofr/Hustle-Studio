@@ -100,13 +100,17 @@ export const PROMOTIONS = {
   },
 
   /**
-   * Welcome pop-up — a discount code in exchange for a phone number, shown
-   * once per visitor. Numbers are stored in a Notion database (environment
-   * variables NOTION_API_KEY and NOTION_PHONE_DATABASE_ID); the pop-up stays
-   * hidden until those are set on Vercel, even if `enabled` is true.
+   * Welcome pop-up — -15% on the first order, in exchange for a phone
+   * number, shown once per visitor. Each number is e-mailed to
+   * LAUNCH.notifyEmail through Resend (RESEND_API_KEY on Vercel), or stored
+   * in Notion when NOTION_API_KEY and NOTION_PHONE_DATABASE_ID are set.
+   *
+   * It shows only once `code` is filled in AND one of those is configured:
+   * create the discount in Shopify first (docs/WAITLIST.md, "Pop-up -15%"),
+   * then type its exact code here.
    */
   welcomePopup: {
-    enabled: false,
+    enabled: true,
     code: '',
     percent: 15,
   },

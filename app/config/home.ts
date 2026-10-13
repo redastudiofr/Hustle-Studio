@@ -194,44 +194,59 @@ export const HOME_SECTIONS: HomeSection[] = [
       // Two different photos, one per format — not one photo cropped twice.
       desktop: '/brand/hero-desktop-passage.webp',
       mobile: '/brand/hero-mobile-passage.webp',
-      alt: 'White embroidered henley and black jeans, in the Passage Pommeraye, Nantes',
+      alt: {
+        en: 'White embroidered henley and black jeans, in the Passage Pommeraye, Nantes',
+        fr: 'Henley blanc brodé et jean noir, dans le passage Pommeraye, à Nantes',
+      },
     },
     title: 'BUILT FOR THE AMBITIOUS.',
-    text: 'Une marque indépendante née à Nantes, pour ceux qui voient plus loin.',
+    text: {
+      en: 'An independent brand born in Nantes, for those who see further.',
+      fr: 'Une marque indépendante née à Nantes, pour ceux qui voient plus loin.',
+    },
     countdown: {
-      label: 'Prochain drop',
-      endedLabel: 'Le drop est en ligne.',
+      label: {en: 'Next drop', fr: 'Prochain drop'},
+      endedLabel: {en: 'The drop is live.', fr: 'Le drop est en ligne.'},
       units: {
-        days: 'Jours',
-        hours: 'Heures',
+        days: {en: 'Days', fr: 'Jours'},
+        hours: {en: 'Hours', fr: 'Heures'},
         minutes: 'Min',
         seconds: 'Sec',
       },
     },
-    cta: {label: 'DÉCOUVRIR LA COLLECTION', to: '/collections/all'},
+    cta: {
+      label: {en: 'DISCOVER THE COLLECTION', fr: 'DÉCOUVRIR LA COLLECTION'},
+      to: '/collections/all',
+    },
   },
   {
     type: 'waitlist',
     title: 'BE FIRST.',
-    text: '30 pièces. Un seul drop. Inscris-toi pour être parmi les premiers informés du lancement de Hustle Studio.',
-    submitLabel: 'REJOINDRE LA LISTE D’ATTENTE',
+    text: {
+      en: '30 pieces. One drop. Sign up to be among the first to hear when Hustle Studio launches.',
+      fr: '30 pièces. Un seul drop. Inscris-toi pour être parmi les premiers informés du lancement de Hustle Studio.',
+    },
+    submitLabel: {
+      en: 'JOIN THE WAITLIST',
+      fr: 'REJOINDRE LA LISTE D’ATTENTE',
+    },
   },
   {
     type: 'collections',
-    title: 'Shop by category',
+    title: {en: 'Shop by category', fr: 'Par catégorie'},
   },
   {
     type: 'products',
-    title: 'New in',
+    title: {en: 'New in', fr: 'Nouveautés'},
     fallbackSort: 'newest',
     // Every product, not a first page: nothing in the catalogue is hidden.
     limit: 'all',
     layout: 'grid',
-    link: {label: 'View all', to: '/collections/all'},
+    link: {label: {en: 'View all', fr: 'Tout voir'}, to: '/collections/all'},
   },
   {
     type: 'brands',
-    title: 'Our independent labels',
+    title: {en: 'Our labels', fr: 'Nos marques'},
   },
   {
     // Hidden for now (not rendered, no data loaded). Remove `hidden` to
@@ -239,30 +254,54 @@ export const HOME_SECTIONS: HomeSection[] = [
     hidden: true,
     type: 'family',
     title: 'Community',
-    text: 'Our selection, worn on the street.',
+    text: {
+      en: 'Our selection, worn on the street.',
+      fr: 'Notre sélection, portée dans la rue.',
+    },
     photos: FAMILY_PHOTOS,
   },
   {
     type: 'about',
-    eyebrow: 'Notre histoire — Nantes',
+    eyebrow: {en: 'Our story — Nantes', fr: 'Notre histoire — Nantes'},
     title: 'Hustle Studio.',
     paragraphs: [
-      'Hustle Studio est une marque indépendante, née à Nantes. Pas de grand groupe derrière, pas de raccourci : juste une idée, et le travail pour la faire exister.',
-      'On la fait pour ceux qui avancent. Ceux qui construisent leur propre chemin, qui voient plus loin que la prochaine saison et qui n’attendent pas qu’on leur ouvre la porte.',
-      'Notre streetwear est minimaliste par choix. Des coupes nettes, une identité affirmée, des détails qu’on remarque de près. Peu de pièces, chacune pensée pour durer.',
+      {
+        en: 'Hustle Studio is an independent brand, born in Nantes. No big group behind it, no shortcuts: just an idea, and the work it takes to make it real.',
+        fr: 'Hustle Studio est une marque indépendante, née à Nantes. Pas de grand groupe derrière, pas de raccourci : juste une idée, et le travail pour la faire exister.',
+      },
+      {
+        en: 'We make it for the ones who keep moving. Those building their own path, looking further than next season, and not waiting for anyone to open the door.',
+        fr: 'On la fait pour ceux qui avancent. Ceux qui construisent leur propre chemin, qui voient plus loin que la prochaine saison et qui n’attendent pas qu’on leur ouvre la porte.',
+      },
+      {
+        en: 'Our streetwear is minimal by choice. Clean cuts, a strong identity, details you notice up close. Few pieces, each one made to last.',
+        fr: 'Notre streetwear est minimaliste par choix. Des coupes nettes, une identité affirmée, des détails qu’on remarque de près. Peu de pièces, chacune pensée pour durer.',
+      },
     ],
     image: {
       desktop: '/brand/about-street.webp',
-      alt: 'White waffle henley with red embroidered sleeves and raw denim, worn in the street',
+      alt: {
+        en: 'White waffle henley with red embroidered sleeves and raw denim, worn in the street',
+        fr: 'Henley gaufré blanc aux manches brodées de rouge et jean brut, porté dans la rue',
+      },
     },
-    cta: {label: 'Lire notre histoire', to: '/about'},
+    cta: {
+      label: {en: 'Read our story', fr: 'Lire notre histoire'},
+      to: '/about',
+    },
   },
   {
     type: 'editorial',
-    eyebrow: 'The store',
-    title: 'Come see us in Nantes.',
-    text: 'Hustle Studio is also a streetwear store in Nantes. Come try the pieces on and talk streetwear with us.',
-    cta: {label: 'Visit the store', to: '/about#store'},
+    eyebrow: {en: 'The store', fr: 'Le magasin'},
+    title: {en: 'Come see us in Nantes.', fr: 'Venez nous voir à Nantes.'},
+    text: {
+      en: 'Hustle Studio is also a streetwear store in Nantes. Come try the pieces on and talk streetwear with us.',
+      fr: 'Hustle Studio, c’est aussi un magasin de streetwear à Nantes. Venez essayer les pièces et parler streetwear avec nous.',
+    },
+    cta: {
+      label: {en: 'Visit the store', fr: 'Voir le magasin'},
+      to: '/about#store',
+    },
   },
   {type: 'reviews'},
   {type: 'faq'},

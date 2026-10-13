@@ -34,6 +34,7 @@ import {GIFT, isOfferLive, offersFor} from '~/lib/bundles';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductFaq} from '~/data/faq';
 import {useT} from '~/lib/i18n';
+import {useLocalized} from '~/lib/i18n/localized';
 import {seoMeta, originFromMatches, absoluteUrl} from '~/lib/seo';
 import {BRAND} from '~/config/brand';
 
@@ -222,6 +223,7 @@ export default function Product() {
   });
 
   const t = useT();
+  const l = useLocalized();
   const {title, description, descriptionHtml} = product;
 
   // The selected variant's own photo first when it has one (e.g. the colour
@@ -305,16 +307,19 @@ export default function Product() {
                 </Accordion>
               )}
               <Accordion
-                title={PRODUCT_PAGE.info.shippingTitle}
+                title={l(PRODUCT_PAGE.info.shippingTitle)}
                 variant="block"
               >
                 {PRODUCT_PAGE.info.shipping.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                  <p key={l(paragraph)}>{l(paragraph)}</p>
                 ))}
               </Accordion>
-              <Accordion title={PRODUCT_PAGE.info.paymentTitle} variant="block">
+              <Accordion
+                title={l(PRODUCT_PAGE.info.paymentTitle)}
+                variant="block"
+              >
                 {PRODUCT_PAGE.info.payment.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                  <p key={l(paragraph)}>{l(paragraph)}</p>
                 ))}
               </Accordion>
             </div>

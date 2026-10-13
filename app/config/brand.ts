@@ -92,9 +92,9 @@ export const BRAND = {
    * Languages offered to visitors. With one language, the site never asks
    * and shows no language switch. French stays available on the legal pages
    * (/legal/…?lang=fr): consumer terms must exist in French for customers in
-   * France. Add 'fr' here to offer the whole site in French again.
+   * France. Remove 'fr' here to run the site in English only.
    */
-  languages: ['en'] as ReadonlyArray<'en' | 'fr'>,
+  languages: ['en', 'fr'] as ReadonlyArray<'en' | 'fr'>,
 
   /** Colour of the browser UI on mobile (address bar). */
   themeColor: '#111111',

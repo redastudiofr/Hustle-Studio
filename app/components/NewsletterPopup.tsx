@@ -164,7 +164,17 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
 
   useEffect(() => {
     if (!enabled || hasSignedUp() || recentlyDismissed()) return;
-    const timer = setTimeout(() => setOpen(true), OPEN_DELAY_MS);
+    // Never on top of the first-visit language / cookies dialog: wait until
+    // the visitor has answered it, then open.
+    let timer: ReturnType<typeof setTimeout>;
+    const tryOpen = () => {
+      if (document.querySelector('.lang-prompt')) {
+        timer = setTimeout(tryOpen, OPEN_DELAY_MS);
+        return;
+      }
+      setOpen(true);
+    };
+    timer = setTimeout(tryOpen, OPEN_DELAY_MS);
     return () => clearTimeout(timer);
   }, [enabled]);
 
@@ -301,10 +311,10 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
 
         <div className="popup__media">
           <img
-            src="/brand/hero-mobile.webp"
+            src="/brand/hero-mobile-passage.webp"
             alt=""
-            width="995"
-            height="1581"
+            width="940"
+            height="1672"
             loading="lazy"
             decoding="async"
           />

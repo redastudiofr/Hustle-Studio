@@ -3,11 +3,13 @@ import type {Route} from './+types/newsletter';
 import {normalizePhone} from '~/lib/phone';
 import {
   NEWSLETTER_PROMO_CODE,
+  NEWSLETTER_PROMO_PERCENT,
   PROMO_POPUP_ACTIVE,
   PROMO_SIGNUP_COOKIE,
 } from '~/lib/newsletterPromo';
 import {localeFromRequest} from '~/lib/i18n/locale';
 import {sendNotificationEmail} from '~/lib/email';
+import {LAUNCH} from '~/config/launch';
 
 const NOTION_VERSION = '2022-06-28';
 const NOTION_TIMEOUT_MS = 8000;
@@ -138,17 +140,36 @@ async function popupSignup({
   context: Route.ActionArgs['context'];
 }) {
   const notion = notionSettings(context.env);
+  const locale = localeFromRequest(request);
   if (!notion) {
-    // The pop-up is hidden while this is unset (see root.tsx), so reaching
-    // this means a stale page or a hand-made request. Refusing is the only
-    // honest answer: there is nowhere to keep the number.
-    console.error(
-      'Promo pop-up: NOTION_API_KEY or NOTION_PHONE_DATABASE_ID is not set',
+    // No Notion database: the e-mail to the shop's inbox is the record, so
+    // the code is handed out only once Resend has accepted it.
+    if (!context.env.RESEND_API_KEY) {
+      // The pop-up is hidden in this case (see root.tsx): a stale page or a
+      // hand-made request. There is nowhere to keep the number.
+      console.error('Promo pop-up: neither Notion nor Resend is configured');
+      return Response.json({ok: false, error: 'unavailable'}, {status: 503});
+    }
+    const sent = await sendNotificationEmail({
+      env: context.env,
+      to: LAUNCH.notifyEmail,
+      subject: `Pop-up -${NEWSLETTER_PROMO_PERCENT}% — ${phone}`,
+      text: popupEmailText(phone, locale),
+    });
+    if (!sent) {
+      return Response.json(
+        {ok: false, error: 'storage', ref: 'R'},
+        {status: 502},
+      );
+    }
+    await postCustomerForm(
+      context,
+      {phone},
+      'newsletter, newsletter-popup, phone-optin',
     );
-    return Response.json({ok: false, error: 'unavailable'}, {status: 503});
+    return popupSuccess(request, false);
   }
 
-  const locale = localeFromRequest(request);
   let alreadyRegistered: boolean;
   try {
     alreadyRegistered = await isPhoneInNotion(notion, phone);
@@ -173,16 +194,29 @@ async function popupSignup({
       ),
       sendNotificationEmail({
         env: context.env,
+        to: LAUNCH.notifyEmail,
         subject: 'Nouveau numéro collecté — pop-up',
-        text: [
-          `Téléphone : ${phone}`,
-          `Langue : ${locale}`,
-          `Code promo : ${NEWSLETTER_PROMO_CODE}`,
-        ].join('\n'),
+        text: popupEmailText(phone, locale),
       }),
     ]);
   }
 
+  return popupSuccess(request, alreadyRegistered);
+}
+
+function popupEmailText(phone: string, locale: string): string {
+  return [
+    `Nouveau numéro collecté par le pop-up -${NEWSLETTER_PROMO_PERCENT}% (première commande).`,
+    '',
+    `Téléphone : ${phone}`,
+    `Langue : ${locale}`,
+    `Code promo donné : ${NEWSLETTER_PROMO_CODE}`,
+    `Date : ${new Date().toISOString()}`,
+  ].join('\n');
+}
+
+/** The code, plus the cookie that keeps the pop-up from asking again. */
+function popupSuccess(request: Request, alreadyRegistered: boolean) {
   const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
   return Response.json(
     {ok: true, code: NEWSLETTER_PROMO_CODE, alreadyRegistered},
