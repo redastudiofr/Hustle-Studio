@@ -35,13 +35,14 @@ export function CollectionsSlider({
   const t = useT();
   const {ref} = useHorizontalRail<HTMLDivElement>();
   if (!collections.length) return null;
+  const pair = collections.length <= 2;
 
   return (
     <Reveal
       as="section"
       // Two collections or fewer: equal columns instead of a rail that
       // would leave most of the row empty.
-      className={`collections-slider ${collections.length <= 2 ? 'collections-slider--pair' : ''}`}
+      className={`collections-slider ${pair ? 'collections-slider--pair' : ''}`}
       aria-labelledby={id}
     >
       <div className="section-head">
@@ -74,7 +75,11 @@ export function CollectionsSlider({
                     alt={collection.image.altText || collection.title}
                     aspectRatio="3/4"
                     loading={index < 3 ? 'eager' : 'lazy'}
-                    sizes="(min-width: 64em) 28vw, (min-width: 48em) 40vw, 75vw"
+                    sizes={
+                      pair
+                        ? '(min-width: 64em) 48vw, 50vw'
+                        : '(min-width: 64em) 28vw, (min-width: 48em) 40vw, 75vw'
+                    }
                     draggable={false}
                   />
                 ) : (
