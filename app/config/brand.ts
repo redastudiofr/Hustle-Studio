@@ -14,7 +14,7 @@ export const BRAND = {
 
   /** Default SEO description, used when a page has none of its own. */
   description:
-    'Hustle Studio — premium, minimal streetwear. T-shirts, hoodies, jeans and essentials built to last.',
+    'Hustle Studio — streetwear store in Nantes and online. A hand-picked selection of independent streetwear labels.',
 
   /**
    * Public URL of the live site, without a trailing slash. Used for canonical
@@ -40,6 +40,21 @@ export const BRAND = {
    * Leave empty to hide it.
    */
   email: '',
+
+  /**
+   * The physical store. Shown on the homepage and the about page. Fill in the
+   * address and opening hours: any empty entry is simply not shown, so
+   * nothing is ever displayed that is not the store's real information.
+   */
+  store: {
+    city: 'Nantes',
+    /** Street address, e.g. '12 Rue Exemple, 44000 Nantes'. */
+    address: '',
+    /** One line per range of days, e.g. 'Mon – Sat: 11:00 – 19:30'. */
+    hours: [] as string[],
+    /** Google Maps link to the store. */
+    mapsUrl: '',
+  },
 
   /** Social profiles. Any empty entry is simply not shown. */
   social: {

@@ -9,7 +9,6 @@ const EMAIL = C.email || BRAND.email || LEGAL_PLACEHOLDER;
 const MAILTO = EMAIL.startsWith('[') ? undefined : `mailto:${EMAIL}`;
 const RETURN_DAYS = LEGAL.returnDays;
 
-
 /**
  * The French versions of the store's legal and service documents.
  *
@@ -29,8 +28,7 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
     handle: 'terms',
     title: 'conditions générales de vente',
     navLabel: 'conditions générales',
-    intro:
-      `Les conditions dans lesquelles ${B} vous vend ses pièces, et les règles d’utilisation de ce site.`,
+    intro: `Les conditions dans lesquelles ${B} vous vend ses pièces, et les règles d’utilisation de ce site.`,
     updated: LEGAL.updated.fr,
     sections: [
       {
@@ -44,7 +42,7 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
         heading: '2. les produits',
         body: [
           `Nous décrivons et photographions chaque pièce avec le plus de fidélité possible. Les écrans restituent les couleurs différemment : une légère variation entre la photo et le vêtement est normale et ne constitue pas un défaut.`,
-          `Nos pièces sont produites en séries limitées. La disponibilité affichée sur le site est indicative : si un article est épuisé entre votre commande et sa préparation, nous vous prévenons et vous remboursons intégralement cet article.`,
+          `Une grande partie des pièces que nous proposons viennent de marques indépendantes, en quantités limitées. La disponibilité affichée sur le site est indicative : si un article est épuisé entre votre commande et sa préparation, nous vous prévenons et vous remboursons intégralement cet article.`,
         ],
       },
       {
@@ -93,8 +91,8 @@ export const LEGAL_DOCUMENTS_FR: LegalDocument[] = [
       {
         heading: '9. propriété intellectuelle',
         body: [
-          `L’ensemble des éléments de ce site — le nom, le logo, les photographies, les créations, les textes et le code — appartient à ${B} ou est utilisé avec autorisation. Vous ne pouvez ni les copier, ni les reproduire, ni les exploiter commercialement sans notre accord écrit.`,
-          `Acheter un vêtement vous donne le vêtement. Cela ne vous accorde aucune licence pour en reproduire la création.`,
+          `Le nom et le logo ${B}, les textes, les photographies et le code de ce site appartiennent à ${B} ou sont utilisés avec autorisation. Vous ne pouvez ni les copier, ni les reproduire, ni les exploiter commercialement sans notre accord écrit.`,
+          `Les noms, logos et créations des marques que nous vendons appartiennent à leurs propriétaires respectifs. Acheter un vêtement vous donne le vêtement. Cela ne vous accorde aucune licence pour en reproduire la création.`,
         ],
       },
       {

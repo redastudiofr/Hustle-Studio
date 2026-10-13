@@ -8,8 +8,10 @@ export const meta: Route.MetaFunction = ({matches}) =>
   seoMeta({title: 'about', path: '/about', origin: originFromMatches(matches)});
 
 /**
- * The brand page. Its text lives in the dictionary (about.*) so it exists in
- * both languages; add photos from public/brand/ here when you have them.
+ * The story page: a Nantes store and online shop for independent streetwear
+ * labels. Its text lives in the dictionary (about.*) so it exists in both
+ * languages; the store's address and hours come from BRAND.store and are
+ * shown only once they are filled in.
  */
 export default function About() {
   const t = useT();
@@ -18,6 +20,7 @@ export default function About() {
     {title: t('about.pillar2Title'), body: t('about.pillar2Body')},
     {title: t('about.pillar3Title'), body: t('about.pillar3Body')},
   ];
+  const {store} = BRAND;
 
   return (
     <div className="about">
@@ -42,6 +45,40 @@ export default function About() {
           </li>
         ))}
       </ul>
+
+      <section className="about__store" id="store">
+        <p className="about__eyebrow">{t('about.storeEyebrow')}</p>
+        <h2>{t('about.storeTitle')}</h2>
+        <p>{t('about.storeBody')}</p>
+        {(store.address || store.hours.length > 0) && (
+          <dl className="about__store-info">
+            {store.address && (
+              <div>
+                <dt>{t('about.storeAddress')}</dt>
+                <dd>
+                  {store.address}
+                  {store.mapsUrl && (
+                    <>
+                      {' '}
+                      <a href={store.mapsUrl} target="_blank" rel="noreferrer">
+                        {t('about.storeMaps')}
+                      </a>
+                    </>
+                  )}
+                </dd>
+              </div>
+            )}
+            {store.hours.length > 0 && (
+              <div>
+                <dt>{t('about.storeHours')}</dt>
+                {store.hours.map((line) => (
+                  <dd key={line}>{line}</dd>
+                ))}
+              </div>
+            )}
+          </dl>
+        )}
+      </section>
 
       <section className="about__cta">
         <h2>{t('about.ctaTitle')}</h2>

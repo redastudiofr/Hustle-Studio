@@ -44,7 +44,10 @@ export const LEGAL = {
 
   shipping: {
     /** How long orders take to be prepared before they ship. */
-    preparation: {en: 'one to three business days', fr: 'un à trois jours ouvrés'},
+    preparation: {
+      en: 'one to three business days',
+      fr: 'un à trois jours ouvrés',
+    },
     /** Delivery times once shipped, one line per zone. */
     zones: {
       en: [

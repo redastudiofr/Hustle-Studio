@@ -24,7 +24,11 @@ export type Highlight = {
 export const PRODUCT_PAGE = {
   /** Two tiles under the price. */
   features: [
-    {icon: 'pin', title: 'Designed in Paris', detail: 'In our Paris studio'},
+    {
+      icon: 'pin',
+      title: 'Selected in Nantes',
+      detail: 'Independent labels only',
+    },
     {icon: 'box', title: 'Ships in 1–3 days', detail: 'Tracked delivery'},
   ] as Highlight[],
 
@@ -32,9 +36,13 @@ export const PRODUCT_PAGE = {
   shipsNote: 'Order today — ships within 1 to 3 business days',
 
   /** Default highlights when the product has no custom.highlights. */
-  highlightsTitle: 'Designed in Paris, built to be worn.',
+  highlightsTitle: 'Independent labels, hand-picked in Nantes.',
   highlights: [
-    {icon: 'pin', title: 'Designed in France', detail: 'In our Paris studio'},
+    {
+      icon: 'pin',
+      title: 'Independent label',
+      detail: 'Picked one by one by our Nantes store',
+    },
     {
       icon: 'box',
       title: 'Shipped in 1–3 business days',
@@ -56,7 +64,7 @@ export const PRODUCT_PAGE = {
   info: {
     shippingTitle: 'Shipping & returns',
     shipping: [
-      'Every order is prepared and shipped within 1 to 3 business days from our Paris studio: 48 hours anywhere in France, 3 to 5 days worldwide, with tracking on every parcel.',
+      'Every order is prepared and shipped within 1 to 3 business days: 48 hours anywhere in France, 3 to 5 days worldwide, with tracking on every parcel.',
       'Returns and exchanges are accepted within 30 days of delivery, on unworn pieces in their original packaging.',
     ],
     paymentTitle: 'Secure payment',

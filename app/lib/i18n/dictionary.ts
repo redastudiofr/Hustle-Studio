@@ -37,7 +37,7 @@ export const en = {
   'collections.eyebrow': 'shop',
   'collections.title': 'all collections',
   'collections.intro':
-    "every piece we make, sorted. tap a collection to see what's in it.",
+    'every piece we carry, sorted by category. tap a collection to see what’s in it.',
   'collections.empty': 'no collections published yet. everything we have is in',
   'collections.browseAll': 'browse all products',
 
@@ -87,7 +87,7 @@ export const en = {
   'faq.title': 'need help?',
   'faq.shipping': 'shipping times',
   'faq.shippingBody':
-    'we prepare and ship every order within 1 to 3 business days. once it leaves our paris studio, delivery takes 48 hours anywhere in france, with tracking on every parcel, and 3 to 5 days worldwide — follow yours on the',
+    'we prepare and ship every order within 1 to 3 business days. once shipped, delivery takes 48 hours anywhere in france, with tracking on every parcel, and 3 to 5 days worldwide — follow yours on the',
   'faq.trackingPage': 'order tracking page',
   'faq.returns': 'returns & exchanges',
   'faq.returnsBody1':
@@ -135,7 +135,7 @@ export const en = {
   'faqPage.intro':
     'shipping, returns, sizing, care — the questions we are asked most often about {brand}.',
   'faqPage.groupOrders': 'orders & shipping',
-  'faqPage.groupPieces': 'our pieces',
+  'faqPage.groupPieces': 'the pieces',
   // — FAQ content (app/data/faq.tsx) —
   'faqData.shippingQ': 'how long does shipping take?',
   'faqData.shippingA':
@@ -179,20 +179,29 @@ export const en = {
   'blogs.title': 'blog',
   'about.eyebrowStory': 'our story',
   'about.lead':
-    '{brand} is a streetwear label for people who keep moving: clean cuts, quality fabrics, no noise.',
-  'about.manifesto': 'the hustle is quiet. the clothes should be too.',
-  'about.pillar1Title': 'ambition',
+    '{brand} is a streetwear store in Nantes and online, dedicated to independent labels.',
+  'about.manifesto':
+    'we don’t make the clothes. we find the ones worth wearing.',
+  'about.pillar1Title': 'selection',
   'about.pillar1Body':
-    'pieces made to keep up with people who work for what they want.',
-  'about.pillar2Title': 'minimalism',
+    'every label is chosen one by one — for its cut, its fabrics and what it stands for.',
+  'about.pillar2Title': 'independent',
   'about.pillar2Body':
-    'a restrained palette, clean lines, details you notice up close.',
-  'about.pillar3Title': 'durability',
+    'young designers and small labels side by side: the ones you rarely find in the big chains.',
+  'about.pillar3Title': 'nantes',
   'about.pillar3Body':
-    'fewer pieces, better chosen, made to be worn for a long time.',
-  'about.ctaTitle': 'discover the collection',
-  'about.ctaBody': 'every available piece, straight from the studio.',
-  'about.ctaButton': 'shop the collection',
+    'a real store where you can try the pieces on, and an online shop that ships them to your door.',
+  'about.ctaTitle': 'discover the selection',
+  'about.ctaBody':
+    'every piece available right now, from every label we carry.',
+  'about.ctaButton': 'shop the selection',
+  'about.storeEyebrow': 'the store',
+  'about.storeTitle': 'come see us in nantes',
+  'about.storeBody':
+    '{brand} is also a streetwear store in Nantes. come try the pieces on, discover the labels in person and talk streetwear with us.',
+  'about.storeAddress': 'address',
+  'about.storeHours': 'opening hours',
+  'about.storeMaps': 'open in maps',
   // — account area (Shopify customer accounts) —
   'account.orders': 'orders',
   'account.profile': 'profile',
@@ -290,7 +299,8 @@ export const en = {
   // — pre-order waitlist (royal longsleeve — white only, see app/lib/preorder.ts) —
 
   // — footer —
-  'footer.blurb': '{brand} — minimal, premium streetwear made to last.',
+  'footer.blurb':
+    '{brand} — independent streetwear labels, in store in Nantes and online.',
   'footer.info': 'help',
   'footer.policies': 'policies',
   'footer.faq': 'faq',
@@ -357,7 +367,8 @@ export const en = {
   'nav.shop': 'shop',
   'bundle.eyebrow': 'Bundle & save',
   'bundle.title': 'Build your set',
-  'bundle.previewNote': 'Bundle discounts launch soon — for now the set is charged at full price.',
+  'bundle.previewNote':
+    'Bundle discounts launch soon — for now the set is charged at full price.',
   'bundle.giftUnlocked': '{gift} unlocked — it ships with your order 🎁',
   'bundle.giftRemaining': 'Only €{amount} left to unlock your {gift} 🎁',
   'bundle.size': 'Size',
@@ -378,8 +389,10 @@ export const en = {
   'sizeChart.size': 'Size',
   'sizeChart.howTo': 'How to measure',
   'sizeChart.availability': 'In stock now',
-  'sizeChart.pending': 'Measurements for this piece are being added. Between two sizes?',
-  'sizeChart.pendingEnd': 'with your height and usual size — we reply within 24 business hours.',
+  'sizeChart.pending':
+    'Measurements for this piece are being added. Between two sizes?',
+  'sizeChart.pendingEnd':
+    'with your height and usual size — we reply within 24 business hours.',
   'pdp.price': 'Price',
   'pdp.detailsEyebrow': 'Details',
   'pdp.descriptionEyebrow': 'Description',
@@ -426,7 +439,7 @@ export const en = {
   'pack.free': '+ one piece on us',
   'pack.freeSlot': 'the piece we add',
   'pack.freeTag': 'free',
-  'pack.imageAlt': 'A {brand} outfit worn together',
+  'pack.imageAlt': 'An outfit put together at {brand}',
   'pack.intro':
     'Pick a top, a bottom and a longsleeve, each in your size. Three pieces that go together, and a fourth on us.',
   'pack.model': 'model',
@@ -491,7 +504,8 @@ export const en = {
   'reviews.subtitle': 'honest words from {brand} customers.',
   'reviews.title': 'What our customers say',
   'reviews.empty': 'Be the first to review',
-  'reviews.emptyText': 'Wearing a {brand} piece? Tell us how it fits and feels.',
+  'reviews.emptyText':
+    'Bought a piece from {brand}? Tell us how it fits and feels.',
   'reviews.readMore': 'Read more',
   'reviews.readLess': 'Show less',
   'tier.second': 'second piece −{percent}%',
@@ -532,7 +546,7 @@ export const fr: Record<TranslationKey, string> = {
   'collections.eyebrow': 'boutique',
   'collections.title': 'toutes les collections',
   'collections.intro':
-    'toutes nos pièces, classées. touchez une collection pour voir ce qu’elle contient.',
+    'toutes les pièces que nous proposons, classées par catégorie. touchez une collection pour voir ce qu’elle contient.',
   'collections.empty':
     'aucune collection publiée pour l’instant. tout ce que nous avons est dans',
   'collections.browseAll': 'voir tous les produits',
@@ -583,7 +597,7 @@ export const fr: Record<TranslationKey, string> = {
   'faq.title': 'besoin d’aide ?',
   'faq.shipping': 'délai de livraison',
   'faq.shippingBody':
-    'nous préparons et expédions toutes les commandes sous 1 à 3 jours ouvrés. une fois partie de notre studio parisien, la livraison prend 48 h partout en france, avec un suivi sur chaque colis, et entre 3 et 5 jours à travers le monde — suivez le vôtre sur la',
+    'nous préparons et expédions toutes les commandes sous 1 à 3 jours ouvrés. une fois expédiée, la livraison prend 48 h partout en france, avec un suivi sur chaque colis, et entre 3 et 5 jours à travers le monde — suivez le vôtre sur la',
   'faq.trackingPage': 'page de suivi de commande',
   'faq.returns': 'retours & échanges',
   'faq.returnsBody1':
@@ -632,7 +646,7 @@ export const fr: Record<TranslationKey, string> = {
   'faqPage.intro':
     'livraison, retours, tailles, entretien — les questions qu’on nous pose le plus souvent sur {brand}.',
   'faqPage.groupOrders': 'commandes et livraison',
-  'faqPage.groupPieces': 'nos pièces',
+  'faqPage.groupPieces': 'les pièces',
   // — contenu de la FAQ (app/data/faq.tsx) —
   'faqData.shippingQ': 'quels sont les délais de livraison ?',
   'faqData.shippingA':
@@ -676,20 +690,29 @@ export const fr: Record<TranslationKey, string> = {
   'blogs.title': 'journal',
   'about.eyebrowStory': 'notre histoire',
   'about.lead':
-    '{brand} est une marque de streetwear pour celles et ceux qui avancent : des coupes nettes, des matières de qualité, aucun superflu.',
-  'about.manifesto': 'le travail se fait en silence. les vêtements aussi.',
-  'about.pillar1Title': 'ambition',
+    '{brand} est un magasin de streetwear à Nantes et en ligne, dédié aux marques indépendantes.',
+  'about.manifesto':
+    'nous ne fabriquons pas les vêtements. nous trouvons ceux qui valent la peine d’être portés.',
+  'about.pillar1Title': 'sélection',
   'about.pillar1Body':
-    'des pièces faites pour suivre celles et ceux qui travaillent pour ce qu’ils veulent.',
-  'about.pillar2Title': 'minimalisme',
+    'chaque marque est choisie une par une — pour sa coupe, ses matières et ce qu’elle défend.',
+  'about.pillar2Title': 'indépendant',
   'about.pillar2Body':
-    'une palette sobre, des lignes nettes, des détails qu’on remarque de près.',
-  'about.pillar3Title': 'durabilité',
+    'jeunes créateurs et petites marques côte à côte : celles qu’on trouve rarement dans les grandes enseignes.',
+  'about.pillar3Title': 'nantes',
   'about.pillar3Body':
-    'moins de pièces, mieux choisies, faites pour être portées longtemps.',
-  'about.ctaTitle': 'découvrir la collection',
-  'about.ctaBody': 'toutes les pièces disponibles, directement du studio.',
-  'about.ctaButton': 'voir la collection',
+    'un vrai magasin pour essayer les pièces, et une boutique en ligne qui vous les livre.',
+  'about.ctaTitle': 'découvrir la sélection',
+  'about.ctaBody':
+    'toutes les pièces disponibles en ce moment, de toutes nos marques.',
+  'about.ctaButton': 'voir la sélection',
+  'about.storeEyebrow': 'le magasin',
+  'about.storeTitle': 'venez nous voir à nantes',
+  'about.storeBody':
+    '{brand}, c’est aussi un magasin de streetwear à Nantes. venez essayer les pièces, découvrir les marques en vrai et parler streetwear avec nous.',
+  'about.storeAddress': 'adresse',
+  'about.storeHours': 'horaires',
+  'about.storeMaps': 'ouvrir dans maps',
   // — espace compte (comptes clients Shopify) —
   'account.orders': 'commandes',
   'account.profile': 'profil',
@@ -788,7 +811,7 @@ export const fr: Record<TranslationKey, string> = {
 
   // — pied de page —
   'footer.blurb':
-    '{brand} — un streetwear minimaliste et premium, pensé pour durer.',
+    '{brand} — des marques de streetwear indépendantes, en magasin à Nantes et en ligne.',
   'footer.info': 'aide',
   'footer.policies': 'informations légales',
   'footer.faq': 'faq',
@@ -856,7 +879,8 @@ export const fr: Record<TranslationKey, string> = {
   'nav.shop': 'boutique',
   'bundle.eyebrow': 'Lot & économies',
   'bundle.title': 'Composez votre lot',
-  'bundle.previewNote': 'Les remises des lots arrivent bientôt — pour l’instant, le lot est au prix normal.',
+  'bundle.previewNote':
+    'Les remises des lots arrivent bientôt — pour l’instant, le lot est au prix normal.',
   'bundle.giftUnlocked': '{gift} débloqué — il part avec votre commande 🎁',
   'bundle.giftRemaining': 'Plus que {amount} € pour débloquer votre {gift} 🎁',
   'bundle.size': 'Taille',
@@ -877,8 +901,10 @@ export const fr: Record<TranslationKey, string> = {
   'sizeChart.size': 'Taille',
   'sizeChart.howTo': 'Comment mesurer',
   'sizeChart.availability': 'En stock maintenant',
-  'sizeChart.pending': 'Les mesures de cette pièce arrivent. Entre deux tailles ?',
-  'sizeChart.pendingEnd': 'avec votre taille et votre taille habituelle — réponse sous 24 h ouvrées.',
+  'sizeChart.pending':
+    'Les mesures de cette pièce arrivent. Entre deux tailles ?',
+  'sizeChart.pendingEnd':
+    'avec votre taille et votre taille habituelle — réponse sous 24 h ouvrées.',
   'pdp.price': 'Prix',
   'pdp.detailsEyebrow': 'Détails',
   'pdp.descriptionEyebrow': 'Description',
@@ -926,7 +952,7 @@ export const fr: Record<TranslationKey, string> = {
   'pack.free': '+ une pièce offerte',
   'pack.freeSlot': 'la pièce offerte',
   'pack.freeTag': 'offert',
-  'pack.imageAlt': 'Une tenue {brand} portée',
+  'pack.imageAlt': 'Une tenue composée chez {brand}',
   'pack.intro':
     'Choisissez un haut, un bas et un longsleeve, chacun dans votre taille. Trois pièces qui vont ensemble, et une quatrième offerte.',
   'pack.model': 'modèle',
@@ -995,7 +1021,8 @@ export const fr: Record<TranslationKey, string> = {
   'reviews.subtitle': 'les mots de clients {brand}, sans filtre.',
   'reviews.title': 'Ce que disent nos clients',
   'reviews.empty': 'Soyez le premier à donner votre avis',
-  'reviews.emptyText': 'Vous portez une pièce {brand} ? Dites-nous comment elle tombe.',
+  'reviews.emptyText':
+    'Vous avez acheté une pièce chez {brand} ? Dites-nous comment elle tombe.',
   'reviews.readMore': 'Lire la suite',
   'reviews.readLess': 'Réduire',
   'tier.second': '2e article −{percent} %',

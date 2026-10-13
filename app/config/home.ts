@@ -120,13 +120,31 @@ export type FamilyPhoto = {src: string; alt: Localized};
 
 /** The community photos (public/brand/family/), in display order. */
 const FAMILY_PHOTOS: FamilyPhoto[] = [
-  {src: '/brand/family/01.webp', alt: 'chloeestr in a black CY tracksuit, Paris'},
+  {
+    src: '/brand/family/01.webp',
+    alt: 'chloeestr in a black CY tracksuit, Paris',
+  },
   {src: '/brand/family/03.webp', alt: 'Stacyhrf in a grey CY set, New York'},
-  {src: '/brand/family/04.webp', alt: 'muruafit_ in a black CY zip and jogging, Toulouse'},
-  {src: '/brand/family/05.webp', alt: 'paauuul_ in black CY with two dogs, Toulouse'},
-  {src: '/brand/family/06.webp', alt: 'Rach.K_ in a black CY zip and jogging, New York'},
-  {src: '/brand/family/07.webp', alt: 'Alan__ot in a black CY tracksuit, London'},
-  {src: '/brand/family/08.webp', alt: 'muruafit_ in CY by a graffiti wall, Toulouse'},
+  {
+    src: '/brand/family/04.webp',
+    alt: 'muruafit_ in a black CY zip and jogging, Toulouse',
+  },
+  {
+    src: '/brand/family/05.webp',
+    alt: 'paauuul_ in black CY with two dogs, Toulouse',
+  },
+  {
+    src: '/brand/family/06.webp',
+    alt: 'Rach.K_ in a black CY zip and jogging, New York',
+  },
+  {
+    src: '/brand/family/07.webp',
+    alt: 'Alan__ot in a black CY tracksuit, London',
+  },
+  {
+    src: '/brand/family/08.webp',
+    alt: 'muruafit_ in CY by a graffiti wall, Toulouse',
+  },
 ];
 
 export const HOME_SECTIONS: HomeSection[] = [
@@ -137,19 +155,19 @@ export const HOME_SECTIONS: HomeSection[] = [
       mobile: '/brand/hero-mobile-desert.webp',
       alt: 'Black hoodie and wide joggers, worn in a concrete studio',
     },
-    eyebrow: 'New collection',
-    title: 'Built on ambition.',
-    text: 'Streetwear for the ones still building.',
+    eyebrow: 'Streetwear store — Nantes',
+    title: 'Independent labels, hand-picked.',
+    text: 'The streetwear labels worth knowing, in store in Nantes and online.',
     cta: {label: 'Shop now', to: '/collections/all'},
     secondaryCta: {label: 'Collections', to: '/collections'},
   },
   {
     type: 'collections',
-    title: 'Collections',
+    title: 'Shop by category',
   },
   {
     type: 'products',
-    title: 'Our products',
+    title: 'New in',
     fallbackSort: 'newest',
     // Every product, not a first page: nothing in the catalogue is hidden.
     limit: 'all',
@@ -159,7 +177,7 @@ export const HOME_SECTIONS: HomeSection[] = [
   {
     type: 'family',
     title: 'Community',
-    text: 'Worn by the ones still building.',
+    text: 'Our selection, worn on the street.',
     photos: FAMILY_PHOTOS,
   },
   {
@@ -167,15 +185,22 @@ export const HOME_SECTIONS: HomeSection[] = [
     eyebrow: 'About us',
     title: 'Hustle Studio.',
     paragraphs: [
-      'Hustle is not a slogan. It is the hours nobody sees — the early mornings, the late nights, the work you put in long before anyone is watching.',
-      'Hustle Studio is made for the ones still building: the first idea sketched on a phone, the hundredth draft, the session nobody asked you to do. People who measure progress in effort, not in noise.',
-      'Every piece is designed as a uniform for that work — clean lines, considered details, nothing that does not need to be there. Build something. Wear it while you do.',
+      'The best streetwear is often made by small, independent labels: young designers, short runs, pieces you will not see on everyone. They are also the hardest to find — and almost never stocked side by side.',
+      'Hustle Studio is the place we wanted to shop in: a streetwear store in Nantes, and this site, where independent labels are picked one by one, for their cut, their fabrics and what they stand for.',
+      'We do not make the clothes — the labels do. Our job is to find the ones worth wearing and bring them to you: in store in Nantes, or delivered to your door.',
     ],
     image: {
       desktop: '/brand/about.webp',
       alt: 'White long-sleeve and raw denim jeans, worn in a Paris street',
     },
-    cta: {label: 'Discover the studio', to: '/about'},
+    cta: {label: 'Our story', to: '/about'},
+  },
+  {
+    type: 'editorial',
+    eyebrow: 'The store',
+    title: 'Come see us in Nantes.',
+    text: 'Hustle Studio is also a real streetwear store in Nantes. Come try the pieces on, discover the labels in person and talk streetwear with us.',
+    cta: {label: 'Visit the store', to: '/about#store'},
   },
   {type: 'reviews'},
   {type: 'faq'},
