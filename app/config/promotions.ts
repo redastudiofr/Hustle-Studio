@@ -111,7 +111,7 @@ export const PROMOTIONS = {
    */
   welcomePopup: {
     enabled: true,
-    code: '',
+    code: 'WELCOME15',
     percent: 15,
   },
 };
