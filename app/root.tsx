@@ -12,11 +12,7 @@ import {
 } from 'react-router';
 import type {Route} from './+types/root';
 import {HEADER_QUERY, NAV_COLLECTIONS_QUERY} from '~/lib/fragments';
-import resetStyles from '~/styles/reset.css?url';
-import appStyles from '~/styles/app.css?url';
-import promotionsStyles from '~/styles/promotions.css?url';
-import brandStyles from '~/styles/brand.css?url';
-import editorialStyles from '~/styles/editorial.css?url';
+import siteStyles from '~/styles/site.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
 import {withoutAutoCollections} from '~/lib/collections';
@@ -225,12 +221,10 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content={BRAND.themeColor} />
         <link rel="stylesheet" href={tailwindCss}></link>
-        <link rel="stylesheet" href={resetStyles}></link>
-        <link rel="stylesheet" href={appStyles}></link>
-        <link rel="stylesheet" href={promotionsStyles}></link>
-        <link rel="stylesheet" href={brandStyles}></link>
-        <link rel="stylesheet" href={editorialStyles}></link>
-        {/* The two latin font files every page uses (app/config/theme.css). */}
+        {/* reset → app → promotions → brand → editorial → pdp, one file. */}
+        <link rel="stylesheet" href={siteStyles}></link>
+        {/* The two latin font files every page uses (app/config/theme.css):
+            body text and the header. */}
         <link
           rel="preload"
           href="/fonts/inter-tight-latin.woff2"
@@ -240,7 +234,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         />
         <link
           rel="preload"
-          href="/fonts/archivo-latin.woff2"
+          href="/fonts/inter-latin.woff2"
           as="font"
           type="font/woff2"
           crossOrigin="anonymous"

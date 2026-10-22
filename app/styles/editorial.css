@@ -2927,15 +2927,3 @@ h1,
   padding: 0;
   pointer-events: none;
 }
-
-/* Only the header's strip: keeps the white logo and icons legible over a
-   bright sky, without dimming the photograph itself. */
-.hero--bare .hero__media::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  z-index: 1;
-  height: calc(var(--header-height) + 2.5rem);
-  background: linear-gradient(to bottom, rgb(0 0 0 / 0.28), transparent);
-  pointer-events: none;
-}

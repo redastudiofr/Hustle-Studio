@@ -18,10 +18,14 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   Reviews come only from Shopify `review` metaobjects + `app/data/reviews.ts`
   (real ones, app/lib/reviews.ts) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
-  The site runs in English only (`BRAND.languages`); legal pages keep a
-  French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.
-- Styles: app.css (base) → promotions.css → brand.css → editorial.css (the
-  current editorial design layer, loaded last).
+  The site is in English by default with a French option
+  (`BRAND.languages`); config copy uses `{en, fr}` (Localized). Homepage copy lives in `app/config/home.ts`.
+- Styles: reset.css → app.css (base) → promotions.css → brand.css →
+  editorial.css → pdp.css (product page + header, mock-ups 01–09, last),
+  built into one file through app/styles/site.css (tailwind.css apart).
+- Product page: one component per section in app/components/pdp/, texts in
+  app/config/productTemplate.ts, packs in promotions.ts `teePacks` — see
+  docs/PRODUCT_PAGE.md.
 - Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
 - Vercel build: keep server and client CSS identical (no `build.target` on the

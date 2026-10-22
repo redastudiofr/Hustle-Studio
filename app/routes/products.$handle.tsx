@@ -5,64 +5,137 @@ import {
   getSelectedProductOptions,
   Analytics,
   useOptimisticVariant,
-  getProductOptions,
   getAdjacentAndFirstAvailableVariants,
-  useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import type {
-  BundleProductFragment,
+  PdpModelFragment,
   ProductFragment,
   ProductVariantFragment,
 } from 'storefrontapi.generated';
-import {ProductGallery} from '~/components/ProductGallery';
-import {ProductPurchase} from '~/components/ProductPurchase';
-import type {SizeEntry} from '~/components/ProductSizeGuide';
-import {Accordion} from '~/components/Accordion';
-import {ProductHighlights} from '~/components/product/ProductStory';
-import {CollectionsBand} from '~/components/product/CollectionsBand';
 import {SizeChartBody} from '~/components/product/SizeChartDialog';
 import {sizeChartFor} from '~/config/sizeCharts';
 import {PRODUCT_PAGE} from '~/config/productPage';
-import {NAVIGATION} from '~/config/navigation';
-import {RelatedProductsRail} from '~/components/RelatedProductsRail';
-import {SmartBundle} from '~/components/product/SmartBundle';
-import {ProductWornVideos} from '~/components/ProductWornVideos';
-import {ProductReviews} from '~/components/ProductReviews';
+import {PDP} from '~/config/productTemplate';
 import {loadReviews, reviewsForProduct} from '~/lib/reviews';
 import {parseRating} from '~/lib/rating';
-import {GIFT, isOfferLive, offersFor} from '~/lib/bundles';
+import {LIVE_TEE_PACKS, TEE_PACK_COLLECTION} from '~/lib/teePacks';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {getProductFaq} from '~/data/faq';
-import {useT} from '~/lib/i18n';
 import {useLocalized} from '~/lib/i18n/localized';
 import {seoMeta, originFromMatches, absoluteUrl} from '~/lib/seo';
 import {BRAND} from '~/config/brand';
+import {PdpGallery} from '~/components/pdp/PdpGallery';
+import {PdpBuyBox} from '~/components/pdp/PdpBuyBox';
+import {PdpReviews} from '~/components/pdp/PdpReviews';
+import {PdpMaterial} from '~/components/pdp/PdpMaterial';
+import {PdpDetails} from '~/components/pdp/PdpDetails';
+import {PdpManifesto} from '~/components/pdp/PdpManifesto';
+import {PdpCollection} from '~/components/pdp/PdpCollection';
+import {PdpComparison} from '~/components/pdp/PdpComparison';
+import {PdpDelivery} from '~/components/pdp/PdpDelivery';
+import {
+  usePackSelection,
+  type PackModel,
+} from '~/components/pdp/usePackSelection';
 
 /** Title, description and share image all come from the product in Shopify. */
 export const meta: Route.MetaFunction = ({data, matches}) => {
   const product = data?.product;
   if (!product) return seoMeta({title: '404', noindex: true});
-  return seoMeta({
-    title: product.seo?.title || product.title,
-    description: product.seo?.description || product.description,
-    image: product.images.nodes[0]?.url,
-    path: `/products/${product.handle}`,
-    type: 'product',
-    origin: originFromMatches(matches),
-  });
+  const first = product.images.nodes[0];
+  return [
+    ...seoMeta({
+      title: product.seo?.title || product.title,
+      description: product.seo?.description || product.description,
+      image: first?.url,
+      path: `/products/${product.handle}`,
+      type: 'product',
+      origin: originFromMatches(matches),
+    }),
+    // The first photo is the page's largest element: fetched with the HTML,
+    // at the width the screen needs (same URLs as the gallery's <img>).
+    ...(first ? [heroPreload(first.url)] : []),
+  ];
 };
 
-export async function loader(args: Route.LoaderArgs) {
-  const criticalData = await loadCriticalData(args);
-  const deferredData = loadDeferredData(
-    args,
-    criticalData.product.id,
-    criticalData.product.handle,
-  );
-  return {...deferredData, ...criticalData};
+/** Same widths and crop as Hydrogen's <Image aspectRatio="1/1">. */
+function heroPreload(url: string) {
+  const sep = url.includes('?') ? '&' : '?';
+  const at = (width: number) =>
+    `${url}${sep}width=${width}&height=${width}&crop=center`;
+  return {
+    tagName: 'link' as const,
+    rel: 'preload',
+    as: 'image',
+    href: at(800),
+    imageSrcSet: [200, 400, 600, 800, 1000, 1200, 1400, 1600]
+      .map((width) => `${at(width)} ${width}w`)
+      .join(', '),
+    imageSizes: '(min-width: 64em) 50vw, 100vw',
+    fetchPriority: 'high',
+  };
 }
 
-async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
+/** Anton: every title of the product page, first in view. */
+export function links() {
+  return [
+    {
+      rel: 'preload',
+      href: '/fonts/anton-latin.woff2',
+      as: 'font',
+      type: 'font/woff2',
+      crossOrigin: 'anonymous',
+    },
+  ];
+}
+
+/** Option names that hold the size. */
+const SIZE_OPTION = /taille|size|pointure/i;
+
+/** A Shopify product (or collection product) as the pack selector needs it. */
+function toPackModel(product: {
+  id: string;
+  title: string;
+  handle: string;
+  variants: {nodes: PdpModelFragment['variants']['nodes']};
+}): PackModel {
+  // Products with more than a size (e.g. a colour): keep the sizes of the
+  // first available combination, so each size appears once.
+  const nodes = product.variants.nodes;
+  const reference =
+    nodes.find((variant) => variant.availableForSale) ?? nodes[0];
+  const others = (reference?.selectedOptions ?? []).filter(
+    (option) => !SIZE_OPTION.test(option.name),
+  );
+  const sameKind = nodes.filter((variant) =>
+    others.every((option) =>
+      variant.selectedOptions.some(
+        (own) => own.name === option.name && own.value === option.value,
+      ),
+    ),
+  );
+  return {
+    id: product.id,
+    title: product.title,
+    handle: product.handle,
+    variants: sameKind.map((variant) => ({
+      id: variant.id,
+      size:
+        variant.selectedOptions.find((option) => SIZE_OPTION.test(option.name))
+          ?.value ?? null,
+      price: Number(variant.price.amount),
+      compareAt: variant.compareAtPrice
+        ? Number(variant.compareAtPrice.amount)
+        : null,
+      availableForSale: variant.availableForSale,
+      image: variant.image
+        ? {url: variant.image.url, altText: variant.image.altText}
+        : null,
+    })),
+  };
+}
+
+export async function loader(args: Route.LoaderArgs) {
+  const {context, params, request} = args;
   const {handle} = params;
   const {storefront} = context;
 
@@ -81,275 +154,159 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
-  return {product, origin: new URL(request.url).origin};
-}
+  // Packs and the collection grid: the t-shirt collection when the product
+  // is in it, else the product's own first collection.
+  const collectionHandles = product.collections.nodes.map((c) => c.handle);
+  const inPackCollection =
+    TEE_PACK_COLLECTION !== '' &&
+    collectionHandles.includes(TEE_PACK_COLLECTION);
+  const gridHandle = inPackCollection
+    ? TEE_PACK_COLLECTION
+    : (collectionHandles.find((c) => c !== 'frontpage' && c !== 'all') ?? null);
 
-const MAX_RECOMMENDATIONS = 16;
-
-/**
- * "You may also like": Shopify's own recommendations, topped up with best
- * sellers when it returns fewer than a full row (it returns nothing for a
- * brand-new product). Real, in-stock catalogue products either way; a failure
- * just hides the row.
- */
-function loadDeferredData(
-  {context, request}: Route.LoaderArgs,
-  productId: string,
-  handle: string,
-) {
-  const recommended = Promise.all([
-    context.storefront
-      .query(PRODUCT_RECOMMENDATIONS_QUERY, {variables: {productId}})
-      .catch((error: Error) => {
-        console.error(error);
-        return null;
-      }),
-    context.storefront
-      .query(FALLBACK_PRODUCTS_QUERY, {
-        variables: {first: 30},
-        cache: context.storefront.CacheShort(),
-      })
-      .catch((error: Error) => {
-        console.error(error);
-        return null;
-      }),
-  ]).then(([recos, fallback]) => {
-    const seen = new Set<string>([productId]);
-    const merged = [];
-    for (const item of [
-      ...(recos?.productRecommendations ?? []),
-      ...(fallback?.products?.nodes ?? []),
-    ]) {
-      if (
-        !item ||
-        seen.has(item.id) ||
-        item.handle === handle ||
-        !item.availableForSale
-      ) {
-        continue;
-      }
-      seen.add(item.id);
-      merged.push(item);
-      if (merged.length >= MAX_RECOMMENDATIONS) break;
-    }
-    return merged;
-  });
-
-  /*
-   * Bundle box: this product, the pieces offered alongside it and the free
-   * T-shirt, with their sizes — real catalogue products and variants. Shown
-   * on every product page while bundles are enabled; an offer without its
-   * Shopify code yet shows as "coming soon" and cannot be added.
-   */
-  const bundleOffers = offersFor(true);
-  const preview = bundleOffers.some((offer) => !isOfferLive(offer));
-  const giftHandle = GIFT.productHandle.trim();
-  const bundle = bundleOffers.length
-    ? context.storefront
-        .query(BUNDLE_QUERY, {
-          variables: {
-            handle,
-            first: 16,
-            giftHandle: giftHandle || handle,
-            withGift: giftHandle !== '',
-          },
-          cache: context.storefront.CacheShort(),
+  const collection = gridHandle
+    ? await storefront
+        .query(PDP_COLLECTION_QUERY, {
+          variables: {handle: gridHandle},
+          cache: storefront.CacheShort(),
         })
-        .then((data) => {
-          const buyable = (node: BundleProductFragment | null | undefined) =>
-            node?.availableForSale &&
-            node.variants.nodes.some((variant) => variant.availableForSale);
-          if (!data?.current || !buyable(data.current)) return null;
-          return {
-            preview,
-            offerIds: bundleOffers.map((offer) => offer.id),
-            current: data.current,
-            others: (data.products?.nodes ?? [])
-              .filter((node) => node.handle !== handle && buyable(node))
-              .slice(0, MAX_BUNDLE_CHOICES),
-            gift: data.gift && buyable(data.gift) ? data.gift : null,
-          };
-        })
+        .then((data) => data.collection)
         .catch((error: Error) => {
           console.error(error);
           return null;
         })
-    : Promise.resolve(null);
-
-  // Collections band closing the page.
-  const bandCollections = context.storefront
-    .query(BAND_COLLECTIONS_QUERY, {cache: context.storefront.CacheLong()})
-    .then((data) => {
-      const withImage = (data?.collections?.nodes ?? []).filter(
-        (collection) =>
-          collection.image &&
-          !NAVIGATION.hiddenCollections.includes(collection.handle),
-      );
-      const wanted = PRODUCT_PAGE.collectionsBand.handles;
-      const picked = wanted.length
-        ? wanted
-            .map((h) => withImage.find((collection) => collection.handle === h))
-            .filter((collection) => collection != null)
-        : withImage;
-      return picked.slice(0, PRODUCT_PAGE.collectionsBand.count);
-    })
-    .catch((error: Error) => {
-      console.error(error);
-      return [];
-    });
+    : null;
 
   // Real reviews: this product's, then the shop's (app/lib/reviews.ts).
-  const reviews = loadReviews(context.storefront).then((all) =>
-    reviewsForProduct(all, handle),
-  );
+  const reviews = loadReviews(storefront)
+    .then((all) => reviewsForProduct(all, handle))
+    .catch(() => []);
 
-  return {recommended, bundle, bandCollections, reviews};
+  return {
+    product,
+    collection,
+    inPackCollection,
+    reviews,
+    origin: new URL(request.url).origin,
+  };
 }
 
 export default function Product() {
-  const {product, recommended, bundle, bandCollections, reviews, origin} =
+  const {product, collection, inPackCollection, reviews, origin} =
     useLoaderData<typeof loader>();
+  const l = useLocalized();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
     getAdjacentAndFirstAvailableVariants(product),
   );
 
-  useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
+  const model = toPackModel(product);
+  const collectionProducts = (collection?.products.nodes ?? []).filter(
+    (node) => node.availableForSale,
+  );
+  // Designs the free t-shirts can be picked from: the pack collection only.
+  const freeModels = inPackCollection
+    ? [
+        model,
+        ...collectionProducts
+          .filter((node) => node.id !== product.id)
+          .map(toPackModel),
+      ]
+    : [model];
 
-  const productOptions = getProductOptions({
-    ...product,
-    selectedOrFirstAvailableVariant: selectedVariant,
+  const packsAllowed = inPackCollection && LIVE_TEE_PACKS.length > 0;
+  const selection = usePackSelection({
+    product: model,
+    models: freeModels,
+    packsAllowed,
   });
 
-  const t = useT();
-  const l = useLocalized();
-  const {title, description, descriptionHtml} = product;
+  const ownRating = parseRating(product.rating, product.ratingCount);
+  // Header rating: the review app's figure, else the average of the real
+  // reviews shown below; nothing at all without either.
+  const rating = reviews.then((list) => {
+    if (ownRating) return ownRating;
+    if (!list.length) return null;
+    return {
+      value: list.reduce((sum, review) => sum + review.rating, 0) / list.length,
+      count: list.length,
+    };
+  });
 
-  // The selected variant's own photo first when it has one (e.g. the colour
-  // just picked), then the rest of the product's images.
-  const galleryImages = product.images.nodes.length
-    ? product.images.nodes
-    : selectedVariant?.image
-      ? [selectedVariant.image]
-      : [];
-
-  const available = Boolean(selectedVariant?.availableForSale);
-
-  // Real size values for this product, with their live availability.
-  const sizeOption = productOptions.find((option) =>
-    /taille|size|pointure/i.test(option.name),
+  const salesCount = Number(product.salesCount?.value) || null;
+  const bestSeller = product.tags.some(
+    (tag) => tag.toLowerCase() === PDP.badges.bestSellerTag,
   );
-  const sizes: SizeEntry[] = (sizeOption?.optionValues ?? []).map((value) => ({
+
+  const sizeOption = product.options.find((option) =>
+    SIZE_OPTION.test(option.name),
+  );
+  const sizes = (sizeOption?.optionValues ?? []).map((value) => ({
     name: value.name,
-    available: value.available,
+    available: model.variants.some(
+      (variant) => variant.size === value.name && variant.availableForSale,
+    ),
   }));
-  const sizeChart = sizeChartFor(product);
+
+  const detailFiles = (product.detailImages?.references?.nodes ?? []).flatMap(
+    (node) => ('image' in node && node.image ? [node.image] : []),
+  );
+  const detailImages = [0, 1, 2].map(
+    (index) => detailFiles[index] ?? product.images.nodes[index + 1],
+  );
 
   return (
-    <div className="pdp">
-      {/* Gallery + buy box only: the sticky buy box is clamped to this
-          wrapper, so full-width sections must stay outside it. */}
-      <div className="pdp__main">
-        <div className="pdp__gallery">
-          <ProductGallery images={galleryImages} title={title} />
-        </div>
-
-        <aside className="pdp__buy">
-          <ProductPurchase
-            title={title}
-            price={selectedVariant?.price}
-            compareAtPrice={selectedVariant?.compareAtPrice}
-            productOptions={productOptions}
-            sizes={sizes}
-            available={available}
-            quantityAvailable={selectedVariant?.quantityAvailable ?? null}
-            descriptionHtml={descriptionHtml}
-            variantId={selectedVariant?.id}
-            selectedVariant={selectedVariant}
-            // Only a real review app's score (Shopify metafields) — never an
-            // invented one. No review app: no stars.
-            rating={parseRating(product.rating, product.ratingCount)}
-            sizeChart={sizeChart}
-          />
-
-          <Suspense fallback={null}>
-            <Await resolve={bundle} errorElement={null}>
-              {(data) =>
-                data ? (
-                  <SmartBundle
-                    data={data}
-                    selectedVariantId={selectedVariant?.id}
-                  />
-                ) : null
-              }
-            </Await>
-          </Suspense>
-
-          <div className="pdp__details">
-            <ProductHighlights value={product.highlights?.value} />
-
-            <section className="pdp-block pdp__section">
-              <h2 className="pdp-block__title">{t('product.faqTitle')}</h2>
-              <div className="pdp__accordions">
-                {getProductFaq(t, description ?? '').map((item) => (
-                  <Accordion key={item.question} title={item.question}>
-                    <p>{item.answer}</p>
-                  </Accordion>
-                ))}
-              </div>
-            </section>
-
-            <div className="pdp__info">
-              {sizes.length > 0 && (
-                <Accordion title={t('product.sizeGuide')} variant="block">
-                  <SizeChartBody chart={sizeChart} sizes={sizes} />
-                </Accordion>
-              )}
-              <Accordion
-                title={l(PRODUCT_PAGE.info.shippingTitle)}
-                variant="block"
-              >
-                {PRODUCT_PAGE.info.shipping.map((paragraph) => (
-                  <p key={l(paragraph)}>{l(paragraph)}</p>
-                ))}
-              </Accordion>
-              <Accordion
-                title={l(PRODUCT_PAGE.info.paymentTitle)}
-                variant="block"
-              >
-                {PRODUCT_PAGE.info.payment.map((paragraph) => (
-                  <p key={l(paragraph)}>{l(paragraph)}</p>
-                ))}
-              </Accordion>
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <ProductWornVideos />
-
-      <Suspense fallback={null}>
-        <Await resolve={recommended} errorElement={null}>
-          {(items) =>
-            items.length ? <RelatedProductsRail items={items} /> : null
+    <div className="pdpx">
+      <section className="pdpx-hero" aria-label={product.title}>
+        <PdpGallery
+          images={product.images.nodes}
+          title={product.title}
+          badge={bestSeller ? l(PDP.badges.bestSeller) : undefined}
+        />
+        <PdpBuyBox
+          title={product.title}
+          product={model}
+          selection={selection}
+          salesCount={salesCount}
+          badge={product.badge?.value?.trim() || null}
+          rating={rating}
+          descriptionHtml={product.descriptionHtml}
+          sizeGuide={
+            sizes.length ? (
+              <SizeChartBody chart={sizeChartFor(product)} sizes={sizes} />
+            ) : null
           }
-        </Await>
-      </Suspense>
-
-      <div className="pdp__reviews">
-        <Suspense fallback={null}>
-          <Await resolve={reviews} errorElement={null}>
-            {(items) => <ProductReviews reviews={items} productTitle={title} />}
-          </Await>
-        </Suspense>
-      </div>
+          shippingInfo={PRODUCT_PAGE.info.shipping.map((paragraph) => (
+            <p key={l(paragraph)}>{l(paragraph)}</p>
+          ))}
+        />
+      </section>
 
       <Suspense fallback={null}>
-        <Await resolve={bandCollections} errorElement={null}>
-          {(collections) => <CollectionsBand collections={collections} />}
+        <Await resolve={reviews} errorElement={null}>
+          {(items) => <PdpReviews reviews={items} rating={ownRating} />}
         </Await>
       </Suspense>
+
+      <PdpMaterial />
+      <PdpDetails images={detailImages} />
+      <PdpManifesto />
+      <PdpCollection
+        products={collectionProducts.map((node) => ({
+          id: node.id,
+          title: node.title,
+          handle: node.handle,
+          price: Number(node.priceRange.minVariantPrice.amount),
+          image: node.featuredImage,
+        }))}
+        showPackLine={
+          packsAllowed &&
+          LIVE_TEE_PACKS.some((offer) => offer.buy === 2 && offer.free === 1)
+        }
+      />
+      <PdpComparison />
+      <PdpDelivery />
 
       <script
         type="application/ld+json"
@@ -468,30 +425,78 @@ const PRODUCT_VARIANT_FRAGMENT = `#graphql
   }
 ` as const;
 
+const PDP_MODEL_VARIANT_FRAGMENT = `#graphql
+  fragment PdpModelVariant on ProductVariant {
+    id
+    availableForSale
+    price {
+      amount
+      currencyCode
+    }
+    compareAtPrice {
+      amount
+      currencyCode
+    }
+    image {
+      url
+      altText
+    }
+    selectedOptions {
+      name
+      value
+    }
+  }
+` as const;
+
 const PRODUCT_FRAGMENT = `#graphql
   fragment Product on Product {
     id
     title
     vendor
     handle
+    tags
     descriptionHtml
     description
     productType
-    # Optional per-product content, written in Shopify Admin (see
-    # app/config/productPage.ts): highlights, size chart.
-    highlights: metafield(namespace: "custom", key: "highlights") {
-      value
-    }
+    # Size chart written in Shopify Admin (app/config/sizeCharts.ts).
     sizeChart: metafield(namespace: "custom", key: "size_chart") {
       value
     }
+    # Product page (app/config/productTemplate.ts): "[N] ventes" badge, the
+    # second badge, and the three "Ce que tu ne vois pas" photos.
+    salesCount: metafield(namespace: "custom", key: "sales_count") {
+      value
+    }
+    badge: metafield(namespace: "custom", key: "badge") {
+      value
+    }
+    detailImages: metafield(namespace: "custom", key: "detail_images") {
+      references(first: 3) {
+        nodes {
+          ... on MediaImage {
+            image {
+              id
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
+      }
+    }
     # Written by review apps (Shopify Product Reviews, Judge.me…). Absent
-    # when there is no review app — no rating is then shown at all.
+    # when there is no review app — no rating is then shown from it.
     rating: metafield(namespace: "reviews", key: "rating") {
       value
     }
     ratingCount: metafield(namespace: "reviews", key: "rating_count") {
       value
+    }
+    collections(first: 10) {
+      nodes {
+        handle
+      }
     }
     encodedVariantExistence
     encodedVariantAvailability
@@ -508,17 +513,11 @@ const PRODUCT_FRAGMENT = `#graphql
       name
       optionValues {
         name
-        firstSelectableVariant {
-          ...ProductVariant
-        }
-        swatch {
-          color
-          image {
-            previewImage {
-              url
-            }
-          }
-        }
+      }
+    }
+    variants(first: 100) {
+      nodes {
+        ...PdpModelVariant
       }
     }
     selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
@@ -533,6 +532,7 @@ const PRODUCT_FRAGMENT = `#graphql
     }
   }
   ${PRODUCT_VARIANT_FRAGMENT}
+  ${PDP_MODEL_VARIANT_FRAGMENT}
 ` as const;
 
 const PRODUCT_QUERY = `#graphql
@@ -549,175 +549,44 @@ const PRODUCT_QUERY = `#graphql
   ${PRODUCT_FRAGMENT}
 ` as const;
 
-const RECO_PRODUCT_FRAGMENT = `#graphql
-  fragment RecoMoney on MoneyV2 {
-    amount
-    currencyCode
-  }
-  fragment RecoProduct on Product {
+/** The designs of the collection: grid, and the free t-shirt's choices. */
+const PDP_COLLECTION_QUERY = `#graphql
+  fragment PdpModel on Product {
     id
     title
     handle
     availableForSale
-    rating: metafield(namespace: "reviews", key: "rating") {
-      value
-    }
-    ratingCount: metafield(namespace: "reviews", key: "rating_count") {
-      value
-    }
     featuredImage {
       id
       url
       altText
       width
       height
-    }
-    images(first: 2) {
-      nodes {
-        id
-        url
-        altText
-        width
-        height
-      }
     }
     priceRange {
       minVariantPrice {
-        ...RecoMoney
+        amount
+        currencyCode
       }
-    }
-    compareAtPriceRange {
-      minVariantPrice {
-        ...RecoMoney
-      }
-    }
-    options {
-      name
-      optionValues {
-        name
-      }
-    }
-    variants(first: 20) {
-      nodes {
-        id
-        availableForSale
-        selectedOptions {
-          name
-          value
-        }
-        price {
-          ...RecoMoney
-        }
-        compareAtPrice {
-          ...RecoMoney
-        }
-      }
-    }
-  }
-` as const;
-
-const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
-  query ProductRecommendations(
-    $productId: ID!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    productRecommendations(productId: $productId) {
-      ...RecoProduct
-    }
-  }
-  ${RECO_PRODUCT_FRAGMENT}
-` as const;
-
-/** Pieces offered in the bundle's pickers, besides this product. */
-const MAX_BUNDLE_CHOICES = 12;
-
-const BUNDLE_QUERY = `#graphql
-  fragment BundleProduct on Product {
-    id
-    title
-    handle
-    availableForSale
-    featuredImage {
-      id
-      url
-      altText
-      width
-      height
     }
     variants(first: 30) {
       nodes {
-        id
-        title
-        availableForSale
-        price {
-          amount
-          currencyCode
-        }
-        selectedOptions {
-          name
-          value
-        }
+        ...PdpModelVariant
       }
     }
   }
-  query PdpBundle(
+  query PdpCollection(
     $handle: String!
-    $first: Int
-    $giftHandle: String!
-    $withGift: Boolean!
     $country: CountryCode
     $language: LanguageCode
   ) @inContext(country: $country, language: $language) {
-    current: product(handle: $handle) {
-      ...BundleProduct
-    }
-    products(first: $first, sortKey: BEST_SELLING) {
-      nodes {
-        ...BundleProduct
-      }
-    }
-    gift: product(handle: $giftHandle) @include(if: $withGift) {
-      ...BundleProduct
-    }
-  }
-` as const;
-
-const BAND_COLLECTIONS_QUERY = `#graphql
-  fragment BandCollection on Collection {
-    id
-    title
-    handle
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-  }
-  query PdpBandCollections($country: CountryCode, $language: LanguageCode)
-  @inContext(country: $country, language: $language) {
-    collections(first: 30, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...BandCollection
+    collection(handle: $handle) {
+      products(first: 12) {
+        nodes {
+          ...PdpModel
+        }
       }
     }
   }
-` as const;
-
-/** Tops the recommendation row up to a full set with real catalogue products. */
-const FALLBACK_PRODUCTS_QUERY = `#graphql
-  query PdpFallbackProducts(
-    $first: Int
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    products(first: $first, sortKey: BEST_SELLING) {
-      nodes {
-        ...RecoProduct
-      }
-    }
-  }
-  ${RECO_PRODUCT_FRAGMENT}
+  ${PDP_MODEL_VARIANT_FRAGMENT}
 ` as const;

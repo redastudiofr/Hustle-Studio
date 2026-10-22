@@ -1,0 +1,11 @@
+/*
+ * The site's stylesheets, in cascade order, built into one file: one
+ * render-blocking request instead of six (Tailwind stays its own file).
+ * Edit the files themselves; the order here is the order in CLAUDE.md.
+ */
+@import './reset.css';
+@import './app.css';
+@import './promotions.css';
+@import './brand.css';
+@import './editorial.css';
+@import './pdp.css';

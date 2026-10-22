@@ -7,9 +7,11 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {useHeaderTone} from '~/lib/header-tone';
 import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
+import {useLocalized} from '~/lib/i18n/localized';
+import {PDP} from '~/config/productTemplate';
+import {LIVE_TEE_PACKS} from '~/lib/teePacks';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
@@ -37,32 +39,40 @@ interface HeaderProps {
 
 type Viewport = 'desktop' | 'mobile';
 
-export function Header({
-  header,
-  cart,
-  navCollections,
-  accountEnabled,
-}: HeaderProps) {
+/**
+ * Site header, as in the product-page mock-ups (01, 09):
+ *
+ * - a blue announcement bar on top, shown only while the 2+1 t-shirt pack
+ *   is live (its text: app/config/productTemplate.ts);
+ * - desktop: logo left, four links centred, search / account / cart right;
+ * - phones: menu, logo centred, cart.
+ *
+ * White and sticky: it stays at the top of the screen and never overlaps
+ * the page underneath.
+ */
+export function Header({cart, accountEnabled, header}: HeaderProps) {
   const {shop} = header;
   const {open} = useAside();
   const t = useT();
-  const {transparent} = useHeaderTone();
-  // Drives a short press animation on the wordmark; cleared on animation end
-  // so it can replay on every click.
-  const [logoPressed, setLogoPressed] = useState(false);
-
-  const headerClassName = [
-    'site-header',
-    transparent && 'site-header--transparent',
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const l = useLocalized();
+  const packsLive = LIVE_TEE_PACKS.length > 0;
+  const announce = LIVE_TEE_PACKS.some(
+    (offer) => offer.buy === 2 && offer.free === 1,
+  );
 
   return (
-    <header className={headerClassName}>
-      {/* Three tracks — left, centre, right — so the wordmark is optically
-          centred in the header whatever the nav or icons weigh. */}
-      <div className="site-header__side site-header__side--start">
+    <div className="site-top">
+      {announce && (
+        <p className="site-announce">
+          <span className="site-announce__long">
+            {l(PDP.announcement.desktop)}
+          </span>
+          <span className="site-announce__short">
+            {l(PDP.announcement.mobile)}
+          </span>
+        </p>
+      )}
+      <header className="site-header site-header--mock">
         <button
           className="site-header__icon-btn site-header__burger"
           onClick={() => open('mobile')}
@@ -70,52 +80,56 @@ export function Header({
         >
           <BurgerIcon />
         </button>
-        <HeaderMenu collections={navCollections} viewport="desktop" />
-      </div>
 
-      <NavLink
-        to="/"
-        end
-        prefetch="intent"
-        className={`site-header__logo ${logoPressed ? 'site-header__logo--pressed' : ''}`}
-        aria-label={shop.name}
-        onClick={() => setLogoPressed(true)}
-        onAnimationEnd={() => setLogoPressed(false)}
-      >
-        {/* The wordmark is painted with currentColor through a CSS mask, so it
-            turns white by itself when the header goes transparent over the
-            hero. The text stays for screen readers and as a fallback. */}
-        <span className="site-header__wordmark" aria-hidden="true" />
-        <span className="sr-only">{shop.name}</span>
-      </NavLink>
-
-      <div className="site-header__side site-header__side--end">
-        {/* Desktop only: on phones the switch lives in the menu drawer. */}
-        {HAS_LANGUAGE_CHOICE && (
-          <div className="site-header__lang">
-            <LanguageSwitcher />
-          </div>
-        )}
-        <button
-          className="site-header__icon-btn"
-          onClick={() => open('search')}
-          aria-label={t('nav.search')}
+        <NavLink
+          to="/"
+          end
+          prefetch="intent"
+          className="site-header__logo"
+          aria-label={shop.name}
         >
-          <SearchIcon />
-        </button>
-        {accountEnabled && (
-          <NavLink
-            to="/account"
-            prefetch="intent"
-            className="site-header__icon-btn site-header__account"
-            aria-label={t('nav.account')}
+          <span className="site-header__wordmark" aria-hidden="true" />
+          <span className="sr-only">{shop.name}</span>
+        </NavLink>
+
+        <nav className="site-header__links" aria-label={t('nav.menu')}>
+          {PDP.nav
+            .filter((link) => !link.packs || packsLive)
+            .map((link) => (
+              <NavLink
+                key={`${link.to}-${l(link.label)}`}
+                to={link.to}
+                prefetch="intent"
+                className="site-header__link"
+                end
+              >
+                {l(link.label)}
+              </NavLink>
+            ))}
+        </nav>
+
+        <div className="site-header__icons">
+          <button
+            className="site-header__icon-btn site-header__search"
+            onClick={() => open('search')}
+            aria-label={t('nav.search')}
           >
-            <PersonIcon />
-          </NavLink>
-        )}
-        <CartToggle cart={cart} />
-      </div>
-    </header>
+            <SearchIcon />
+          </button>
+          {accountEnabled && (
+            <NavLink
+              to="/account"
+              prefetch="intent"
+              className="site-header__icon-btn site-header__account"
+              aria-label={t('nav.account')}
+            >
+              <PersonIcon />
+            </NavLink>
+          )}
+          <CartToggle cart={cart} />
+        </div>
+      </header>
+    </div>
   );
 }
 

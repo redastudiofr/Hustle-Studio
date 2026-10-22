@@ -100,6 +100,30 @@ export const PROMOTIONS = {
   },
 
   /**
+   * T-shirt packs — the "Compose ton pack" selector of the product page:
+   * 1 t-shirt, 2 bought + 1 free, 3 bought + 2 free.
+   *
+   * Each pack option shows only once its `code` is filled in, on products of
+   * the `collection` below — the site never announces a free t-shirt Shopify
+   * is not set up to give. In Shopify Admin → Discounts, create for each:
+   *   Buy X get Y — Customer buys: minimum quantity `buy`, items from the
+   *   collection `collection`; Customer gets: quantity `free`, items from the
+   *   same collection, at 100 % off ("Free"); one use per order.
+   * The free pieces are added to the cart as their own lines; if Shopify
+   * does not apply the code to the basket, those lines are removed rather
+   * than billed (app/routes/cart.tsx).
+   */
+  teePacks: {
+    enabled: true,
+    /** Shopify handle of the t-shirt collection the discounts target. */
+    collection: 'tshirt',
+    offers: [
+      {id: '2+1', buy: 2, free: 1, code: '', mostChosen: true},
+      {id: '3+2', buy: 3, free: 2, code: '', mostChosen: false},
+    ] as TeePackOfferConfig[],
+  },
+
+  /**
    * Welcome pop-up — -15% on the first order, in exchange for a phone
    * number, shown once per visitor. Each number is e-mailed to
    * LAUNCH.notifyEmail through Resend (RESEND_API_KEY on Vercel), or stored
@@ -134,4 +158,16 @@ export type BundleOfferConfig = {
   appliesTo: 'cheapest' | 'order';
   badge: string;
   gift?: boolean;
+};
+
+export type TeePackOfferConfig = {
+  id: string;
+  /** T-shirts paid for. */
+  buy: number;
+  /** T-shirts given on top. */
+  free: number;
+  /** The Shopify discount code, exactly as written in Shopify Admin. */
+  code: string;
+  /** Selected by default and marked "most chosen". */
+  mostChosen: boolean;
 };

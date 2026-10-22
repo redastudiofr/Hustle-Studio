@@ -13,6 +13,9 @@ import {getAllReviews, type Review} from '~/data/reviews';
  *      date      Date                        — when it was left
  *      location  Single line text            — "Paris, France", only if given
  *      product   Product reference           — empty = a review of the shop
+ *      photo     File (image)                — optional: the customer's photo
+ *      topic     Single line text            — optional: what the review is
+ *                                              about, e.g. "La qualité" 
  *    A new entry shows on the site by itself, no code change.
  * 2. app/data/reviews.ts, for reviews collected another way.
  *
@@ -44,6 +47,21 @@ const REVIEWS_QUERY = `#graphql
         }
         location: field(key: "location") {
           value
+        }
+        topic: field(key: "topic") {
+          value
+        }
+        photo: field(key: "photo") {
+          reference {
+            ... on MediaImage {
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
         }
         product: field(key: "product") {
           reference {
@@ -113,6 +131,11 @@ export async function loadReviews(storefront: Storefront): Promise<Review[]> {
           rating: parseRating(node.rating?.value),
           date: formatDate(node.date?.value),
           location: node.location?.value?.trim() || undefined,
+          topic: node.topic?.value?.trim() || undefined,
+          photo:
+            node.photo?.reference && 'image' in node.photo.reference
+              ? (node.photo.reference.image ?? undefined)
+              : undefined,
           productHandle: handle,
         },
       ];

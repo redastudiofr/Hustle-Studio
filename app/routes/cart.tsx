@@ -18,6 +18,12 @@ import {
   codesForBundle,
 } from '~/lib/bundles';
 import {PACK_ADD_ACTION, PACK_DISCOUNT_CODE} from '~/lib/packOffer';
+import {
+  TEE_PACK_ADD_ACTION,
+  TEE_PACK_CODES,
+  TEE_PACK_FREE_ATTRIBUTE,
+  codeForTeePack,
+} from '~/lib/teePacks';
 
 export const meta: Route.MetaFunction = () => {
   return seoMeta({title: 'cart', noindex: true});
@@ -28,8 +34,12 @@ export const headers: HeadersFunction = ({actionHeaders}) => actionHeaders;
 const CART_UNAVAILABLE_MESSAGE =
   'Le panier est momentanément indisponible. Réessayez dans un instant. / The cart is temporarily unavailable, please try again.';
 
-/** The shop's own offer codes: the bundles' and the pack's. */
-const OFFER_CODES = [...BUNDLE_CODES, PACK_DISCOUNT_CODE].filter(Boolean);
+/** The shop's own offer codes: the bundles', the pack's and the t-shirt packs'. */
+const OFFER_CODES = [
+  ...BUNDLE_CODES,
+  PACK_DISCOUNT_CODE,
+  ...TEE_PACK_CODES,
+].filter(Boolean);
 
 const isShopCode = (code: string) => OFFER_CODES.includes(code);
 
@@ -97,7 +107,73 @@ async function withOfferCode(
     console.error('Offer code could not be settled on the cart', error);
   }
 
-  return withoutUnbackedGift(cart, result, after);
+  const cleaned = await withoutUnbackedGift(cart, result, after);
+  return withoutUnbackedPackFree(
+    cart,
+    cleaned,
+    cleaned === result ? after : await readCart(cart),
+  );
+}
+
+/**
+ * A t-shirt given by a pack is only ever free: if no pack code is on the
+ * basket, or Shopify says the basket no longer qualifies, the free lines are
+ * taken out rather than billed.
+ */
+async function withoutUnbackedPackFree(
+  cart: CartApi,
+  result: CartQueryDataReturn,
+  after: Awaited<ReturnType<typeof readCart>>,
+): Promise<CartQueryDataReturn> {
+  const lines = after?.lines?.nodes ?? [];
+  const freeLines = lines.filter((line) =>
+    line.attributes?.some(
+      (attribute) => attribute.key === TEE_PACK_FREE_ATTRIBUTE,
+    ),
+  );
+  if (!freeLines.length) return result;
+
+  const backed = (after?.discountCodes ?? []).some(
+    (discount) => TEE_PACK_CODES.includes(discount.code) && discount.applicable,
+  );
+  if (backed) return result;
+
+  try {
+    const cleaned = await cart.removeLines(freeLines.map((line) => line.id));
+    return cleaned?.cart ? cleaned : result;
+  } catch (error) {
+    console.error('Unbacked pack line could not be removed', error);
+    return result;
+  }
+}
+
+/** Pack lines from the form: product variants, sane quantities, free marker kept. */
+function teePackLinesFrom(lines: unknown): Parameters<CartApi['addLines']>[0] {
+  type Line = {
+    merchandiseId: string;
+    quantity: number;
+    attributes?: {key: string; value: string}[];
+  };
+  if (!Array.isArray(lines)) return [];
+  return (lines as Partial<Line>[])
+    .filter(
+      (line): line is Line =>
+        typeof line?.merchandiseId === 'string' &&
+        line.merchandiseId.startsWith('gid://shopify/ProductVariant/') &&
+        Number.isInteger(line.quantity) &&
+        (line.quantity ?? 0) > 0 &&
+        (line.quantity ?? 0) <= 5,
+    )
+    .slice(0, 10)
+    .map((line) => ({
+      merchandiseId: line.merchandiseId,
+      quantity: line.quantity,
+      attributes: line.attributes?.some(
+        (attribute) => attribute.key === TEE_PACK_FREE_ATTRIBUTE,
+      )
+        ? [{key: TEE_PACK_FREE_ATTRIBUTE, value: 'true'}]
+        : [],
+    }));
 }
 
 async function readCart(cart: CartApi) {
@@ -234,6 +310,31 @@ export async function action({request, context}: Route.ActionArgs) {
         result = await withOfferCode(cart, () => cart.addLines(packLines), {
           attach: PACK_DISCOUNT_CODE ? [PACK_DISCOUNT_CODE] : [],
           replace: true,
+        });
+        break;
+      }
+      // T-shirt pack: the paid t-shirts, the free ones (marked) and the
+      // pack's code — chosen here from the offer id, never by the browser.
+      // No live code for that offer: the free lines are dropped and the
+      // paid ones added as a plain add.
+      case TEE_PACK_ADD_ACTION: {
+        const code = codeForTeePack(String(inputs.offer ?? ''));
+        const packLines = teePackLinesFrom(inputs.lines).filter(
+          (line) =>
+            code ||
+            !line.attributes?.some(
+              (attribute) => attribute.key === TEE_PACK_FREE_ATTRIBUTE,
+            ),
+        );
+        if (!packLines.length) {
+          return data(
+            {cart: null, errors: [{message: 'Invalid pack'}], warnings: []},
+            {status: 400},
+          );
+        }
+        result = await withOfferCode(cart, () => cart.addLines(packLines), {
+          attach: code ? [code] : [],
+          replace: Boolean(code),
         });
         break;
       }

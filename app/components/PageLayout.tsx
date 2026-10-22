@@ -1,4 +1,4 @@
-import {Await, Link, useLocation} from 'react-router';
+import {Await, Link} from 'react-router';
 import {Suspense, useId} from 'react';
 import type {CartApiQueryFragment, HeaderQuery} from 'storefrontapi.generated';
 import {Aside} from '~/components/Aside';
@@ -43,12 +43,8 @@ export function PageLayout({
   localeChosen = true,
   consentChosen = true,
 }: PageLayoutProps) {
-  // The header is fixed (see .site-header), so it no longer reserves layout
-  // space itself — every route needs that space reserved via padding,
-  // except the homepage, whose hero is meant to start at the very top and
-  // show through the header while it's transparent.
-  const {pathname} = useLocation();
-  const isHome = pathname === '/';
+  // The header is sticky and in the flow (see .site-top): the page starts
+  // right under it on every route, the homepage included.
 
   return (
     <Aside.Provider>
@@ -66,9 +62,7 @@ export function PageLayout({
             accountEnabled={accountEnabled}
           />
         )}
-        <main className={isHome ? undefined : 'main--with-header-space'}>
-          {children}
-        </main>
+        <main>{children}</main>
         <Footer />
         <NewsletterPopup enabled={promoSignupEnabled} />
         {(!localeChosen || !consentChosen) && (

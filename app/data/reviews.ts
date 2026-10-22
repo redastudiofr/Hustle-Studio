@@ -44,6 +44,15 @@ export interface Review {
    * review about the shop in general: it then shows on every product page.
    */
   productHandle?: string;
+  /** What the review is about ("La qualité", "La coupe"…), when given. */
+  topic?: string;
+  /** The customer's own photo, with their agreement. */
+  photo?: {
+    url: string;
+    altText?: string | null;
+    width?: number | null;
+    height?: number | null;
+  };
 }
 
 const REVIEWS: Review[] = [
