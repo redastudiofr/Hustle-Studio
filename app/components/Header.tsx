@@ -11,6 +11,7 @@ import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {useLocalized} from '~/lib/i18n/localized';
 import {PDP} from '~/config/productTemplate';
+import {HOME} from '~/config/homeTemplate';
 import {LIVE_TEE_PACKS} from '~/lib/teePacks';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
@@ -44,18 +45,25 @@ type Viewport = 'desktop' | 'mobile';
  *
  * - a blue announcement bar on top, shown only while the 2+1 t-shirt pack
  *   is live (its text: app/config/productTemplate.ts);
- * - desktop: logo left, four links centred, search / account / cart right;
+ * - desktop: logo left, links centred, "Compose ton pack" (while a pack is
+ *   live), search / account / cart right;
  * - phones: menu, logo centred, cart.
  *
  * White and sticky: it stays at the top of the screen and never overlaps
  * the page underneath.
  */
-export function Header({cart, accountEnabled, header}: HeaderProps) {
+export function Header({
+  cart,
+  accountEnabled,
+  header,
+  navCollections,
+}: HeaderProps) {
   const {shop} = header;
   const {open} = useAside();
   const t = useT();
   const l = useLocalized();
   const packsLive = LIVE_TEE_PACKS.length > 0;
+  const handles = new Set(navCollections.map((c) => c.handle));
   const announce = LIVE_TEE_PACKS.some(
     (offer) => offer.buy === 2 && offer.free === 1,
   );
@@ -94,7 +102,11 @@ export function Header({cart, accountEnabled, header}: HeaderProps) {
 
         <nav className="site-header__links" aria-label={t('nav.menu')}>
           {PDP.nav
-            .filter((link) => !link.packs || packsLive)
+            .filter(
+              (link) =>
+                (!link.packs || packsLive) &&
+                (!link.collection || handles.has(link.collection)),
+            )
             .map((link) => (
               <NavLink
                 key={`${link.to}-${l(link.label)}`}
@@ -109,6 +121,15 @@ export function Header({cart, accountEnabled, header}: HeaderProps) {
         </nav>
 
         <div className="site-header__icons">
+          {packsLive && (
+            <NavLink
+              to={HOME.headerCta.to}
+              prefetch="intent"
+              className="site-header__cta"
+            >
+              {l(HOME.headerCta.label)}
+            </NavLink>
+          )}
           <button
             className="site-header__icon-btn site-header__search"
             onClick={() => open('search')}

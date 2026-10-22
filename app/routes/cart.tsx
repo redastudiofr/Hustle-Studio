@@ -24,6 +24,7 @@ import {
   TEE_PACK_FREE_ATTRIBUTE,
   codeForTeePack,
 } from '~/lib/teePacks';
+import {DUO_ADD_ACTION, DUO_CODE, DUO_LIVE} from '~/lib/homeDuo';
 
 export const meta: Route.MetaFunction = () => {
   return seoMeta({title: 'cart', noindex: true});
@@ -39,6 +40,7 @@ const OFFER_CODES = [
   ...BUNDLE_CODES,
   PACK_DISCOUNT_CODE,
   ...TEE_PACK_CODES,
+  DUO_CODE,
 ].filter(Boolean);
 
 const isShopCode = (code: string) => OFFER_CODES.includes(code);
@@ -335,6 +337,23 @@ export async function action({request, context}: Route.ActionArgs) {
         result = await withOfferCode(cart, () => cart.addLines(packLines), {
           attach: code ? [code] : [],
           replace: Boolean(code),
+        });
+        break;
+      }
+      // Homepage duo: the two pieces and the duo's code (2nd at -50 %).
+      case DUO_ADD_ACTION: {
+        const duoLines = teePackLinesFrom(inputs.lines)
+          .filter((line) => !line.attributes?.length)
+          .slice(0, 2);
+        if (!duoLines.length) {
+          return data(
+            {cart: null, errors: [{message: 'Invalid duo'}], warnings: []},
+            {status: 400},
+          );
+        }
+        result = await withOfferCode(cart, () => cart.addLines(duoLines), {
+          attach: DUO_LIVE && DUO_CODE ? [DUO_CODE] : [],
+          replace: DUO_LIVE && Boolean(DUO_CODE),
         });
         break;
       }

@@ -124,6 +124,21 @@ export const PROMOTIONS = {
   },
 
   /**
+   * Homepage duo offer — "the 2nd at -50%" (homepage mock-up 03). Shown only
+   * once `code` is set. In Shopify Admin → Discounts → Buy X get Y:
+   * Customer buys minimum quantity 1 (items from `collection`, or all
+   * products), Customer gets quantity 1 at `percent` % off. The homepage
+   * adds both pieces and this code in one go (app/routes/cart.tsx).
+   */
+  homeDuo: {
+    enabled: true,
+    code: '',
+    percent: 50,
+    /** The two products shown, by handle. Empty: the two best sellers. */
+    handles: [] as string[],
+  },
+
+  /**
    * Welcome pop-up — -15% on the first order, in exchange for a phone
    * number, shown once per visitor. Each number is e-mailed to
    * LAUNCH.notifyEmail through Resend (RESEND_API_KEY on Vercel), or stored

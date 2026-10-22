@@ -13,6 +13,7 @@ import {
   BUNDLE_FETCHER_KEY,
   PACK_FETCHER_KEY,
   TEE_PACK_FETCHER_KEY,
+  DUO_FETCHER_KEY,
 } from '~/components/AddToCartButton';
 import {CartSummary} from './CartSummary';
 import {CartSuggestions} from './CartSuggestions';
@@ -92,7 +93,8 @@ function AddFeedback() {
   const bundle = useFetcher<CartActionFeedback>({key: BUNDLE_FETCHER_KEY});
   const pack = useFetcher<CartActionFeedback>({key: PACK_FETCHER_KEY});
   const teePack = useFetcher<CartActionFeedback>({key: TEE_PACK_FETCHER_KEY});
-  const message = [add, bundle, pack, teePack]
+  const duo = useFetcher<CartActionFeedback>({key: DUO_FETCHER_KEY});
+  const message = [add, bundle, pack, teePack, duo]
     .filter((fetcher) => fetcher.state === 'idle')
     .map((fetcher) => cartFeedbackMessage(fetcher.data))
     .find(Boolean);

@@ -13,6 +13,7 @@
  *   - Cormorant Garamond: the brand's serif — hero, waitlist and story titles.
  *   - Anton (titles, upper case) and Inter (text): the product page and the
  *     header, as in the product-page mock-ups.
+ *   - Caveat: handwritten captions (homepage polaroids).
  * All are variable fonts: one file per family covers every weight.
  */
 @font-face {
@@ -107,6 +108,24 @@
   unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
 }
 
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url('/fonts/caveat-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url('/fonts/caveat-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+
 @theme {
   --color-ink: #111111;
   --color-paper: #ffffff;
@@ -134,6 +153,10 @@
   --color-pdp-green: #1f7a45;
   --color-pdp-alt: #f7f7f5;
   --color-pdp-line: #e2e2e2;
+  /* Homepage (mock-ups 01–07). */
+  --font-caveat: 'Caveat', 'Comic Sans MS', cursive;
+  --color-pdp-pink: #b8326a;
+  --color-pdp-beige: #efe8dc;
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 

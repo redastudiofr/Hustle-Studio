@@ -1546,3 +1546,30 @@ main {
     transition: none;
   }
 }
+
+/* Header button "Compose ton pack" (homepage mock-up 01), desktop only. */
+.site-header--mock .site-header__cta {
+  display: none;
+}
+
+@media (min-width: 64em) {
+  .site-header--mock .site-header__cta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 42px;
+    margin-right: 0.75rem;
+    padding: 0 1.1rem;
+    border-radius: 6px;
+    background: var(--color-pdp-blue);
+    color: #fff;
+    font-family: var(--font-inter);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+
+  .site-header--mock .site-header__cta:hover {
+    background: #2a3bab;
+  }
+}

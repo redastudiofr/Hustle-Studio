@@ -39,16 +39,25 @@ export const PDP = {
     },
   },
 
-  /** Header links (centre). `packs`: shown only while a pack is live. */
+  /**
+   * Header links (centre), from the homepage mock-up 01. `collection`: shown
+   * only if that Shopify collection exists; `packs`: only while a t-shirt
+   * pack is live — never a link to a page that isn't there.
+   */
   nav: [
     {
-      label: {en: 'New in', fr: 'Nouveautés'},
-      to: '/collections/all?sort=newest',
+      label: {en: 'T-shirts', fr: 'T-shirts'},
+      to: '/collections/tshirt',
+      collection: 'tshirt',
     },
-    {label: {en: 'T-shirts', fr: 'T-shirts'}, to: '/collections/tshirt'},
+    {
+      label: {en: 'Sweaters', fr: 'Pulls'},
+      to: '/collections/pulls',
+      collection: 'pulls',
+    },
     {label: {en: 'Packs', fr: 'Packs'}, to: '/collections/tshirt', packs: true},
     {label: {en: 'Our story', fr: 'Notre histoire'}, to: '/about'},
-  ] as {label: Localized; to: string; packs?: boolean}[],
+  ] as {label: Localized; to: string; packs?: boolean; collection?: string}[],
 
   badges: {
     sales: {en: 'sales', fr: 'ventes'},

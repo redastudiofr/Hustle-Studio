@@ -19,9 +19,12 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   (real ones, app/lib/reviews.ts) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
   The site is in English by default with a French option
-  (`BRAND.languages`); config copy uses `{en, fr}` (Localized). Homepage copy lives in `app/config/home.ts`.
+  (`BRAND.languages`); config copy uses `{en, fr}` (Localized). Homepage: sections
+  in app/components/landing/, texts in app/config/homeTemplate.ts — see
+  docs/HOME_PAGE.md (the old app/config/home.ts is unused).
 - Styles: reset.css → app.css (base) → promotions.css → brand.css →
-  editorial.css → pdp.css (product page + header, mock-ups 01–09, last),
+  editorial.css → pdp.css (product page + header, mock-ups 01–09) →
+  home.css (homepage, mock-ups 01–07, `hx-` classes, last),
   built into one file through app/styles/site.css (tailwind.css apart).
 - Product page: one component per section in app/components/pdp/, texts in
   app/config/productTemplate.ts, packs in promotions.ts `teePacks` — see
