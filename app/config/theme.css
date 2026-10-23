@@ -1,7 +1,7 @@
 /**
  * Brand theme — colours, fonts, motion and elevation.
  *
- * The one stylesheet to edit when the storefront changes brand. Every rule in
+ * The one stylesheet to edit when the site changes brand. Every rule in
  * app/styles reads these tokens (var(--color-ink), var(--font-sans), …), and
  * Tailwind exposes them as utilities (text-ink, bg-paper, …).
  *

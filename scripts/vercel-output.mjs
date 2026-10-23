@@ -5,7 +5,7 @@
  *   dist/server  →  .vercel/output/functions/index.func  (one Node.js function)
  *
  * Every request that is not a static file goes to the function, which renders
- * the storefront. Run by `npm run build:vercel`; Vercel picks up
+ * the site. Run by `npm run build:vercel`; Vercel picks up
  * .vercel/output automatically after the build command.
  * Spec: https://vercel.com/docs/build-output-api
  */

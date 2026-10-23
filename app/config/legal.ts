@@ -7,9 +7,9 @@
  * is hidden), so a missing value is never shown to visitors.
  *
  * The commercial commitments below (shipping times, return window, free
- * shipping) are the ones the previous store used: CHECK THEY ARE YOURS, and
- * keep them identical to your Shopify settings (Settings → Shipping and
- * delivery) — the site states them, Shopify applies them.
+ * shipping) are the ones the previous store used: CHECK THEY ARE YOURS. The
+ * pages stating them (terms, shipping, returns) are not linked while the
+ * site sells nothing online.
  */
 const TODO = '[à compléter]';
 

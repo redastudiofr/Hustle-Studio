@@ -74,15 +74,3 @@ export function localeChosen(request: Request): boolean {
 export function localeCookie(locale: Locale): string {
   return `${LOCALE_COOKIE}=${locale}; Path=/; Max-Age=${LOCALE_COOKIE_MAX_AGE}; SameSite=Lax`;
 }
-
-/**
- * The Shopify language code for a locale.
- *
- * This is what makes Shopify return *its* content — product titles,
- * descriptions, collection names — in the right language, provided those
- * translations have been published in Shopify Admin. Without them Shopify
- * returns the original text, which no storefront code can change.
- */
-export function shopifyLanguage(locale: Locale): 'EN' | 'FR' {
-  return locale === 'fr' ? 'FR' : 'EN';
-}

@@ -9,7 +9,6 @@ export {
   isLocale,
   localeCookie,
   localeFromRequest,
-  shopifyLanguage,
 } from './locale';
 export type {Locale} from './locale';
 export type {TranslationKey} from './dictionary';

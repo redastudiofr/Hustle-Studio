@@ -7,9 +7,8 @@ import {fill} from '~/components/pdp/shared';
 /**
  * Homepage mock-up 01 — two full-frame photo panels side by side, each with
  * a giant Anton title and a white button; on phones (mock-up 07) a slider
- * with dots. Panels whose collection does not exist in Shopify are left out
- * (their button would lead nowhere). Photos load eagerly: this is the first
- * screen.
+ * with dots. A panel's button shows only when it has a page to open
+ * (`to`). Photos load eagerly: this is the first screen.
  */
 export function HeroSplit({panels}: {panels: HeroPanel[]}) {
   const l = useLocalized();
@@ -31,11 +30,7 @@ export function HeroSplit({panels}: {panels: HeroPanel[]}) {
 
   return (
     <section className="hx-hero" aria-label={l(panels[0].title)}>
-      <div
-        className="hx-hero__track"
-        ref={trackRef}
-        data-count={panels.length}
-      >
+      <div className="hx-hero__track" ref={trackRef} data-count={panels.length}>
         {panels.map((panel, index) => {
           const subtitle =
             panel.subtitle && l(panel.subtitle).includes('{name}')
@@ -45,7 +40,7 @@ export function HeroSplit({panels}: {panels: HeroPanel[]}) {
               : l(panel.subtitle);
           return (
             <article
-              key={panel.collection}
+              key={l(panel.title)}
               className="hx-hero__panel"
               data-align={index % 2 ? 'end' : 'start'}
             >
@@ -54,7 +49,8 @@ export function HeroSplit({panels}: {panels: HeroPanel[]}) {
                 src={panel.image}
                 alt={l(panel.alt)}
                 loading="eager"
-                fetchPriority={index === 0 ? 'high' : 'auto'}
+                // React 18 only passes the attribute through in lower case.
+                {...{fetchpriority: index === 0 ? 'high' : 'auto'}}
                 decoding="async"
               />
               <div className="hx-hero__copy">
@@ -65,13 +61,11 @@ export function HeroSplit({panels}: {panels: HeroPanel[]}) {
                 )}
                 {subtitle && <p className="hx-hero__subtitle">{subtitle}</p>}
               </div>
-              <Link
-                to={`/collections/${panel.collection}`}
-                prefetch="intent"
-                className="hx-hero__cta"
-              >
-                {l(panel.cta)}
-              </Link>
+              {panel.to && (
+                <Link to={panel.to} prefetch="intent" className="hx-hero__cta">
+                  {l(panel.cta)}
+                </Link>
+              )}
             </article>
           );
         })}
@@ -80,7 +74,7 @@ export function HeroSplit({panels}: {panels: HeroPanel[]}) {
         <div className="hx-hero__dots" aria-hidden="true">
           {panels.map((panel, index) => (
             <span
-              key={panel.collection}
+              key={l(panel.title)}
               data-active={index === active || undefined}
             />
           ))}

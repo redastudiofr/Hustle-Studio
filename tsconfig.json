@@ -7,7 +7,6 @@
     "*.ts",
     "*.tsx",
     "*.d.ts",
-    ".graphqlrc.ts",
     ".react-router/types/**/*",
     "server/**/*.ts"
   ],
@@ -36,9 +35,7 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "types": [
-      "@shopify/oxygen-workers-types",
       "react-router",
-      "@shopify/hydrogen/react-router-types",
       "vite/client"
     ],
     "paths": {

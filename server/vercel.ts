@@ -1,10 +1,6 @@
 /**
- * Production server entry for Vercel (Node.js runtime).
- *
- * Same request handling as server.ts (the Mini Oxygen entry used by
- * `npm run dev`): build the Hydrogen context, let React Router render, commit
- * the session cookie, fall back to Shopify's URL redirects on a 404. Only the
- * plumbing differs — Node's (req, res) instead of a Worker's fetch().
+ * Production server entry for Vercel (Node.js runtime): React Router renders
+ * each request. Node's (req, res) are turned into a web Request / Response.
  *
  * Built by `npm run build:vercel`, which then packages it as a Vercel
  * function with scripts/vercel-output.mjs.
@@ -12,65 +8,19 @@
 import type {IncomingMessage, ServerResponse} from 'node:http';
 import {Readable} from 'node:stream';
 import * as serverBuild from 'virtual:react-router/server-build';
-import {createRequestHandler, storefrontRedirect} from '@shopify/hydrogen';
-import {createHydrogenRouterContext} from '~/lib/context';
+import {createRequestHandler} from 'react-router';
 import {unavailablePage} from '~/lib/unavailable';
 
-/**
- * Vercel keeps a function alive for promises passed to waitUntil (Hydrogen
- * uses it to refresh its cache after answering). This is the hook
- * @vercel/functions reads, without adding the dependency; outside Vercel the
- * promise simply runs on its own.
- */
-function waitUntil(promise: Promise<unknown>) {
-  const context = (
-    globalThis as unknown as Record<
-      symbol,
-      {get?: () => {waitUntil?: (p: Promise<unknown>) => void}}
-    >
-  )[Symbol.for('@vercel/request-context')]?.get?.();
-  if (context?.waitUntil) context.waitUntil(promise);
-  else promise.catch((error) => console.error(error));
-}
+const handleRequest = createRequestHandler(serverBuild, process.env.NODE_ENV);
 
 async function fetchHandler(request: Request): Promise<Response> {
   try {
-    const hydrogenContext = await createHydrogenRouterContext(
-      request,
-      process.env as unknown as Env,
-      {waitUntil},
-    );
-
-    const handleRequest = createRequestHandler({
-      build: serverBuild,
-      mode: process.env.NODE_ENV,
-      getLoadContext: () => hydrogenContext,
-    });
-
-    const response = await handleRequest(request);
-
-    if (hydrogenContext.session.isPending) {
-      response.headers.append(
-        'Set-Cookie',
-        await hydrogenContext.session.commit(),
-      );
-    }
-
-    if (response.status === 404) {
-      return storefrontRedirect({
-        request,
-        response,
-        storefront: hydrogenContext.storefront,
-      });
-    }
-
-    return response;
+    return await handleRequest(request);
   } catch (error) {
     console.error(error);
     return unavailablePage();
   }
 }
-
 export default async function handler(
   req: IncomingMessage,
   res: ServerResponse,

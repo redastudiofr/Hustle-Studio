@@ -3,12 +3,11 @@
  *
  * French texts are the mock-ups' own words; English is their translation.
  * What the mock-ups wrote between [brackets] is a field: it is empty here
- * until you fill it in (or it comes from Shopify), and a section — or a line
+ * until you fill it in, and a section — or a line
  * — with nothing real to show is not shown. Nothing is invented to fill it.
  *
- * Several fixed texts are claims (2+1 free, free shipping from 2 items,
- * printed in France, 30-day exchange, "monthly ranking"): check them, as for
- * the product page (app/config/productTemplate.ts).
+ * The band's texts are claims (printed in France, 30-day exchange): check
+ * them.
  */
 import type {Localized} from '~/lib/i18n/localized';
 
@@ -16,8 +15,8 @@ export type HeroPanel = {
   title: Localized;
   subtitle: Localized;
   cta: Localized;
-  /** Shopify collection handle the button opens. Panel hidden if missing. */
-  collection: string;
+  /** Page the white button opens. Empty: no button. */
+  to: string;
   /** Photo, full frame (a file in public/brand/, or any URL). */
   image: string;
   alt: Localized;
@@ -34,19 +33,14 @@ export type MediaCard = {src: string; caption: Localized};
 export type MediaLogo = {src: string; name: string};
 
 export const HOME = {
-  /** Header button. Shown only while a t-shirt pack is live. */
-  headerCta: {
-    label: {en: 'BUILD YOUR PACK', fr: 'COMPOSE TON PACK'},
-    to: '/collections/tshirt',
-  },
-
   /** 1 — two full-frame photo panels (a slider on phones). */
   hero: [
     {
       title: {en: 'THEY THINK IT.', fr: 'ILS LE PENSENT.'},
       subtitle: {en: 'YOU WEAR IT.', fr: 'TOI, TU LE PORTES.'},
       cta: {en: 'DISCOVER THE T-SHIRTS', fr: 'DÉCOUVRIR LES T-SHIRTS'},
-      collection: 'tshirt',
+      // No online shop: no page to open, so no button.
+      to: '',
       // [Photo lifestyle — t-shirt porté, plein cadre]: replace with yours.
       image: '/brand/hero-mobile-passage.webp',
       alt: {
@@ -62,7 +56,7 @@ export const HOME = {
         fr: 'LE PULL {name}, LE VRAI.',
       },
       cta: {en: 'DISCOVER THE SWEATERS', fr: 'DÉCOUVRIR LES PULLS'},
-      collection: 'pulls',
+      to: '',
       // [Photo lifestyle — pull porté de dos]: replace with yours.
       image: '/brand/about-street.webp',
       alt: {
@@ -74,50 +68,13 @@ export const HOME = {
   /** [NOM] of the second panel's subtitle. Empty: the subtitle is hidden. */
   sweaterName: '',
 
-  /** Blue scrolling band. Pack lines show only while the 2+1 pack is live. */
+  /** Blue scrolling band. */
   band: [
-    {text: {en: '2+1 FREE', fr: '2+1 OFFERT'}, needsPack: true},
-    {
-      text: {
-        en: 'FREE SHIPPING FROM 2 ITEMS',
-        fr: 'LIVRAISON OFFERTE DÈS 2 ARTICLES',
-      },
-      needsPack: true,
-    },
-    {
-      text: {en: 'PRINTED IN FRANCE', fr: 'IMPRIMÉ EN FRANCE'},
-      needsPack: false,
-    },
-    {text: {en: '30-DAY EXCHANGE', fr: 'ÉCHANGE 30 JOURS'}, needsPack: false},
-  ] as {text: Localized; needsPack: boolean}[],
+    {en: 'PRINTED IN FRANCE', fr: 'IMPRIMÉ EN FRANCE'},
+    {en: '30-DAY EXCHANGE', fr: 'ÉCHANGE 30 JOURS'},
+  ] as Localized[],
 
-  /** 2 — the two best-selling products, face to face. */
-  bestSeller: {
-    eyebrow: {en: 'THE BEST SELLING', fr: 'LE PLUS VENDU'},
-    title: {en: 'THE BEST-SELLER', fr: 'LE BEST-SELLER'},
-    cta: {en: 'I WANT IT', fr: 'JE LE VEUX'},
-    /** Product handles, in order. Empty: Shopify's two best sellers. */
-    handles: [] as string[],
-  },
-
-  /** 3 — duo offer. Shown only once its Shopify code is set (promotions.ts). */
-  duo: {
-    badge: {en: 'DUO OFFER', fr: 'OFFRE DUO'},
-    title: {
-      black: {en: 'TAKE TWO.', fr: 'PRENDS-EN DEUX.'},
-      blue: {en: 'THE 2ND AT -50%.', fr: 'LE 2E À -50 %.'},
-    },
-    watermark: '-50%',
-    text: {
-      en: 'A t-shirt + a sweater, or two sweaters. The discount applies in the cart.',
-      fr: 'Un t-shirt + un pull, ou deux pulls. La remise s’applique au panier.',
-    },
-    total: {en: 'Duo total', fr: 'Total duo'},
-    cta: {en: 'GET THE DUO', fr: 'PROFITER DU DUO'},
-    size: {en: 'Size', fr: 'Taille'},
-  },
-
-  /** 4 — customer photos. Hidden until `photos` holds at least one. */
+  /** 2 — customer photos. Hidden until `photos` holds at least one. */
   community: {
     eyebrow: {en: 'THE COMMUNITY', fr: 'LA COMMUNAUTÉ'},
     title: {
@@ -136,18 +93,7 @@ export const HOME = {
     photos: [] as Polaroid[],
   },
 
-  /** 5 — top 3 sales, from Shopify's best sellers. */
-  podium: {
-    eyebrow: {en: 'THIS MONTH’S RANKING', fr: 'CLASSEMENT DU MOIS'},
-    title: {
-      black: {en: 'WHO MAKES', fr: 'QUI MONTE'},
-      blue: {en: 'THE PODIUM?', fr: 'SUR LE PODIUM ?'},
-    },
-    cta: {en: 'SEE THE FULL RANKING', fr: 'VOIR TOUT LE CLASSEMENT'},
-    to: '/collections/all?sort=best-selling',
-  },
-
-  /** 6 — press and appearances. Hidden until `cards` holds at least one. */
+  /** 3 — press and appearances. Hidden until `cards` holds at least one. */
   media: {
     eyebrow: {en: 'THEY WORE IT', fr: 'ILS L’ONT PORTÉ'},
     title: {

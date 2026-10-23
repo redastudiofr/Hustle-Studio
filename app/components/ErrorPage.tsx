@@ -20,9 +20,6 @@ export function ErrorPage({status}: {status: number}) {
         <Link to="/" className="btn">
           {t('notFound.back')}
         </Link>
-        <Link to="/collections/all" className="btn btn--outline">
-          {t('nav.allProducts')}
-        </Link>
       </div>
     </div>
   );

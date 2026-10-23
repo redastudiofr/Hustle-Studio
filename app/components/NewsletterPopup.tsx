@@ -136,8 +136,8 @@ type Status = 'idle' | 'loading' | 'done' | 'error' | 'invalid';
  * - Shown only to a visitor who hasn't signed up. Once they have, never again.
  * - Closing it (X, the backdrop, Escape) is remembered for DISMISS_DAYS, so it
  *   doesn't come back on every page or every visit — only after that pause.
- * - Hidden entirely while `enabled` is false, i.e. while the server has no
- *   Notion database to store numbers in: better no offer than a code handed
+ * - Hidden entirely while `enabled` is false, i.e. while the server cannot
+ *   e-mail numbers to the shop (no RESEND_API_KEY): better no offer than a code handed
  *   out for a sign-up that was never saved.
  *
  * The code shown is the one the server returns, and only after it has
@@ -152,8 +152,8 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
     'idle',
   );
   const [digitCount, setDigitCount] = useState(0);
-  // A short technical reference shown with a failed save (e.g. N404), so a
-  // screenshot is enough to tell what went wrong — see NotionError.
+  // A short technical reference shown with a failed save (e.g. R), so a
+  // screenshot is enough to tell what went wrong.
   const [errorRef, setErrorRef] = useState('');
   const statusRef = useRef<Status>('idle');
   const codeRef = useRef<HTMLParagraphElement>(null);

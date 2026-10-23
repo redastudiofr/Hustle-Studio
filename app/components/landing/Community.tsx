@@ -54,7 +54,9 @@ export function Community({photos}: {photos: Polaroid[]}) {
           <li
             key={photo.src}
             className="hx-polaroid"
-            style={{'--tilt': `${TILTS[index % TILTS.length]}deg`} as CSSProperties}
+            style={
+              {'--tilt': `${TILTS[index % TILTS.length]}deg`} as CSSProperties
+            }
           >
             <img
               src={photo.src}

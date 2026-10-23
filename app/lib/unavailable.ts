@@ -2,8 +2,7 @@ import {BRAND} from '~/config/brand';
 
 /**
  * Last-resort page, served by the server entry when the app could not even
- * start rendering (missing environment variables, Shopify unreachable while
- * building the context). Plain HTML, no JavaScript, no dependency on anything
+ * start rendering. Plain HTML, no JavaScript, no dependency on anything
  * that might be what failed. The real error is in the server logs.
  */
 export function unavailablePage(): Response {

@@ -1,4 +1,3 @@
-import {Link} from 'react-router';
 import type {Route} from './+types/about';
 import {useT} from '~/lib/i18n';
 import {seoMeta, originFromMatches} from '~/lib/seo';
@@ -78,14 +77,6 @@ export default function About() {
             )}
           </dl>
         )}
-      </section>
-
-      <section className="about__cta">
-        <h2>{t('about.ctaTitle')}</h2>
-        <p>{t('about.ctaBody')}</p>
-        <Link to="/collections/all" prefetch="intent" className="btn">
-          {t('about.ctaButton')}
-        </Link>
       </section>
     </div>
   );
