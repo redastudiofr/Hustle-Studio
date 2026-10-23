@@ -903,17 +903,6 @@ html {
   }
 }
 
-/*
-* Collection showcase closing the product page
-*
-* Full-bleed tall tiles, one per collection, each linking to a real Shopify
-* collection page. Row of four on desktop, touch carousel on mobile.
-*/
-.showcase {
-  /* Bleeds past .pdp's padding to touch both screen edges. */
-  margin-inline: -1rem;
-}
-
 /* Press feedback before the route change. */
 
 @keyframes showcase-press {
@@ -925,12 +914,6 @@ html {
   }
   100% {
     transform: scale(1);
-  }
-}
-
-@media (min-width: 64em) {
-  .showcase {
-    margin-inline: -1.5rem;
   }
 }
 

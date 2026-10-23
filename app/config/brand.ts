@@ -60,12 +60,6 @@ export const BRAND = {
   },
 
   /**
-   * Order amount (€) from which shipping is free, stated in the shipping
-   * policy (app/data/legal*.ts). 0: not stated.
-   */
-  freeShippingThreshold: 0 as number,
-
-  /**
    * Language a first-time visitor gets ('en' or 'fr'). They can switch at any
    * time; the choice is remembered in a cookie.
    */
