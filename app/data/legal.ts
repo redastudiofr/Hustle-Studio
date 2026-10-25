@@ -1,9 +1,11 @@
 /**
  * The storefront's legal and service documents.
  *
- * The site's legal documents (privacy policy, legal notice), versioned with
- * the code. The site sells nothing online: there are no terms of sale,
- * shipping or returns pages.
+ * Held here rather than in Shopify Admin's policy editor for two reasons: they
+ * are versioned with the code, and Shopify has no slot at all for a French
+ * *mentions légales*, which is a legal requirement for a site selling into
+ * France. The Admin policies still exist and are what Shopify's own checkout
+ * links to — keep the two in step (see docs/legal-pages.md).
  *
  * Each document exists in both languages: this file holds the English set,
  * ./legal.fr.ts the French one, under the same handles. The French version of
@@ -32,6 +34,7 @@ const B = BRAND.name;
 const C = LEGAL.company;
 const EMAIL = C.email || BRAND.email || LEGAL_PLACEHOLDER;
 const MAILTO = EMAIL.startsWith('[') ? undefined : `mailto:${EMAIL}`;
+const RETURN_DAYS = LEGAL.returnDays;
 
 export type LegalField = {
   label: string;
@@ -70,6 +73,219 @@ export type LegalDocument = {
 
 const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
   {
+    handle: 'terms',
+    title: 'terms & conditions',
+    navLabel: 'terms & conditions',
+    intro: `The terms on which ${B} sells to you, and the rules for using this site.`,
+    updated: LEGAL.updated.en,
+    sections: [
+      {
+        heading: '1. who we are',
+        body: [
+          `Throughout these terms, "we", "us" and "${B}" refer to the company operating this store, and "you" refers to the person placing an order or browsing the site.`,
+          `These terms apply to every order placed through this store. Placing an order means you accept them, so please read them before you buy. We may change them at any time; the version that governs your order is the one published when you place it.`,
+        ],
+      },
+      {
+        heading: '2. the products',
+        body: [
+          `We describe and photograph each piece as accurately as we can. Screens render colour differently, so a small variation between the photograph and the garment is normal and is not a defect.`,
+          `Our pieces are produced in limited runs. Availability shown on the site is indicative: if an item sells out between your order and its preparation, we will tell you and refund that item in full.`,
+        ],
+      },
+      {
+        heading: '3. prices',
+        body: [
+          `Prices are shown in euros, inclusive of French VAT. Shipping is calculated at checkout and shown before you pay, so the total you confirm is the total you are charged.`,
+          `We may change prices at any time. The price that applies to your order is the one displayed at the moment you confirm it.`,
+          `If an item is listed at an obviously incorrect price — a decimal in the wrong place, a €10 overshirt — we may cancel the order and refund you in full rather than fulfil it. We will contact you first.`,
+        ],
+      },
+      {
+        heading: '4. placing an order',
+        body: [
+          `You place an order by adding items to your cart and completing checkout. Your order is an offer to buy; the contract is formed when we send you a confirmation email.`,
+          `We may refuse an order where the item is unavailable, where we cannot obtain payment authorisation, where we suspect fraud, or where a resale pattern suggests the order is not for personal use.`,
+        ],
+      },
+      {
+        heading: '5. payment',
+        body: [
+          `Payment is taken at the time of the order, through Shopify Payments and the methods shown at checkout. Card details are handled by the payment provider and never reach our servers.`,
+          `Your order is prepared once payment is confirmed.`,
+        ],
+      },
+      {
+        heading: '6. delivery',
+        body: [
+          `Shipping times, costs and territories are set out in our Shipping Policy, which forms part of these terms.`,
+          `Risk in the goods passes to you on delivery.`,
+        ],
+      },
+      {
+        heading: '7. right of withdrawal and returns',
+        body: [
+          `If you are a consumer in the European Union, you have a statutory right to withdraw from your purchase within fourteen days of receiving it, without giving a reason. We extend this to ${RETURN_DAYS} days as a commercial gesture.`,
+          `How to exercise it, and what happens to your refund, are set out in our Return & Refund Policy, which forms part of these terms. Nothing in that policy reduces your statutory rights.`,
+        ],
+      },
+      {
+        heading: '8. legal guarantees',
+        body: [
+          `Beyond anything we offer commercially, you benefit from the legal guarantee of conformity (articles L.217-3 and following of the French Consumer Code) and the guarantee against hidden defects (articles 1641 and following of the Civil Code).`,
+          `Under the guarantee of conformity you have two years from delivery to act, and you may choose between repair and replacement. You do not have to prove the defect existed at delivery during the first two years.`,
+        ],
+      },
+      {
+        heading: '9. intellectual property',
+        body: [
+          `Everything on this site — the name, the logo, the photographs, the garment designs, the texts and the code — belongs to ${B} or is used with permission. You may not copy, reproduce or reuse it commercially without our written agreement.`,
+          `Buying a garment gives you the garment. It does not give you a licence to reproduce its design.`,
+        ],
+      },
+      {
+        heading: '10. your use of the site',
+        body: [
+          `You agree not to attempt to disrupt the site, to access data you are not entitled to, to scrape it at a scale that degrades it for others, or to use it for anything unlawful.`,
+        ],
+      },
+      {
+        heading: '11. liability',
+        body: [
+          `We are liable for foreseeable loss caused by our failure to meet these terms. We are not liable for loss that was not foreseeable, nor for business losses, since our products are sold for personal use.`,
+          `Nothing here limits our liability for death or personal injury caused by our negligence, for fraud, or for anything that cannot lawfully be limited.`,
+        ],
+      },
+      {
+        heading: '12. complaints and disputes',
+        body: [
+          `Write to us first, from the contact page on this site. Most things are settled that way.`,
+          `If we cannot agree, you may use the European Commission's online dispute resolution platform at ec.europa.eu/consumers/odr, or refer the matter to a consumer mediator, free of charge to you.`,
+          `These terms are governed by French law. If you are a consumer, you keep the protection of the mandatory rules of the country where you live.`,
+        ],
+      },
+    ],
+  },
+
+  {
+    handle: 'shipping',
+    title: 'shipping policy',
+    navLabel: 'shipping',
+    intro: 'How and when your order reaches you.',
+    updated: LEGAL.updated.en,
+    sections: [
+      {
+        heading: 'processing',
+        body: [
+          `We process and ship all orders within ${LEGAL.shipping.preparation.en}. Orders placed at the weekend or on a public holiday are prepared on the next business day.`,
+          `During drops and sale periods, preparation can take slightly longer. If it does, we say so on the site rather than letting you find out from a tracking page that has not moved.`,
+        ],
+      },
+      {
+        heading: 'delivery times',
+        body: [`Once your parcel leaves us, expect:`],
+        list: LEGAL.shipping.zones.en,
+      },
+      {
+        heading: 'shipping costs',
+        body: [
+          `Shipping is calculated at checkout from the destination and the weight of the parcel, and shown in full before you pay.`,
+          ...(BRAND.freeShippingThreshold
+            ? [
+                `Shipping is free on orders over €${BRAND.freeShippingThreshold} delivered within France.`,
+              ]
+            : []),
+        ],
+      },
+      {
+        heading: 'tracking',
+        body: [
+          `Every parcel is tracked. You receive a tracking number by email as soon as the label is created, and you can follow the parcel at any time from our order tracking page.`,
+          `A tracking number can take a few hours to become active with the carrier. If it shows nothing at first, that is normal.`,
+        ],
+      },
+      {
+        heading: 'customs and import duties',
+        body: [
+          `Orders shipped outside the European Union may attract import duties and taxes on arrival. These are set by the destination country, are payable by you, and are not included in what you paid us.`,
+          `We cannot declare an order as a gift or under-declare its value. We do not do it, and being asked does not change the answer.`,
+        ],
+      },
+      {
+        heading: 'wrong address, failed delivery',
+        body: [
+          `Please check your address before confirming. We can correct it only while the order is still being prepared — write to us immediately from the contact page.`,
+          `If a parcel comes back to us because the address was wrong or nobody collected it, we will refund the items but not the original shipping, and reshipping is at your cost.`,
+        ],
+      },
+      {
+        heading: 'lost or damaged parcels',
+        body: [
+          `If tracking has not moved for seven business days, or the parcel arrives damaged, contact us. We open a claim with the carrier and either reship or refund you — we do not leave you to argue with the carrier yourself.`,
+        ],
+      },
+    ],
+  },
+
+  {
+    handle: 'returns',
+    title: 'return & refund policy',
+    navLabel: 'returns & refunds',
+    intro: `${RETURN_DAYS} days to change your mind, and what happens next.`,
+    updated: LEGAL.updated.en,
+    sections: [
+      {
+        heading: 'the window',
+        body: [
+          `You have ${RETURN_DAYS} days from the day you receive your order to return it. That is longer than the fourteen days EU law requires, and it does not replace your statutory rights — it adds to them.`,
+        ],
+      },
+      {
+        heading: 'condition',
+        body: [
+          `Pieces must come back unworn, unwashed, with their tags attached and in their original packaging. Trying something on is fine; wearing it out is not.`,
+          `We reserve the right to refuse a return that arrives visibly worn, marked, or smelling of smoke or perfume, and to send it back to you.`,
+        ],
+      },
+      {
+        heading: 'what cannot be returned',
+        body: [
+          `For hygiene reasons, underwear and socks cannot be returned once the seal is broken. Gift cards are not refundable. Anything made or altered to your specification is not returnable.`,
+        ],
+      },
+      {
+        heading: 'how to return',
+        body: [
+          `Write to us from the contact page with your order number and what you are sending back. We reply with the return address and instructions within one business day.`,
+          `Return shipping is at your cost unless the item is faulty or we sent the wrong one, in which case we cover it. Use a tracked service — until the parcel reaches us, it is your responsibility.`,
+        ],
+      },
+      {
+        heading: 'refunds',
+        body: [
+          `We inspect the return and refund you within fourteen days of receiving it, to the payment method you used. Your bank may take a few more days to show it.`,
+          `We refund the price of the items and the standard outbound shipping. If you chose an express option, we refund the standard rate, not the difference.`,
+          `Where an order was discounted as a set — the cap offer, for instance — returning part of it removes the discount from the part you keep, and the refund is adjusted accordingly.`,
+        ],
+      },
+      {
+        heading: 'exchanges',
+        body: [
+          `The fastest route is to return the item for a refund and place a new order for the size or colour you want. It avoids your size selling out while a parcel is in transit.`,
+          `If you would rather we handled the exchange directly, ask and we will, subject to stock.`,
+        ],
+      },
+      {
+        heading: 'faulty items',
+        body: [
+          `If something arrives faulty or is not what you ordered, tell us within a reasonable time and send a photograph. We cover return shipping and either replace the item or refund you in full, as you prefer.`,
+          `This is on top of the legal guarantee of conformity and the guarantee against hidden defects described in our terms.`,
+        ],
+      },
+    ],
+  },
+
+  {
     handle: 'privacy',
     title: 'privacy policy',
     navLabel: 'privacy',
@@ -79,33 +295,33 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: 'who is responsible',
         body: [
-          `The company operating this site is the data controller for the personal data collected through it — see our Legal Notice for its full registered identity. For any question about your data, write to us from the contact page and we will answer.`,
+          `The company operating this store is the data controller for the personal data collected through it — see our Legal Notice for its full registered identity. For any question about your data, write to us from the contact page and we will answer.`,
         ],
       },
       {
         heading: 'what we collect',
-        body: [
-          `We collect only what you choose to send us through the site's forms:`,
-        ],
+        body: [`We collect only what an order or a request actually needs:`],
         list: [
-          'Contact form — your name, email address and message',
-          'Newsletter — your email address, and your first name if you give it',
-          'Welcome offer — your phone number, if you ask for the code',
-          'Technical data — IP address and browser, in the hosting provider’s server logs, needed to run and secure the site',
+          'Identity and contact details — name, email, postal address, phone number',
+          'Order details — what you bought, when, for how much, and where it was sent',
+          'Payment confirmation — never the card number itself, which stays with our payment provider',
+          'Newsletter subscription, if you asked for it',
+          'Technical data — IP address, browser, pages visited, through our analytics',
         ],
       },
       {
         heading: 'why we use it, and on what legal basis',
         body: [
-          `To answer your messages: because you asked us to.`,
-          `To send you news and offers: because you consented, and only until you withdraw it.`,
-          `To secure the site: because we have a legitimate interest in it working and not being abused.`,
+          `To fulfil your order and provide support: because we have a contract with you.`,
+          `To send you marketing emails: because you consented, and only until you withdraw it.`,
+          `To keep accounting and invoicing records: because the law requires it.`,
+          `To secure the site and understand how it is used: because we have a legitimate interest in it working and not being abused.`,
         ],
       },
       {
         heading: 'who sees it',
         body: [
-          `Our processors, and nobody else: ${LEGAL.host.name} hosts the site; Resend (resend.com) delivers the messages sent through the site's forms to our inbox.`,
+          `Our processors, and nobody else. Shopify hosts the store and processes orders; our payment provider handles payment; our carriers deliver the parcel; our email provider sends the newsletter.`,
           `We do not sell your data. We do not rent it. We do not trade it for reach.`,
           `Some of these providers operate outside the European Union. Where they do, transfers are covered by the European Commission's standard contractual clauses.`,
         ],
@@ -113,8 +329,10 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: 'how long we keep it',
         body: [
-          `Messages sent through the contact form: as long as needed to answer them.`,
-          `Newsletter and welcome-offer data: until you unsubscribe, then we delete it.`,
+          `Order and invoice data: ten years, as French commercial law requires.`,
+          `Customer account data: for as long as the account is open, then three years after your last contact with us.`,
+          `Newsletter data: until you unsubscribe, then we delete it.`,
+          `Analytics data: thirteen months.`,
         ],
       },
       {
@@ -127,8 +345,8 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: 'cookies',
         body: [
-          `We only use what the site needs to work: a cookie that remembers your language, and one that remembers you already asked for the welcome offer. There is no audience measurement and no advertising pixel (Meta, TikTok, Google Ads or similar). You can block cookies from your browser settings at any time.`,
-          `The welcome pop-up records that it has been shown, in your browser only. That record never leaves your device and tells us nothing about you.`,
+          `We use cookies that are strictly necessary for the site to work — your cart, your session and your language preference. We also use Shopify's own built-in analytics to understand visits and orders on this store; we do not use any third-party advertising pixel (Meta, TikTok, Google Ads or similar). You can block cookies from your browser settings at any time, though this may affect the cart.`,
+          `The newsletter pop-up records that it has been shown, in your browser only. That record never leaves your device and tells us nothing about you.`,
         ],
       },
     ],
@@ -139,7 +357,7 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
     title: 'legal notice',
     navLabel: 'legal notice',
     intro:
-      'Who publishes this site, where it is hosted, and what happens to your data.',
+      'Who publishes this site, where it is hosted, how payment works, and what happens to your data.',
     updated: LEGAL.updated.en,
     sections: [
       {
@@ -168,7 +386,13 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
         heading: 'hosting',
         body: [
           `This site is hosted by ${LEGAL.host.name}, ${LEGAL.host.address} (${LEGAL.host.website}).`,
-          `No purchase can be made on this site.`,
+          `The commerce platform behind it — orders, payment and shipping management — is provided by Shopify Inc. and its subsidiaries.`,
+        ],
+      },
+      {
+        heading: 'payment',
+        body: [
+          `Payments made on this site are processed securely by Shopify Payments. ${B} neither stores nor directly processes card details: they are passed to the payment provider concerned.`,
         ],
       },
       {
@@ -184,7 +408,9 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
           `In running this site, ${B} may collect and process certain personal data, in particular in the following situations:`,
         ],
         list: [
-          'Contact: information sent through the contact page, to answer requests.',
+          'Orders and delivery: name, address, email address and phone number needed to process and ship orders.',
+          'Payment: payments processed by Shopify Payments or the provider concerned, under the applicable terms.',
+          'Customer service and reviews: information sent through the contact page or review forms, to answer requests or manage customer feedback.',
           'Newsletter and commercial offers: email address or phone number given voluntarily, subject to the required consent.',
           'Security: technical data needed to run the site, keep it secure and prevent abuse.',
         ],
@@ -201,14 +427,15 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: 'cookies',
         body: [
-          `This site only uses the cookies it needs to work (language preference, welcome offer already requested). It uses no audience measurement and no advertising tracker.`,
-          `You can manage cookies through your browser settings.`,
+          `This site uses cookies and other trackers needed for it to work, in particular for the cart, the browsing session and user preferences.`,
+          `Audience measurement tools may also be used to analyse visits and orders, depending on their configuration. Where the regulations require it, the user's prior consent is obtained before non-essential cookies or trackers are set.`,
+          `You can manage your preferences through the site's cookie management tool, where available, and through your browser settings. Refusing some cookies may affect how certain features work.`,
         ],
       },
       {
         heading: 'liability',
         body: [
-          `${B} strives to keep the information on this site as accurate and up to date as possible.`,
+          `${B} strives to keep the information on this site as accurate and up to date as possible. Information about products, prices and lead times may change.`,
           `${B} cannot be held liable for temporary interruptions of the site due to maintenance, technical problems or events beyond its control, within the limits set by law.`,
         ],
       },
@@ -223,7 +450,7 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: 'contact us',
         body: [
-          `For any question about this legal notice or your personal data, you can contact us:`,
+          `For any question about this legal notice, an order or your personal data, you can contact us:`,
         ],
         fields: [
           {label: 'Email', value: EMAIL, href: MAILTO},

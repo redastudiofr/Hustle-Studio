@@ -1,29 +1,28 @@
 # Hustle Studio — notes for Claude
 
-Showcase site (no online shop): React Router 7, server-rendered, deployed on
-**Vercel** through the Build Output API (`npm run build:vercel` →
-`server/vercel.ts` + `scripts/vercel-output.mjs`). `npm run dev` runs React
-Router's dev server. No Shopify, no external service except Resend for the
-forms (contact, newsletter, welcome pop-up → e-mail, see docs/FORMS.md).
+Shopify headless storefront: React Router 7 + Hydrogen (as a library),
+deployed on **Vercel** through the Build Output API (`npm run build:vercel`
+→ `server/vercel.ts` + `scripts/vercel-output.mjs`). `npm run dev` runs the
+same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 
-- Brand-specific values live in `app/config/` (brand, theme, homeTemplate,
-  navigation, inbox, promotions, legal) and `public/brand/`. Do not
-  hardcode the brand name elsewhere; dictionary strings can use `{brand}`.
-- Never add products, prices, fake reviews or promises (delivery times,
-  return windows) the shop does not stand behind. Legal pages (`/legal/*`)
-  are in `app/data/legal*.ts`, fed by `app/config/legal.ts`.
+- Brand-specific values live in `app/config/` (brand, theme, home,
+  navigation) and `public/brand/`. Do not hardcode the brand name elsewhere;
+  dictionary strings can use `{brand}`.
+- Products, collections, stock and prices come from Shopify. Legal pages
+  (`/legal/*`) are in `app/data/legal*.ts`, fed by `app/config/legal.ts`.
+  Never add hardcoded products, fake reviews, fake stock counts or promises
+  (delivery times, return windows) that Shopify does not back.
+- Promotions live in `app/config/promotions.ts` and stay invisible until a
+  Shopify code is set (`isLive`). Bundle maths in `app/lib/bundles.ts`; the
+  cart attaches bundle codes server-side and drops an unbacked gift line.
+  Reviews come only from Shopify `review` metaobjects + `app/data/reviews.ts`
+  (real ones, app/lib/reviews.ts) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
-  The site is in English by default with a French option
-  (`BRAND.languages`); config copy uses `{en, fr}` (Localized). Homepage:
-  sections in app/components/landing/, texts in app/config/homeTemplate.ts —
-  see docs/HOME_PAGE.md.
-- Server-only settings through `serverEnv()` (app/lib/env.server.ts), never
-  in browser code. Secrets only in env vars (`.env.example` lists them).
-  Never commit tokens.
-- Styles: reset.css → app.css (base) → promotions.css → brand.css →
-  editorial.css → pdp.css (header + section titles) → home.css (homepage,
-  `hx-` classes, last), built into one file through app/styles/site.css
-  (tailwind.css apart).
+  The site runs in English only (`BRAND.languages`); legal pages keep a
+  French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.
+- Styles: app.css (base) → promotions.css → brand.css → editorial.css (the
+  current editorial design layer, loaded last).
+- Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
 - Vercel build: keep server and client CSS identical (no `build.target` on the
   SSR build) or hydration breaks on a stylesheet hash mismatch.

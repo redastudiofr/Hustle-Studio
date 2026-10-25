@@ -1,9 +1,12 @@
 /**
- * Everything that makes this site *this brand*, in one file.
+ * Everything that makes this storefront *this brand*, in one file.
  *
  * To reuse the site for another brand: change this file, `theme.css` next to
- * it, `homeTemplate.ts` for the homepage, and the images under `public/brand/`.
+ * it, `home.ts` for the homepage, and the images under `public/brand/`.
  * Nothing else in the code names the brand.
+ *
+ * Products, prices, collections, stock, legal policies and menus are NOT here:
+ * they come from Shopify and are edited in Shopify Admin.
  */
 export const BRAND = {
   /** Shown in page titles, alt texts, the footer and structured data. */
@@ -58,6 +61,26 @@ export const BRAND = {
     instagram: '',
     tiktok: '',
   },
+
+  /** Handles of the Shopify menus (Shopify Admin → Online Store → Navigation). */
+  menus: {
+    header: 'main-menu',
+    footer: 'footer',
+  },
+
+  /**
+   * Market used for prices and availability. Shopify converts prices when
+   * several markets are set up; this is the one the storefront asks for.
+   */
+  country: 'FR',
+  currency: {code: 'EUR', symbol: '€'},
+
+  /**
+   * Order amount (in the currency above) from which shipping is free, shown as
+   * a progress bar in the cart. Must match your free-shipping rate in Shopify
+   * Admin → Settings → Shipping and delivery. 0 hides the bar.
+   */
+  freeShippingThreshold: 0 as number,
 
   /**
    * Language a first-time visitor gets ('en' or 'fr'). They can switch at any

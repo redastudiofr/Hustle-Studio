@@ -10,7 +10,7 @@ import {BRAND} from '~/config/brand';
  *
  * Destination: NOTIFICATION_EMAIL (server-only env var), else BRAND.email.
  * Sent from Resend's sandbox address, which can only deliver to the e-mail
- * the Resend account was created with — see docs/FORMS.md.
+ * the Resend account was created with — see docs/PROMOTIONS.md.
  */
 export async function sendNotificationEmail({
   env,

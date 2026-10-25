@@ -1,24 +1,68 @@
-import {NavLink} from 'react-router';
+import {Suspense, useState} from 'react';
+import {Await, NavLink, useAsyncValue} from 'react-router';
+import {
+  type CartViewPayload,
+  useAnalytics,
+  useOptimisticCart,
+} from '@shopify/hydrogen';
+import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
-import {BurgerIcon} from '~/components/Icons';
+import {useHeaderTone} from '~/lib/header-tone';
+import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
-import {BRAND} from '~/config/brand';
-import {NAVIGATION} from '~/config/navigation';
+import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
+import {
+  buildNavGroups,
+  NAV_HEADER_LINKS,
+  NAV_SERVICE_LINKS,
+  NAV_MOBILE_LINKS,
+  NAV_LEGAL_LINKS,
+  type NavCollection,
+  type NavGroup,
+} from '~/lib/nav';
 
-/**
- * Site header, as in the mock-ups: desktop — logo left, links centred;
- * phones — menu, logo centred. White and sticky: it stays at the top of the
- * screen and never overlaps the page underneath.
- */
-export function Header() {
+export type {NavCollection};
+
+interface HeaderProps {
+  header: HeaderQuery;
+  cart: Promise<CartApiQueryFragment | null>;
+  isLoggedIn: Promise<boolean>;
+  publicStoreDomain: string;
+  navCollections: NavCollection[];
+  /** False when the Customer Account API is not configured — no account icon then. */
+  accountEnabled?: boolean;
+}
+
+type Viewport = 'desktop' | 'mobile';
+
+export function Header({
+  header,
+  cart,
+  navCollections,
+  accountEnabled,
+}: HeaderProps) {
+  const {shop} = header;
   const {open} = useAside();
   const t = useT();
+  const {transparent} = useHeaderTone();
+  // Drives a short press animation on the wordmark; cleared on animation end
+  // so it can replay on every click.
+  const [logoPressed, setLogoPressed] = useState(false);
+
+  const headerClassName = [
+    'site-header',
+    transparent && 'site-header--transparent',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className="site-top">
-      <header className="site-header site-header--mock">
+    <header className={headerClassName}>
+      {/* Three tracks — left, centre, right — so the wordmark is optically
+          centred in the header whatever the nav or icons weigh. */}
+      <div className="site-header__side site-header__side--start">
         <button
           className="site-header__icon-btn site-header__burger"
           onClick={() => open('mobile')}
@@ -26,46 +70,91 @@ export function Header() {
         >
           <BurgerIcon />
         </button>
+        <HeaderMenu collections={navCollections} viewport="desktop" />
+      </div>
 
-        <NavLink
-          to="/"
-          end
-          prefetch="intent"
-          className="site-header__logo"
-          aria-label={BRAND.name}
+      <NavLink
+        to="/"
+        end
+        prefetch="intent"
+        className={`site-header__logo ${logoPressed ? 'site-header__logo--pressed' : ''}`}
+        aria-label={shop.name}
+        onClick={() => setLogoPressed(true)}
+        onAnimationEnd={() => setLogoPressed(false)}
+      >
+        {/* The wordmark is painted with currentColor through a CSS mask, so it
+            turns white by itself when the header goes transparent over the
+            hero. The text stays for screen readers and as a fallback. */}
+        <span className="site-header__wordmark" aria-hidden="true" />
+        <span className="sr-only">{shop.name}</span>
+      </NavLink>
+
+      <div className="site-header__side site-header__side--end">
+        {/* Desktop only: on phones the switch lives in the menu drawer. */}
+        {HAS_LANGUAGE_CHOICE && (
+          <div className="site-header__lang">
+            <LanguageSwitcher />
+          </div>
+        )}
+        <button
+          className="site-header__icon-btn"
+          onClick={() => open('search')}
+          aria-label={t('nav.search')}
         >
-          <span className="site-header__wordmark" aria-hidden="true" />
-          <span className="sr-only">{BRAND.name}</span>
-        </NavLink>
-
-        <nav className="site-header__links" aria-label={t('nav.menu')}>
-          {NAVIGATION.headerLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              prefetch="intent"
-              className="site-header__link"
-              end
-            >
-              {t(link.labelKey)}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div className="site-header__icons" />
-      </header>
-    </div>
+          <SearchIcon />
+        </button>
+        {accountEnabled && (
+          <NavLink
+            to="/account"
+            prefetch="intent"
+            className="site-header__icon-btn site-header__account"
+            aria-label={t('nav.account')}
+          >
+            <PersonIcon />
+          </NavLink>
+        )}
+        <CartToggle cart={cart} />
+      </div>
+    </header>
   );
 }
 
-/** Burger menu: every page as a plain link, then the legal pages. */
-export function MobileMenu() {
+export function HeaderMenu({
+  collections,
+  viewport,
+}: {
+  collections: NavCollection[];
+  viewport: Viewport;
+}) {
   const {close} = useAside();
   const t = useT();
+  const groups = buildNavGroups(collections);
 
+  if (viewport === 'desktop') {
+    return (
+      <nav className="site-header__nav" role="navigation">
+        {groups.map((group) => (
+          <DesktopGroup key={group.id} group={group} />
+        ))}
+        {NAV_HEADER_LINKS.map((link) => (
+          <NavLink
+            key={link.to}
+            to={link.to}
+            end
+            prefetch="intent"
+            className="site-header__nav-link"
+          >
+            {t(link.labelKey)}
+          </NavLink>
+        ))}
+      </nav>
+    );
+  }
+
+  // Burger menu: every page as a plain link — no "shop" dropdown to open.
   return (
     <nav className="mobile-nav" role="navigation">
-      {NAVIGATION.mobileLinks.map((link) => (
+      {NAV_MOBILE_LINKS.map((link) => (
         <NavLink
           key={link.to}
           to={link.to}
@@ -77,7 +166,20 @@ export function MobileMenu() {
         </NavLink>
       ))}
 
-      {NAVIGATION.footer.policies.map((link, index) => (
+      {/* Service links sit under the main pages, not among them. */}
+      {NAV_SERVICE_LINKS.map((link, index) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          className={`mobile-nav__service ${index === 0 ? 'mobile-nav__first' : ''}`}
+          onClick={close}
+          prefetch="intent"
+        >
+          {t(link.labelKey)}
+        </NavLink>
+      ))}
+
+      {NAV_LEGAL_LINKS.map((link, index) => (
         <NavLink
           key={link.to}
           to={link.to}
@@ -94,17 +196,120 @@ export function MobileMenu() {
   );
 }
 
-/** Language choice, in the menu drawer and in the footer. */
+/**
+ * Desktop: the group name in the bar, its collections in a panel underneath.
+ *
+ * Opened by hover and by `:focus-within`, with no state to keep in sync. The
+ * label has to be a real button for that to work: the panel is hidden with
+ * `visibility: hidden`, which makes everything inside it unfocusable, so
+ * `:focus-within` could never fire from the links themselves. Tabbing to the
+ * button opens the panel, and the links become reachable because they are now
+ * visible.
+ */
+function DesktopGroup({group}: {group: NavGroup}) {
+  const t = useT();
+
+  return (
+    <div className="nav-group">
+      <button type="button" className="site-header__nav-link nav-group__label">
+        {t(group.labelKey)}
+      </button>
+      <div className="nav-group__panel">
+        <ul>
+          {group.id === 'shop' && (
+            <li>
+              <NavLink to="/collections/all" prefetch="intent">
+                {t('nav.allProducts')}
+              </NavLink>
+            </li>
+          )}
+          {group.collections.map((collection) => (
+            <li key={collection.id}>
+              <NavLink
+                to={`/collections/${collection.handle}`}
+                prefetch="intent"
+              >
+                {collection.title.toLowerCase()}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function CartToggle({cart}: Pick<HeaderProps, 'cart'>) {
+  return (
+    <Suspense fallback={<CartButton count={0} />}>
+      <Await resolve={cart}>
+        <CartBanner />
+      </Await>
+    </Suspense>
+  );
+}
+
+function CartBanner() {
+  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
+  const cart = useOptimisticCart(originalCart);
+  return <CartButton count={cart?.totalQuantity ?? 0} />;
+}
+
+function CartButton({count}: {count: number}) {
+  const {open} = useAside();
+  const t = useT();
+  const {publish, shop, cart, prevCart} = useAnalytics();
+  return (
+    <button
+      className="site-header__icon-btn"
+      aria-label={t('nav.cartCount', {count})}
+      onClick={() => {
+        open('cart');
+        publish('cart_viewed', {
+          cart,
+          prevCart,
+          shop,
+          url: window.location.href || '',
+        } as CartViewPayload);
+      }}
+    >
+      <BagIcon />
+      {count > 0 && <span className="site-header__cart-count">{count}</span>}
+    </button>
+  );
+}
+
+/**
+ * Store preferences — language and currency — as a small settings block.
+ *
+ * The language switcher used to sit loose in the header bar. It now lives
+ * here, next to the currency it belongs with: two facts about how the shop is
+ * displayed, stated in one place instead of scattered across the chrome. The
+ * block is rendered inside the menu drawer and in the footer, so it is
+ * reachable on a phone and on a desktop without the header carrying it.
+ *
+ * The currency is a statement, not a control: Shopify prices this storefront
+ * in euros, and offering a switch that cannot change the price would be a lie.
+ */
 export function LocalePreferences({className}: {className?: string}) {
   const t = useT();
-  if (!HAS_LANGUAGE_CHOICE) return null;
 
   return (
     <div className={['locale-prefs', className].filter(Boolean).join(' ')}>
       <span className="locale-prefs__title">{t('nav.settings')}</span>
+
+      {HAS_LANGUAGE_CHOICE && (
+        <div className="locale-prefs__row">
+          <span className="locale-prefs__label">{t('nav.language')}</span>
+          <LanguageSwitcher />
+        </div>
+      )}
+
       <div className="locale-prefs__row">
-        <span className="locale-prefs__label">{t('nav.language')}</span>
-        <LanguageSwitcher />
+        <span className="locale-prefs__label">{t('nav.currency')}</span>
+        <span className="locale-prefs__value">
+          {CURRENCY_CODE}&nbsp;{CURRENCY_SYMBOL}
+        </span>
       </div>
     </div>
   );

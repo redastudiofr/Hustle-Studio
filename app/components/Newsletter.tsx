@@ -2,8 +2,8 @@ import {useState} from 'react';
 import {useT} from '~/lib/i18n';
 
 /**
- * Newsletter sign-up. Posts to /newsletter, which e-mails the address to
- * the shop's inbox through Resend (see routes/newsletter.tsx).
+ * Newsletter sign-up. Posts to /newsletter, which adds the e-mail to the
+ * Shopify customer list with marketing consent (see routes/newsletter.tsx).
  * Shows a readable message if that fails.
  */
 export function Newsletter() {

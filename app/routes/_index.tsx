@@ -1,34 +1,47 @@
+import {useLoaderData} from 'react-router';
 import type {Route} from './+types/_index';
-import {HOME} from '~/config/homeTemplate';
-import {useLocalized} from '~/lib/i18n/localized';
-import {HeroSplit, ScrollingBand} from '~/components/landing/HeroSplit';
-import {Community} from '~/components/landing/Community';
-import {MediaCarousel} from '~/components/landing/MediaCarousel';
+import {HOME_SECTIONS} from '~/config/home';
+import {HomeSections} from '~/components/home/HomeSections';
+import {loadHomeSections} from '~/lib/homeSections';
 import {seoMeta, originFromMatches} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({matches}) =>
   seoMeta({path: '/', origin: originFromMatches(matches)});
 
-/** Preloads the first hero photo — the page's LCP element. */
+/** The homepage minus the sections switched off with `hidden: true`. */
+const SECTIONS = HOME_SECTIONS.filter((section) => !section.hidden);
+
+/** Preloads the hero photo (the page's LCP element) when one is configured. */
 export function links() {
-  const first = HOME.hero[0];
-  return first ? [{rel: 'preload', as: 'image', href: first.image}] : [];
+  const hero = SECTIONS.find((section) => section.type === 'hero');
+  if (!hero || hero.type !== 'hero' || !hero.image) return [];
+  const {desktop, mobile} = hero.image;
+  return [
+    {
+      rel: 'preload',
+      as: 'image',
+      href: mobile ?? desktop,
+      media: '(max-width: 47.99em)',
+    },
+    {rel: 'preload', as: 'image', href: desktop, media: '(min-width: 48em)'},
+  ];
 }
 
 /**
- * Homepage (see docs/HOME_PAGE.md): every text and photo in
- * app/config/homeTemplate.ts. A section without real content behind it is
- * not rendered.
+ * The homepage is entirely described by app/config/home.ts. Every Shopify
+ * request is started here and streamed: the hero renders immediately, each
+ * product section fills in as its data arrives.
  */
+export async function loader({context}: Route.LoaderArgs) {
+  return {sections: loadHomeSections(context.storefront, SECTIONS)};
+}
+
 export default function Homepage() {
-  const l = useLocalized();
+  const {sections} = useLoaderData<typeof loader>();
 
   return (
-    <div className="hx">
-      <HeroSplit panels={HOME.hero} />
-      <ScrollingBand items={HOME.band.map(l)} />
-      <Community photos={HOME.community.photos} />
-      <MediaCarousel cards={HOME.media.cards} logos={HOME.media.logos} />
+    <div className="home">
+      <HomeSections sections={SECTIONS} data={sections} />
     </div>
   );
 }

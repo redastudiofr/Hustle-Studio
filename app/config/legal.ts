@@ -5,6 +5,11 @@
  * (mentions légales, Loi pour la confiance dans l'économie numérique, art. 6).
  * Any field left as '[à compléter]' is left off the page entirely (the line
  * is hidden), so a missing value is never shown to visitors.
+ *
+ * The commercial commitments below (shipping times, return window, free
+ * shipping) are the ones the previous store used: CHECK THEY ARE YOURS, and
+ * keep them identical to your Shopify settings (Settings → Shipping and
+ * delivery) — the site states them, Shopify applies them.
  */
 const TODO = '[à compléter]';
 
@@ -36,6 +41,35 @@ export const LEGAL = {
     address: '440 N Barranca Ave #4133, Covina, CA 91723, United States',
     website: 'https://vercel.com',
   },
+
+  shipping: {
+    /** How long orders take to be prepared before they ship. */
+    preparation: {
+      en: 'one to three business days',
+      fr: 'un à trois jours ouvrés',
+    },
+    /** Delivery times once shipped, one line per zone. */
+    zones: {
+      en: [
+        'France — 48 hours, tracked',
+        'Belgium, Luxembourg, Germany, Spain, Italy, Netherlands — 3 to 5 business days',
+        'Rest of the European Union — 4 to 7 business days',
+        'Rest of the world — 7 to 14 business days',
+      ],
+      fr: [
+        'France — 48 heures, avec suivi',
+        'Belgique, Luxembourg, Allemagne, Espagne, Italie, Pays-Bas — 3 à 5 jours ouvrés',
+        'Reste de l’Union européenne — 4 à 7 jours ouvrés',
+        'Reste du monde — 7 à 14 jours ouvrés',
+      ],
+    },
+  },
+
+  /**
+   * Days a customer has to return an order. The law requires at least 14
+   * (EU right of withdrawal); anything above is a commercial commitment.
+   */
+  returnDays: 30,
 };
 
 export const LEGAL_PLACEHOLDER = TODO;

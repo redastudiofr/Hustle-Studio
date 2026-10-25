@@ -1,0 +1,231 @@
+import {useState} from 'react';
+import {Link} from 'react-router';
+import type {Review} from '~/data/reviews';
+import {StarRating} from '~/components/StarRating';
+import {RailArrows} from '~/components/RailArrows';
+import {Reveal} from '~/components/Reveal';
+import {useHorizontalRail} from '~/lib/useHorizontalRail';
+import {useAutoScroll} from '~/lib/useAutoScroll';
+import {useCenterFocus} from '~/lib/useCenterFocus';
+import {useI18n, useT} from '~/lib/i18n';
+
+/**
+ * How a review card is laid out:
+ * - 'card' (homepage): stars and name on one line, the review, then where
+ *   and when;
+ * - 'line' (product pages): ★★★★★, then "Name — City, Country — Date" in
+ *   bold, then « the review ».
+ */
+export type ReviewFormat = 'card' | 'line';
+
+/**
+ * One review: the stars and the customer's name on the same line, then the
+ * review in the words it was written in, then where and when it was left.
+ * No avatar, no badge — what the customer said, and nothing invented around
+ * it.
+ */
+function ReviewCard({
+  review,
+  format = 'card',
+}: {
+  review: Review;
+  format?: ReviewFormat;
+}) {
+  const t = useT();
+  const [expanded, setExpanded] = useState(false);
+  // Long reviews are clamped so every card keeps the same height; the full
+  // text is one tap away.
+  const long = review.text.length > 220;
+  const meta = [review.location, review.date].filter(Boolean).join(' · ');
+
+  const moreButton = long && (
+    <button
+      type="button"
+      className="review-card__more"
+      aria-expanded={expanded}
+      onClick={() => setExpanded((value) => !value)}
+    >
+      {expanded ? t('reviews.readLess') : t('reviews.readMore')}
+    </button>
+  );
+
+  if (format === 'line') {
+    // ★★★★★ / Name — City, Country — Date (bold) / « Review ». Only the
+    // details the review actually has are joined; nothing is filled in.
+    const identity = [review.name, review.location, review.date]
+      .filter(Boolean)
+      .join(' — ');
+    return (
+      <article className="review-card review-card--line">
+        <StarRating rating={review.rating} className="review-card__stars" />
+        <p className="review-card__identity">{identity}</p>
+        <p
+          className={`review-card__text ${long && !expanded ? 'review-card__text--clamped' : ''}`}
+        >
+          « {review.text} »
+        </p>
+        {moreButton}
+      </article>
+    );
+  }
+
+  return (
+    <article className="review-card">
+      <header className="review-card__head">
+        <StarRating rating={review.rating} className="review-card__stars" />
+        {review.name ? (
+          <span className="review-card__name">{review.name}</span>
+        ) : null}
+      </header>
+
+      <p
+        className={`review-card__text ${long && !expanded ? 'review-card__text--clamped' : ''}`}
+      >
+        “{review.text}”
+      </p>
+      {moreButton}
+
+      {meta && <p className="review-card__meta">{meta}</p>}
+    </article>
+  );
+}
+
+/**
+ * One row of reviews: drifting on its own, and scrollable by hand at the same
+ * time.
+ *
+ * Both are the same mechanism — the row is a plain scroll container, and the
+ * drift only nudges its scroll position (see useAutoScroll). So a finger, a
+ * trackpad or the arrows take over instantly, the drift pauses while they do,
+ * and it resumes from wherever the visitor stopped. `loop` renders the row
+ * three times over so the travel never reaches an end; the two extra copies
+ * are hidden from screen readers, which would otherwise read every review
+ * three times.
+ *
+ * Two things blur the cards, and they are not the same thing. Reveal blurs
+ * the row on arrival and clears it — and can never leave it blurred, since it
+ * shows its content with no transition at all when its observer never
+ * reports. useCenterFocus then keeps whatever is passing the middle sharp and
+ * lets the rest soften, for as long as the row travels.
+ */
+function ReviewRow({
+  reviews,
+  direction,
+  format,
+}: {
+  reviews: Review[];
+  direction: 'left' | 'right';
+  format?: ReviewFormat;
+}) {
+  const t = useT();
+  const {ref, scrollByCard} = useHorizontalRail<HTMLDivElement>({loop: true});
+  useAutoScroll(ref, {direction});
+  useCenterFocus(ref);
+
+  if (!reviews.length) return null;
+
+  const copies = [0, 1, 2];
+
+  return (
+    <Reveal as="div" className="rail-wrap">
+      <div className="reviews-row" ref={ref}>
+        {copies.map((copy) =>
+          reviews.map((review) => (
+            <div
+              className="reviews-row__item"
+              key={`${copy}-${review.id}`}
+              aria-hidden={copy === 0 ? undefined : true}
+            >
+              <ReviewCard review={review} format={format} />
+            </div>
+          )),
+        )}
+      </div>
+      <RailArrows
+        onPrev={() => scrollByCard(-1)}
+        onNext={() => scrollByCard(1)}
+        prevLabel={t('reviews.prev')}
+        nextLabel={t('reviews.next')}
+      />
+    </Reveal>
+  );
+}
+
+/**
+ * One row, travelling right.
+ *
+ * It was two, in opposite directions. One row shows fewer reviews at a time
+ * and reads as a single thing going somewhere, rather than as a wall of text
+ * sliding both ways at once — and it leaves the cards the room to be bigger.
+ */
+const ROW_DIRECTION = 'right' as const;
+
+/**
+ * Customer reviews, shared by the homepage and every product page.
+ *
+ * One row, holding every review in the order they were left, travelling on
+ * its own and scrollable by hand. The same cards are shown at every screen
+ * width; only how many fit changes.
+ */
+export function ReviewsSection({
+  heading,
+  subheading,
+  reviews,
+  // Threaded through from the product page so the "write a review" link can
+  // arrive with the product already filled in — see ProductReviews.tsx. Left
+  // unset on the homepage, where there's no single product to attach it to.
+  productTitle,
+  format,
+}: {
+  heading: string;
+  subheading?: string;
+  /** Real reviews only; an empty list shows the "be the first" invitation. */
+  reviews: Review[];
+  productTitle?: string;
+  /** Card layout — see ReviewFormat. */
+  format?: ReviewFormat;
+}) {
+  const t = useT();
+
+  const writeReviewHref = productTitle
+    ? `/reviews?product=${encodeURIComponent(productTitle)}`
+    : '/reviews';
+
+  return (
+    <section className="reviews">
+      <div className="reviews__head">
+        <h2 className="reviews__title">{heading}</h2>
+        {subheading ? <p className="reviews__subtitle">{subheading}</p> : null}
+      </div>
+
+      {reviews.length ? (
+        <>
+          <div className="reviews__rows">
+            <ReviewRow
+              reviews={reviews}
+              direction={ROW_DIRECTION}
+              format={format}
+            />
+          </div>
+
+          <div className="reviews__cta">
+            <p>{t('reviews.ctaText')}</p>
+            <Link to={writeReviewHref} className="btn btn--outline">
+              {t('reviews.ctaButton')}
+            </Link>
+          </div>
+        </>
+      ) : (
+        // No real review yet: an invitation, never placeholder cards.
+        <div className="reviews__empty">
+          <StarRating rating={0} className="review-card__stars" size={18} />
+          <p className="reviews__empty-title">{t('reviews.empty')}</p>
+          <p className="reviews__empty-text">{t('reviews.emptyText')}</p>
+          <Link to={writeReviewHref} className="btn btn--outline">
+            {t('reviews.ctaButton')}
+          </Link>
+        </div>
+      )}
+    </section>
+  );
+}

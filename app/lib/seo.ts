@@ -20,7 +20,7 @@ export function seoMeta({
   description?: string | null;
   /** Path of the canonical URL, e.g. `/products/tee`. */
   path?: string;
-  /** Absolute image URL or a path under /public. */
+  /** Absolute image URL (Shopify CDN) or a path under /public. */
   image?: string | null;
   type?: 'website' | 'product' | 'article';
   /** Request origin, from the root loader — used when BRAND.siteUrl is empty. */

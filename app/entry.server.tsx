@@ -1,42 +1,33 @@
 import {ServerRouter} from 'react-router';
 import {isbot} from 'isbot';
-// The web-streams renderer, in dev (Node) as on Vercel.
-import {renderToReadableStream} from 'react-dom/server.browser';
+import {renderToReadableStream} from 'react-dom/server';
+import {
+  createContentSecurityPolicy,
+  type HydrogenRouterContextProvider,
+} from '@shopify/hydrogen';
 import type {EntryContext} from 'react-router';
-import {NonceProvider} from '~/lib/nonce';
-
-/**
- * Strict Content-Security-Policy: only this site's own scripts, styles,
- * fonts and images (plus the nonce'd inline scripts React Router writes).
- * Forms post here only; nobody may frame the site.
- */
-function contentSecurityPolicy(nonce: string, dev: boolean) {
-  const self = dev ? "'self' ws: http://localhost:*" : "'self'";
-  return [
-    `default-src ${self}`,
-    `script-src 'self' 'nonce-${nonce}'${dev ? " 'unsafe-eval'" : ''}`,
-    `style-src 'self' 'unsafe-inline'`,
-    `img-src 'self' data: blob:`,
-    `font-src 'self'`,
-    `media-src 'self' blob:`,
-    `connect-src ${self}`,
-    `form-action 'self'`,
-    `frame-ancestors 'none'`,
-    `base-uri 'self'`,
-    `object-src 'none'`,
-  ].join('; ');
-}
 
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
   reactRouterContext: EntryContext,
+  context: HydrogenRouterContextProvider,
 ) {
-  const nonce = crypto.randomUUID().replace(/-/g, '');
+  const {nonce, header, NonceProvider} = createContentSecurityPolicy({
+    shop: {
+      checkoutDomain: context.env.PUBLIC_CHECKOUT_DOMAIN,
+      storeDomain: context.env.PUBLIC_STORE_DOMAIN,
+    },
+    // Nobody may frame the shop, and no injected <base> tag can redirect its
+    // relative links. (No form-action: "buy now" posts here, then redirects
+    // to Shopify's checkout, and Chrome applies form-action to redirects.)
+    frameAncestors: ["'none'"],
+    baseUri: ["'self'"],
+  });
 
   const body = await renderToReadableStream(
-    <NonceProvider value={nonce}>
+    <NonceProvider>
       <ServerRouter
         context={reactRouterContext}
         url={request.url}
@@ -58,10 +49,7 @@ export default async function handleRequest(
   }
 
   responseHeaders.set('Content-Type', 'text/html');
-  responseHeaders.set(
-    'Content-Security-Policy',
-    contentSecurityPolicy(nonce, import.meta.env.DEV),
-  );
+  responseHeaders.set('Content-Security-Policy', header);
 
   return new Response(body, {
     headers: responseHeaders,

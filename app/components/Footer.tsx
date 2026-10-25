@@ -5,11 +5,12 @@ import {LocalePreferences} from '~/components/Header';
 import {BRAND} from '~/config/brand';
 import {NAVIGATION, type NavLinkConfig} from '~/config/navigation';
 import {useT} from '~/lib/i18n';
+import {PACK_ENABLED, PACK_PATH} from '~/lib/packOffer';
 
 /**
  * Site footer. Everything it shows is configured elsewhere: the brand's
  * contact and social links in app/config/brand.ts, the link columns in
- * app/config/navigation.ts, and the legal texts in app/data/legal*.ts.
+ * app/config/navigation.ts, and the legal texts in Shopify Admin.
  */
 export function Footer() {
   const t = useT();
@@ -55,7 +56,18 @@ export function Footer() {
           )}
         </div>
 
-        <FooterColumn title={t('footer.info')} links={NAVIGATION.footer.info} />
+        <FooterColumn
+          title={t('footer.info')}
+          links={[
+            // The pack page has no collection behind it, so the footer is
+            // where it is reachable from — only while the offer is live.
+            ...(PACK_ENABLED
+              ? [{labelKey: 'footer.pack' as const, to: PACK_PATH}]
+              : []),
+            ...NAVIGATION.footer.info,
+            {labelKey: 'footer.writeReview', to: '/reviews'},
+          ]}
+        />
         <FooterColumn
           title={t('footer.policies')}
           links={NAVIGATION.footer.policies}

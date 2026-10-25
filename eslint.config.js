@@ -27,8 +27,11 @@ export default [
       '**/node_modules/',
       '**/build/',
       '**/dist/',
+      '**/*.graphql.d.ts',
+      '**/*.graphql.ts',
+      '**/*.generated.d.ts',
       '**/.react-router/',
-      '**/.vercel/',
+      '**/packages/hydrogen/dist/',
     ],
   },
   ...fixupConfigRules(

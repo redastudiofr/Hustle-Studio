@@ -2,9 +2,6 @@ import {Form, useActionData, useNavigation} from 'react-router';
 import {useT} from '~/lib/i18n';
 import type {Route} from './+types/contact';
 import {seoMeta, originFromMatches} from '~/lib/seo';
-import {sendNotificationEmail} from '~/lib/email';
-import {serverEnv} from '~/lib/env.server';
-import {INBOX} from '~/config/inbox';
 
 export const meta: Route.MetaFunction = ({matches}) =>
   seoMeta({
@@ -15,30 +12,39 @@ export const meta: Route.MetaFunction = ({matches}) =>
 
 type ActionData = {ok: boolean; error?: string};
 
-/** The message is e-mailed to the shop's inbox (INBOX) through Resend. */
-export async function action({request}: Route.ActionArgs): Promise<ActionData> {
+export async function action({
+  request,
+  context,
+}: Route.ActionArgs): Promise<ActionData> {
   const formData = await request.formData();
-  const name = String(formData.get('name') || '')
-    .trim()
-    .slice(0, 120);
-  const email = String(formData.get('email') || '')
-    .trim()
-    .slice(0, 254);
-  const message = String(formData.get('message') || '')
-    .trim()
-    .slice(0, 5000);
+  const name = String(formData.get('name') || '').trim();
+  const email = String(formData.get('email') || '').trim();
+  const message = String(formData.get('message') || '').trim();
 
-  if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !message) {
+  if (!name || !email || !message) {
     return {ok: false, error: 'fields'};
   }
 
-  const sent = await sendNotificationEmail({
-    env: serverEnv(),
-    to: INBOX,
-    subject: `Contact — ${name}`,
-    text: [`Nom : ${name}`, `E-mail : ${email}`, '', message].join('\n'),
-  });
-  return sent ? {ok: true} : {ok: false, error: 'send'};
+  const shopDomain = context.env.PUBLIC_STORE_DOMAIN;
+  try {
+    const body = new URLSearchParams({
+      form_type: 'contact',
+      utf8: '✓',
+      'contact[name]': name,
+      'contact[email]': email,
+      'contact[body]': message,
+    });
+    const res = await fetch(`https://${shopDomain}/contact`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: body.toString(),
+    });
+    if (res.status >= 500) throw new Error(`status ${res.status}`);
+    return {ok: true};
+  } catch (error) {
+    console.error('Contact form failed', error);
+    return {ok: false, error: 'send'};
+  }
 }
 
 export default function Contact() {
