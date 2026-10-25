@@ -206,14 +206,14 @@ export const HOME_SECTIONS: HomeSection[] = [
     type: 'hero',
     image: {
       // Two different photos, one per format — not one photo cropped twice.
-      desktop: '/brand/hero-desktop-passage.webp',
-      mobile: '/brand/hero-mobile-passage.webp',
+      desktop: '/brand/hero-desktop-shoot.webp',
+      mobile: '/brand/hero-mobile-shoot.webp',
       // Native pixel sizes: each format is shown whole, at its own ratio.
-      desktopSize: [1983, 793],
-      mobileSize: [940, 1672],
+      desktopSize: [2000, 1002],
+      mobileSize: [1072, 2000],
       alt: {
-        en: 'White embroidered henley and black jeans, in the Passage Pommeraye, Nantes',
-        fr: 'Henley blanc brodé et jean noir, dans le passage Pommeraye, à Nantes',
+        en: 'White long-sleeve t-shirt on a studio monitor, during a photo shoot',
+        fr: 'T-shirt manches longues blanc sur un écran de studio, pendant un shooting photo',
       },
     },
     // Purely visual: no title, text, countdown or button. To bring the
