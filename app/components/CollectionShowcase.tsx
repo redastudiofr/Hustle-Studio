@@ -39,7 +39,7 @@ export function CollectionShowcase({
   return (
     <section className="showcase" aria-labelledby="showcase-heading">
       {heading && (
-        <h2 className="showcase__heading" id="showcase-heading">
+        <h2 className="section-title showcase__heading" id="showcase-heading">
           {heading}
         </h2>
       )}

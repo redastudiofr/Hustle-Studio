@@ -87,6 +87,8 @@ export type HomeSection = (
       /** Tiles of every Shopify collection, each with its Shopify image. */
       type: 'collections';
       title: Localized;
+      /** 'slider' (default): a row of cards; 'tiles': large full-width tiles. */
+      layout?: 'slider' | 'tiles';
       /**
        * Show only these collections, in this order (title or handle; case,
        * spaces and hyphens ignored: "T-shirt" = "tshirt"). The others are
@@ -220,6 +222,8 @@ export const HOME_SECTIONS: HomeSection[] = [
     // drop countdown back, add `countdown` (see CountdownCopy) and a `cta`.
   },
   {
+    // Hidden for now: remove `hidden` to bring the drop waitlist back.
+    hidden: true,
     type: 'waitlist',
     title: 'BE FIRST.',
     text: {
@@ -232,19 +236,24 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
   },
   {
+    // Slider of every Shopify collection (appears as soon as one exists).
     type: 'collections',
     title: {en: 'Shop by category', fr: 'Par catégorie'},
-    // For now: Longsleeve and T-shirt only. Remove `only` to show them all.
-    only: ['longsleeve', 'tshirt'],
   },
   {
+    // Slider of every product.
     type: 'products',
-    title: {en: 'New in', fr: 'Nouveautés'},
+    title: {en: 'All products', fr: 'Tous les produits'},
     fallbackSort: 'newest',
-    // Every product, not a first page: nothing in the catalogue is hidden.
     limit: 'all',
-    layout: 'grid',
+    layout: 'rail',
     link: {label: {en: 'View all', fr: 'Tout voir'}, to: '/collections/all'},
+  },
+  {
+    // Then the collections again, as large tiles.
+    type: 'collections',
+    title: {en: 'Collections', fr: 'Collections'},
+    layout: 'tiles',
   },
   {
     type: 'brands',

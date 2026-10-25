@@ -16,6 +16,7 @@ import {WaitlistSection} from '~/components/home/WaitlistSection';
 import {ProductRail} from '~/components/ProductRail';
 import {ProductItem} from '~/components/ProductItem';
 import {CollectionsSlider} from '~/components/CollectionsSlider';
+import {CollectionShowcase} from '~/components/CollectionShowcase';
 import {Newsletter} from '~/components/Newsletter';
 import {Reveal} from '~/components/Reveal';
 import {PackOffer} from '~/components/PackOffer';
@@ -132,12 +133,19 @@ function HomeSectionView({
       return (
         <Suspense fallback={null}>
           <Await resolve={data.data}>
-            {(collections) => (
-              <CollectionsSlider
-                title={l(section.title)}
-                collections={collections}
-              />
-            )}
+            {(collections) =>
+              section.layout === 'tiles' ? (
+                <CollectionShowcase
+                  heading={l(section.title)}
+                  collections={collections}
+                />
+              ) : (
+                <CollectionsSlider
+                  title={l(section.title)}
+                  collections={collections}
+                />
+              )
+            }
           </Await>
         </Suspense>
       );
