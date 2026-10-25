@@ -20,8 +20,11 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
   The site runs in English only (`BRAND.languages`); legal pages keep a
   French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.
-- Styles: app.css (base) → promotions.css → brand.css → editorial.css (the
-  current editorial design layer, loaded last).
+- Styles: app.css (base) → promotions.css → brand.css → editorial.css →
+  shop.css (the current design, `sx-` classes, loaded last). Collection
+  pages share app/components/shop/CollectionShell.tsx; the product page is
+  built from app/components/shop/ (ProductMedia, BuyBox, CompleteTheFit,
+  AlsoLike).
 - Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
 - Vercel build: keep server and client CSS identical (no `build.target` on the

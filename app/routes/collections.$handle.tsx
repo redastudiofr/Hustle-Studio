@@ -5,7 +5,8 @@ import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {ProductItem} from '~/components/ProductItem';
 import {seoMeta, originFromMatches} from '~/lib/seo';
-import {SortSelect} from '~/components/SortSelect';
+import {CollectionShell} from '~/components/shop/CollectionShell';
+import {collectionFilters, filtersFromRequest} from '~/lib/shopFilters';
 import {collectionSortKey, sortFromRequest} from '~/lib/sort';
 import {useT} from '~/lib/i18n';
 import type {ProductItemFragment} from 'storefrontapi.generated';
@@ -39,9 +40,15 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   }
 
   const sort = sortFromRequest(request);
+  const filters = filtersFromRequest(request);
   const [{collection}] = await Promise.all([
     storefront.query(COLLECTION_QUERY, {
-      variables: {handle, ...paginationVariables, ...collectionSortKey(sort)},
+      variables: {
+        handle,
+        ...paginationVariables,
+        ...collectionSortKey(sort),
+        filters: collectionFilters(filters),
+      },
     }),
   ]);
 
@@ -51,29 +58,29 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
 
   redirectIfHandleIsLocalized(request, {handle, data: collection});
 
-  return {collection, sort};
+  return {collection, sort, filters};
 }
 
 export default function Collection() {
-  const {collection, sort} = useLoaderData<typeof loader>();
+  const {collection, sort, filters} = useLoaderData<typeof loader>();
   const t = useT();
-  const empty = !collection.products.nodes.length;
+  const {products} = collection;
 
   return (
-    <div className="collection-page">
-      <div className="collection-head">
-        <h1>{collection.title}</h1>
-        {collection.description ? <p>{collection.description}</p> : null}
-      </div>
-      {!empty && (
-        <div className="collection-toolbar">
-          <SortSelect value={sort} />
-        </div>
+    <CollectionShell
+      title={collection.title}
+      activeHandle={collection.handle}
+      count={products.nodes.length}
+      more={products.pageInfo.hasNextPage}
+      sort={sort}
+      filters={filters}
+    >
+      {!products.nodes.length && (
+        <p className="sx-empty">{t('collection.empty')}</p>
       )}
-      {empty && <p className="collection-empty">{t('collection.empty')}</p>}
       <PaginatedResourceSection<ProductItemFragment>
-        connection={collection.products}
-        resourcesClassName="product-grid"
+        connection={products}
+        resourcesClassName="sx-grid"
       >
         {({node: product, index}) => (
           <ProductItem
@@ -91,7 +98,7 @@ export default function Collection() {
           },
         }}
       />
-    </div>
+    </CollectionShell>
   );
 }
 
@@ -177,6 +184,7 @@ const COLLECTION_QUERY = `#graphql
     $endCursor: String
     $sortKey: ProductCollectionSortKeys
     $reverse: Boolean
+    $filters: [ProductFilter!]
   ) @inContext(country: $country, language: $language) {
     collection(handle: $handle) {
       id
@@ -196,7 +204,8 @@ const COLLECTION_QUERY = `#graphql
         before: $startCursor,
         after: $endCursor,
         sortKey: $sortKey,
-        reverse: $reverse
+        reverse: $reverse,
+        filters: $filters
       ) {
         nodes {
           ...ProductItem

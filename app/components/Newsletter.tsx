@@ -6,7 +6,7 @@ import {useT} from '~/lib/i18n';
  * Shopify customer list with marketing consent (see routes/newsletter.tsx).
  * Shows a readable message if that fails.
  */
-export function Newsletter() {
+export function Newsletter({compact = false}: {compact?: boolean}) {
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>(
     'idle',
   );
@@ -39,6 +39,42 @@ export function Newsletter() {
   function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void submit(event.currentTarget);
+  }
+
+  if (compact) {
+    return status === 'done' ? (
+      <p className="sx-news__done">{t('news.thanks')}</p>
+    ) : (
+      <form className="sx-news" onSubmit={onSubmit}>
+        <input
+          type="email"
+          name="email"
+          placeholder={t('news.placeholder')}
+          required
+          autoComplete="email"
+          aria-label={t('news.emailLabel')}
+        />
+        <button
+          type="submit"
+          aria-label={t('news.subscribe')}
+          disabled={status === 'loading'}
+        >
+          <svg width="18" height="12" viewBox="0 0 18 12" aria-hidden="true">
+            <path
+              d="M1 6h15M11 1l5 5-5 5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.3"
+            />
+          </svg>
+        </button>
+        {status === 'error' && (
+          <p className="form-error" role="alert">
+            {t('news.error')}
+          </p>
+        )}
+      </form>
+    );
   }
 
   return (

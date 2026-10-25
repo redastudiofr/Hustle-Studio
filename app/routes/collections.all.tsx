@@ -3,7 +3,8 @@ import {useLoaderData} from 'react-router';
 import {getPaginationVariables} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {ProductItem} from '~/components/ProductItem';
-import {SortSelect} from '~/components/SortSelect';
+import {CollectionShell} from '~/components/shop/CollectionShell';
+import {catalogQuery, filtersFromRequest} from '~/lib/shopFilters';
 import {catalogSortKey, sortFromRequest} from '~/lib/sort';
 import {seoMeta, originFromMatches} from '~/lib/seo';
 import {useT} from '~/lib/i18n';
@@ -28,36 +29,39 @@ async function loadCriticalData({context, request}: Route.LoaderArgs) {
   });
 
   const sort = sortFromRequest(request);
+  const filters = filtersFromRequest(request);
   const [{products}] = await Promise.all([
     storefront.query(CATALOG_QUERY, {
-      variables: {...paginationVariables, ...catalogSortKey(sort)},
+      variables: {
+        ...paginationVariables,
+        ...catalogSortKey(sort),
+        query: catalogQuery(filters),
+      },
     }),
   ]);
-  return {products, sort};
+  return {products, sort, filters};
 }
 
 export default function Catalog() {
   const t = useT();
-  const {products, sort} = useLoaderData<typeof loader>();
+  const {products, sort, filters} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection-page">
-      <div className="collection-head">
-        <h1>{t('shop.title')}</h1>
-      </div>
-      {products.nodes.length ? (
-        <div className="collection-toolbar">
-          <SortSelect
-            value={sort === 'featured' ? 'newest' : sort}
-            exclude={['featured']}
-          />
-        </div>
-      ) : (
-        <p className="collection-empty">{t('collection.empty')}</p>
+    <CollectionShell
+      title={t('shop.all')}
+      activeHandle={null}
+      count={products.nodes.length}
+      more={products.pageInfo.hasNextPage}
+      sort={sort}
+      sortExclude={['featured']}
+      filters={filters}
+    >
+      {!products.nodes.length && (
+        <p className="sx-empty">{t('collection.empty')}</p>
       )}
       <PaginatedResourceSection<CollectionItemFragment>
         connection={products}
-        resourcesClassName="product-grid"
+        resourcesClassName="sx-grid"
       >
         {({node: product, index}) => (
           <ProductItem
@@ -67,7 +71,7 @@ export default function Catalog() {
           />
         )}
       </PaginatedResourceSection>
-    </div>
+    </CollectionShell>
   );
 }
 
@@ -151,6 +155,7 @@ const CATALOG_QUERY = `#graphql
     $endCursor: String
     $sortKey: ProductSortKeys
     $reverse: Boolean
+    $query: String
   ) @inContext(country: $country, language: $language) {
     products(
       first: $first
@@ -159,6 +164,7 @@ const CATALOG_QUERY = `#graphql
       after: $endCursor
       sortKey: $sortKey
       reverse: $reverse
+      query: $query
     ) {
       nodes {
         ...CollectionItem

@@ -10,31 +10,21 @@ import {
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
 import type {
-  BundleProductFragment,
   ProductFragment,
   ProductVariantFragment,
+  RecoProductFragment,
 } from 'storefrontapi.generated';
-import {ProductGallery} from '~/components/ProductGallery';
-import {ProductPurchase} from '~/components/ProductPurchase';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
-import {Accordion} from '~/components/Accordion';
-import {ProductHighlights} from '~/components/product/ProductStory';
-import {CollectionsBand} from '~/components/product/CollectionsBand';
-import {SizeChartBody} from '~/components/product/SizeChartDialog';
+import {ProductMedia} from '~/components/shop/ProductMedia';
+import {BuyBox} from '~/components/shop/BuyBox';
+import {
+  CompleteTheFit,
+  type FitProduct,
+} from '~/components/shop/CompleteTheFit';
+import {AlsoLike} from '~/components/shop/AlsoLike';
 import {sizeChartFor} from '~/config/sizeCharts';
-import {PRODUCT_PAGE} from '~/config/productPage';
-import {NAVIGATION} from '~/config/navigation';
-import {RelatedProductsRail} from '~/components/RelatedProductsRail';
-import {SmartBundle} from '~/components/product/SmartBundle';
-import {ProductWornVideos} from '~/components/ProductWornVideos';
-import {ProductReviews} from '~/components/ProductReviews';
-import {loadReviews, reviewsForProduct} from '~/lib/reviews';
-import {parseRating} from '~/lib/rating';
-import {GIFT, isOfferLive, offersFor} from '~/lib/bundles';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {getProductFaq} from '~/data/faq';
-import {useT} from '~/lib/i18n';
-import {useLocalized} from '~/lib/i18n/localized';
+import {parseRating} from '~/lib/rating';
 import {seoMeta, originFromMatches, absoluteUrl} from '~/lib/seo';
 import {BRAND} from '~/config/brand';
 
@@ -93,7 +83,7 @@ const MAX_RECOMMENDATIONS = 16;
  * just hides the row.
  */
 function loadDeferredData(
-  {context, request}: Route.LoaderArgs,
+  {context}: Route.LoaderArgs,
   productId: string,
   handle: string,
 ) {
@@ -135,80 +125,11 @@ function loadDeferredData(
     return merged;
   });
 
-  /*
-   * Bundle box: this product, the pieces offered alongside it and the free
-   * T-shirt, with their sizes — real catalogue products and variants. Shown
-   * on every product page while bundles are enabled; an offer without its
-   * Shopify code yet shows as "coming soon" and cannot be added.
-   */
-  const bundleOffers = offersFor(true);
-  const preview = bundleOffers.some((offer) => !isOfferLive(offer));
-  const giftHandle = GIFT.productHandle.trim();
-  const bundle = bundleOffers.length
-    ? context.storefront
-        .query(BUNDLE_QUERY, {
-          variables: {
-            handle,
-            first: 16,
-            giftHandle: giftHandle || handle,
-            withGift: giftHandle !== '',
-          },
-          cache: context.storefront.CacheShort(),
-        })
-        .then((data) => {
-          const buyable = (node: BundleProductFragment | null | undefined) =>
-            node?.availableForSale &&
-            node.variants.nodes.some((variant) => variant.availableForSale);
-          if (!data?.current || !buyable(data.current)) return null;
-          return {
-            preview,
-            offerIds: bundleOffers.map((offer) => offer.id),
-            current: data.current,
-            others: (data.products?.nodes ?? [])
-              .filter((node) => node.handle !== handle && buyable(node))
-              .slice(0, MAX_BUNDLE_CHOICES),
-            gift: data.gift && buyable(data.gift) ? data.gift : null,
-          };
-        })
-        .catch((error: Error) => {
-          console.error(error);
-          return null;
-        })
-    : Promise.resolve(null);
-
-  // Collections band closing the page.
-  const bandCollections = context.storefront
-    .query(BAND_COLLECTIONS_QUERY, {cache: context.storefront.CacheLong()})
-    .then((data) => {
-      const withImage = (data?.collections?.nodes ?? []).filter(
-        (collection) =>
-          collection.image &&
-          !NAVIGATION.hiddenCollections.includes(collection.handle),
-      );
-      const wanted = PRODUCT_PAGE.collectionsBand.handles;
-      const picked = wanted.length
-        ? wanted
-            .map((h) => withImage.find((collection) => collection.handle === h))
-            .filter((collection) => collection != null)
-        : withImage;
-      return picked.slice(0, PRODUCT_PAGE.collectionsBand.count);
-    })
-    .catch((error: Error) => {
-      console.error(error);
-      return [];
-    });
-
-  // Real reviews: this product's, then the shop's (app/lib/reviews.ts).
-  const reviews = loadReviews(context.storefront).then((all) =>
-    reviewsForProduct(all, handle),
-  );
-
-  return {recommended, bundle, bandCollections, reviews};
+  return {recommended};
 }
 
 export default function Product() {
-  const {product, recommended, bundle, bandCollections, reviews, origin} =
-    useLoaderData<typeof loader>();
+  const {product, recommended, origin} = useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -222,19 +143,13 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const t = useT();
-  const l = useLocalized();
   const {title, description, descriptionHtml} = product;
 
-  // The selected variant's own photo first when it has one (e.g. the colour
-  // just picked), then the rest of the product's images.
   const galleryImages = product.images.nodes.length
     ? product.images.nodes
     : selectedVariant?.image
       ? [selectedVariant.image]
       : [];
-
-  const available = Boolean(selectedVariant?.availableForSale);
 
   // Real size values for this product, with their live availability.
   const sizeOption = productOptions.find((option) =>
@@ -244,110 +159,54 @@ export default function Product() {
     name: value.name,
     available: value.available,
   }));
-  const sizeChart = sizeChartFor(product);
+
+  const current: FitProduct = {
+    title,
+    image: product.images.nodes[0] ?? null,
+    variants: product.allVariants.nodes.map((variant) => ({
+      id: variant.id,
+      availableForSale: variant.availableForSale,
+      price: variant.price,
+      label: variant.title,
+    })),
+  };
 
   return (
-    <div className="pdp">
-      {/* Gallery + buy box only: the sticky buy box is clamped to this
-          wrapper, so full-width sections must stay outside it. */}
-      <div className="pdp__main">
-        <div className="pdp__gallery">
-          <ProductGallery images={galleryImages} title={title} />
-        </div>
+    <div className="sx-product">
+      <div className="sx-product__main">
+        <ProductMedia images={galleryImages} title={title} />
 
-        <aside className="pdp__buy">
-          <ProductPurchase
-            title={title}
-            price={selectedVariant?.price}
-            compareAtPrice={selectedVariant?.compareAtPrice}
-            productOptions={productOptions}
-            sizes={sizes}
-            available={available}
-            quantityAvailable={selectedVariant?.quantityAvailable ?? null}
-            descriptionHtml={descriptionHtml}
-            variantId={selectedVariant?.id}
-            selectedVariant={selectedVariant}
-            // Only a real review app's score (Shopify metafields) — never an
-            // invented one. No review app: no stars.
-            rating={parseRating(product.rating, product.ratingCount)}
-            sizeChart={sizeChart}
-          />
-
+        <BuyBox
+          title={title}
+          variant={selectedVariant}
+          productOptions={productOptions}
+          sizes={sizes}
+          sizeChart={sizeChartFor(product)}
+          description={description ?? ''}
+          descriptionHtml={descriptionHtml}
+        >
           <Suspense fallback={null}>
-            <Await resolve={bundle} errorElement={null}>
-              {(data) =>
-                data ? (
-                  <SmartBundle
-                    data={data}
-                    selectedVariantId={selectedVariant?.id}
+            <Await resolve={recommended} errorElement={null}>
+              {(items) => {
+                const partner = items.find((item) =>
+                  item.variants.nodes.some((v) => v.availableForSale),
+                );
+                return partner && selectedVariant?.availableForSale ? (
+                  <CompleteTheFit
+                    current={current}
+                    currentVariantId={selectedVariant.id}
+                    partner={fitProduct(partner)}
                   />
-                ) : null
-              }
+                ) : null;
+              }}
             </Await>
           </Suspense>
-
-          <div className="pdp__details">
-            <ProductHighlights value={product.highlights?.value} />
-
-            <section className="pdp-block pdp__section">
-              <h2 className="pdp-block__title">{t('product.faqTitle')}</h2>
-              <div className="pdp__accordions">
-                {getProductFaq(t, description ?? '').map((item) => (
-                  <Accordion key={item.question} title={item.question}>
-                    <p>{item.answer}</p>
-                  </Accordion>
-                ))}
-              </div>
-            </section>
-
-            <div className="pdp__info">
-              {sizes.length > 0 && (
-                <Accordion title={t('product.sizeGuide')} variant="block">
-                  <SizeChartBody chart={sizeChart} sizes={sizes} />
-                </Accordion>
-              )}
-              <Accordion
-                title={l(PRODUCT_PAGE.info.shippingTitle)}
-                variant="block"
-              >
-                {PRODUCT_PAGE.info.shipping.map((paragraph) => (
-                  <p key={l(paragraph)}>{l(paragraph)}</p>
-                ))}
-              </Accordion>
-              <Accordion
-                title={l(PRODUCT_PAGE.info.paymentTitle)}
-                variant="block"
-              >
-                {PRODUCT_PAGE.info.payment.map((paragraph) => (
-                  <p key={l(paragraph)}>{l(paragraph)}</p>
-                ))}
-              </Accordion>
-            </div>
-          </div>
-        </aside>
+        </BuyBox>
       </div>
-
-      <ProductWornVideos />
 
       <Suspense fallback={null}>
         <Await resolve={recommended} errorElement={null}>
-          {(items) =>
-            items.length ? <RelatedProductsRail items={items} /> : null
-          }
-        </Await>
-      </Suspense>
-
-      <div className="pdp__reviews">
-        <Suspense fallback={null}>
-          <Await resolve={reviews} errorElement={null}>
-            {(items) => <ProductReviews reviews={items} productTitle={title} />}
-          </Await>
-        </Suspense>
-      </div>
-
-      <Suspense fallback={null}>
-        <Await resolve={bandCollections} errorElement={null}>
-          {(collections) => <CollectionsBand collections={collections} />}
+          {(items) => <AlsoLike items={items} />}
         </Await>
       </Suspense>
 
@@ -383,6 +242,20 @@ export default function Product() {
  * schema.org Product with one Offer per known variant. `<` is escaped so the
  * JSON can never close the <script> tag early, whatever a description holds.
  */
+/** A recommended product in the shape of the "complete the fit" box. */
+function fitProduct(product: RecoProductFragment): FitProduct {
+  return {
+    title: product.title,
+    image: product.featuredImage ?? null,
+    variants: product.variants.nodes.map((variant) => ({
+      id: variant.id,
+      availableForSale: variant.availableForSale,
+      price: variant.price,
+      label: variant.selectedOptions.map((option) => option.value).join(' / '),
+    })),
+  };
+}
+
 function productJsonLd(
   product: ProductFragment,
   selected: ProductVariantFragment | null | undefined,
@@ -495,6 +368,17 @@ const PRODUCT_FRAGMENT = `#graphql
     }
     encodedVariantExistence
     encodedVariantAvailability
+    allVariants: variants(first: 50) {
+      nodes {
+        id
+        title
+        availableForSale
+        price {
+          amount
+          currencyCode
+        }
+      }
+    }
     images(first: 12) {
       nodes {
         id
@@ -627,83 +511,6 @@ const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
     }
   }
   ${RECO_PRODUCT_FRAGMENT}
-` as const;
-
-/** Pieces offered in the bundle's pickers, besides this product. */
-const MAX_BUNDLE_CHOICES = 12;
-
-const BUNDLE_QUERY = `#graphql
-  fragment BundleProduct on Product {
-    id
-    title
-    handle
-    availableForSale
-    featuredImage {
-      id
-      url
-      altText
-      width
-      height
-    }
-    variants(first: 30) {
-      nodes {
-        id
-        title
-        availableForSale
-        price {
-          amount
-          currencyCode
-        }
-        selectedOptions {
-          name
-          value
-        }
-      }
-    }
-  }
-  query PdpBundle(
-    $handle: String!
-    $first: Int
-    $giftHandle: String!
-    $withGift: Boolean!
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    current: product(handle: $handle) {
-      ...BundleProduct
-    }
-    products(first: $first, sortKey: BEST_SELLING) {
-      nodes {
-        ...BundleProduct
-      }
-    }
-    gift: product(handle: $giftHandle) @include(if: $withGift) {
-      ...BundleProduct
-    }
-  }
-` as const;
-
-const BAND_COLLECTIONS_QUERY = `#graphql
-  fragment BandCollection on Collection {
-    id
-    title
-    handle
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-  }
-  query PdpBandCollections($country: CountryCode, $language: LanguageCode)
-  @inContext(country: $country, language: $language) {
-    collections(first: 30, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...BandCollection
-      }
-    }
-  }
 ` as const;
 
 /** Tops the recommendation row up to a full set with real catalogue products. */

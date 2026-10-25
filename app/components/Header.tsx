@@ -13,14 +13,13 @@ import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
+import {NAVIGATION} from '~/config/navigation';
 import {
-  buildNavGroups,
   NAV_HEADER_LINKS,
   NAV_SERVICE_LINKS,
   NAV_MOBILE_LINKS,
   NAV_LEGAL_LINKS,
   type NavCollection,
-  type NavGroup,
 } from '~/lib/nav';
 
 export type {NavCollection};
@@ -90,12 +89,6 @@ export function Header({
       </NavLink>
 
       <div className="site-header__side site-header__side--end">
-        {/* Desktop only: on phones the switch lives in the menu drawer. */}
-        {HAS_LANGUAGE_CHOICE && (
-          <div className="site-header__lang">
-            <LanguageSwitcher />
-          </div>
-        )}
         <button
           className="site-header__icon-btn"
           onClick={() => open('search')}
@@ -128,13 +121,31 @@ export function HeaderMenu({
 }) {
   const {close} = useAside();
   const t = useT();
-  const groups = buildNavGroups(collections);
 
   if (viewport === 'desktop') {
+    // Shop all, the collections picked in app/config/navigation.ts, contact.
+    const picked = NAVIGATION.headerCollections
+      .map((handle) => collections.find((c) => c.handle === handle))
+      .filter((c) => c != null);
     return (
       <nav className="site-header__nav" role="navigation">
-        {groups.map((group) => (
-          <DesktopGroup key={group.id} group={group} />
+        <NavLink
+          to="/collections/all"
+          end
+          prefetch="intent"
+          className="site-header__nav-link"
+        >
+          {t('shop.all')}
+        </NavLink>
+        {picked.map((collection) => (
+          <NavLink
+            key={collection.id}
+            to={`/collections/${collection.handle}`}
+            prefetch="intent"
+            className="site-header__nav-link"
+          >
+            {collection.title}
+          </NavLink>
         ))}
         {NAV_HEADER_LINKS.map((link) => (
           <NavLink
@@ -193,49 +204,6 @@ export function HeaderMenu({
 
       <LocalePreferences className="mobile-nav__settings" />
     </nav>
-  );
-}
-
-/**
- * Desktop: the group name in the bar, its collections in a panel underneath.
- *
- * Opened by hover and by `:focus-within`, with no state to keep in sync. The
- * label has to be a real button for that to work: the panel is hidden with
- * `visibility: hidden`, which makes everything inside it unfocusable, so
- * `:focus-within` could never fire from the links themselves. Tabbing to the
- * button opens the panel, and the links become reachable because they are now
- * visible.
- */
-function DesktopGroup({group}: {group: NavGroup}) {
-  const t = useT();
-
-  return (
-    <div className="nav-group">
-      <button type="button" className="site-header__nav-link nav-group__label">
-        {t(group.labelKey)}
-      </button>
-      <div className="nav-group__panel">
-        <ul>
-          {group.id === 'shop' && (
-            <li>
-              <NavLink to="/collections/all" prefetch="intent">
-                {t('nav.allProducts')}
-              </NavLink>
-            </li>
-          )}
-          {group.collections.map((collection) => (
-            <li key={collection.id}>
-              <NavLink
-                to={`/collections/${collection.handle}`}
-                prefetch="intent"
-              >
-                {collection.title.toLowerCase()}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
   );
 }
 

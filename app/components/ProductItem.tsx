@@ -8,9 +8,8 @@ import type {
 } from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {useT} from '~/lib/i18n';
+import {useModelView} from '~/lib/modelView';
 import {Price} from '~/components/Price';
-import {StarRating} from '~/components/StarRating';
-import {parseRating} from '~/lib/rating';
 
 type GridProduct =
   | CollectionItemFragment
@@ -19,24 +18,36 @@ type GridProduct =
   | HomeProductFragment;
 
 /**
- * The product card used on every grid and rail: Shopify's featured image,
- * the second image on hover (desktop), the title, the price and — only when
- * Shopify says so — the compare-at price and the sold-out state.
+ * The product card of every grid: the photo on a light grey tile, an
+ * "on sale" / "sold out" label only when Shopify says so, the title and the
+ * price (compare-at price struck through before it).
+ *
+ * - `grid` (collection pages): label top left, title and price on one line.
+ * - `rail` ("you may also like"): rounded label top right, title above the
+ *   prices.
+ *
+ * With the collection page's "Model" switch on, the second Shopify image
+ * (the piece worn) replaces the first.
  */
 export function ProductItem({
   product,
   loading,
+  variant = 'grid',
 }: {
   product: GridProduct;
   loading?: 'eager' | 'lazy';
+  variant?: 'grid' | 'rail';
 }) {
   const t = useT();
+  const {on: modelView} = useModelView();
   const variantUrl = useVariantUrl(product.handle);
-  const image = product.featuredImage;
   const soldOut = !product.availableForSale;
 
   const images = 'images' in product ? (product.images?.nodes ?? []) : [];
-  const altImage = images.find((img) => img.id !== image?.id);
+  const featured = product.featuredImage;
+  const second = images.find((img) => img.id !== featured?.id);
+  const image = modelView && second ? second : featured;
+
   const price = product.priceRange.minVariantPrice;
   const compareAt =
     'compareAtPriceRange' in product
@@ -45,134 +56,39 @@ export function ProductItem({
   const onSale =
     !soldOut && compareAt && Number(compareAt.amount) > Number(price.amount);
 
-  // Only when a review app publishes real ratings in Shopify.
-  const swatches = colorSwatches(product);
-
-  const rating =
-    'rating' in product
-      ? parseRating(
-          product.rating,
-          'ratingCount' in product ? product.ratingCount : null,
-        )
-      : null;
+  const label = soldOut ? t('shop.soldOut') : onSale ? t('shop.onSale') : null;
 
   return (
     <Link
-      className={`product-card ${soldOut ? 'product-card--sold-out' : ''}`}
+      className={`sx-card sx-card--${variant}${soldOut ? ' sx-card--sold-out' : ''}`}
       prefetch="intent"
       to={variantUrl}
     >
-      <div className="product-card__media">
-        {soldOut ? (
-          <span className="badge-sold-out">{t('product.soldOut')}</span>
-        ) : (
-          onSale && <span className="badge-sale">{t('product.saleBadge')}</span>
-        )}
+      <div className="sx-card__media">
+        {label && <span className="sx-card__label">{label}</span>}
         {image ? (
           <Image
             alt={image.altText || product.title}
             aspectRatio="4/5"
             data={image}
             loading={loading}
-            sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw"
-            className="product-card__img product-card__img--main"
+            sizes="(min-width: 64em) 25vw, 50vw"
           />
         ) : (
-          <span className="product-card__placeholder" aria-hidden="true" />
-        )}
-        {altImage && (
-          <Image
-            alt={altImage.altText || product.title}
-            aspectRatio="4/5"
-            data={altImage}
-            loading="lazy"
-            sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw"
-            className="product-card__img product-card__img--alt"
-          />
+          <span className="sx-card__placeholder" aria-hidden="true" />
         )}
       </div>
-      <div className="product-card__info">
-        <h3 className="product-card__title">{product.title}</h3>
-        <div className="product-card__price">
-          <Price data={price} />
+      <div className="sx-card__info">
+        <h3 className="sx-card__title">{product.title}</h3>
+        <p className="sx-card__price">
           {onSale && compareAt && (
             <s>
               <Price data={compareAt} />
             </s>
           )}
-        </div>
-        {swatches.length > 1 && (
-          <ul className="product-card__swatches" aria-label={t('product.colours')}>
-            {swatches.slice(0, 5).map((swatch) => (
-              <li
-                key={swatch.name}
-                className="product-card__swatch"
-                style={{background: swatch.color}}
-                title={swatch.name}
-              />
-            ))}
-            {swatches.length > 5 && (
-              <li className="product-card__swatch-more">
-                +{swatches.length - 5}
-              </li>
-            )}
-          </ul>
-        )}
-        {rating && (
-          <StarRating
-            rating={rating.value}
-            count={rating.count}
-            className="product-card__rating"
-          />
-        )}
+          <Price data={price} />
+        </p>
       </div>
     </Link>
   );
-}
-
-/** Common colour names → CSS, for colour options without a Shopify swatch. */
-const COLOUR_NAMES: Record<string, string> = {
-  black: '#111111',
-  noir: '#111111',
-  white: '#ffffff',
-  blanc: '#ffffff',
-  grey: '#9a9a96',
-  gray: '#9a9a96',
-  gris: '#9a9a96',
-  navy: '#1f2a44',
-  blue: '#2f4f8f',
-  bleu: '#2f4f8f',
-  red: '#8e1f24',
-  rouge: '#8e1f24',
-  burgundy: '#6b1f2a',
-  bordeaux: '#6b1f2a',
-  green: '#3d5a3a',
-  vert: '#3d5a3a',
-  beige: '#d8c8ad',
-  cream: '#efe7d6',
-  brown: '#5a3e2b',
-  marron: '#5a3e2b',
-  pink: '#e8b4c0',
-  rose: '#e8b4c0',
-};
-
-/**
- * The product's colours, when Shopify gives it a colour option with more than
- * one value: the swatch colour set in Shopify, or a known colour name.
- * Products sold one colour per product show nothing.
- */
-function colorSwatches(product: GridProduct): {name: string; color: string}[] {
-  if (!('options' in product) || !product.options) return [];
-  const option = product.options.find((o) =>
-    /^(colou?r|couleur)$/i.test(o.name.trim()),
-  );
-  if (!option) return [];
-  return option.optionValues.flatMap((value) => {
-    const swatch =
-      'swatch' in value
-        ? (value.swatch as {color?: string | null} | null)?.color
-        : undefined;
-    const color = swatch ?? COLOUR_NAMES[value.name.trim().toLowerCase()];
-    return color ? [{name: value.name, color}] : [];
-  });
 }

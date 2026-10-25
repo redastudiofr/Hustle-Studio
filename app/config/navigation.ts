@@ -48,10 +48,15 @@ export const NAVIGATION = {
   /** Collections never shown in the menu or on /collections (handle or title). */
   hiddenCollections: ['frontpage', 'home page'],
 
-  /** Plain links next to the "shop" menu in the desktop header. */
+  /**
+   * Desktop header, left: "shop all", then these Shopify collections (by
+   * handle, in this order, shown only if they exist), then `headerLinks`.
+   */
+  headerCollections: [] as string[],
+
+  /** Plain links after the collections in the desktop header. */
   headerLinks: [
-    {labelKey: 'nav.collections', to: '/collections'},
-    {labelKey: 'footer.about', to: '/about'},
+    {labelKey: 'footer.contact', to: '/contact'},
   ] as NavLinkConfig[],
 
   /**
@@ -60,7 +65,7 @@ export const NAVIGATION = {
    */
   mobileLinks: [
     {labelKey: 'nav.home', to: '/'},
-    {labelKey: 'nav.shop', to: '/collections/all'},
+    {labelKey: 'shop.all', to: '/collections/all'},
     {labelKey: 'nav.collections', to: '/collections'},
     {labelKey: 'footer.about', to: '/about'},
     {labelKey: 'footer.faq', to: '/faq'},
