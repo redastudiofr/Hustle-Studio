@@ -18,13 +18,10 @@ type GridProduct =
   | HomeProductFragment;
 
 /**
- * The product card of every grid: the photo on a light grey tile, an
- * "on sale" / "sold out" label only when Shopify says so, the title and the
- * price (compare-at price struck through before it).
- *
- * - `grid` (collection pages): label top left, title and price on one line.
- * - `rail` ("you may also like"): rounded label top right, title above the
- *   prices.
+ * The product card of every grid: the photo, a red "-X%" label when Shopify
+ * has a compare-at price above the price (a black "sold out" one when
+ * nothing is left), the title, the prices — the old one struck through, the
+ * new one in red — and how many colours exist. Everything comes from Shopify.
  *
  * With the collection page's "Model" switch on, the second Shopify image
  * (the piece worn) replaces the first.
@@ -32,10 +29,10 @@ type GridProduct =
 export function ProductItem({
   product,
   loading,
-  variant = 'grid',
 }: {
   product: GridProduct;
   loading?: 'eager' | 'lazy';
+  /** Kept for older callers; every card now looks the same. */
   variant?: 'grid' | 'rail';
 }) {
   const t = useT();
@@ -55,40 +52,63 @@ export function ProductItem({
       : undefined;
   const onSale =
     !soldOut && compareAt && Number(compareAt.amount) > Number(price.amount);
+  const percent = onSale
+    ? Math.round((1 - Number(price.amount) / Number(compareAt.amount)) * 100)
+    : 0;
 
-  const label = soldOut ? t('shop.soldOut') : onSale ? t('shop.onSale') : null;
+  const colorOption =
+    'options' in product
+      ? product.options?.find((option) =>
+          /^(colou?r|couleur)$/i.test(option.name.trim()),
+        )
+      : undefined;
+  const colors = colorOption?.optionValues.length ?? 0;
 
   return (
     <Link
-      className={`sx-card sx-card--${variant}${soldOut ? ' sx-card--sold-out' : ''}`}
+      className={`st-card${soldOut ? ' st-card--sold-out' : ''}`}
       prefetch="intent"
       to={variantUrl}
     >
-      <div className="sx-card__media">
-        {label && <span className="sx-card__label">{label}</span>}
+      <div className="st-card__media">
+        {soldOut ? (
+          <span className="st-card__badge st-card__badge--dark">
+            {t('shop.soldOut')}
+          </span>
+        ) : (
+          percent > 0 && (
+            <span className="st-card__badge st-card__badge--sale">
+              {t('store.percentOff', {percent})}
+            </span>
+          )
+        )}
         {image ? (
           <Image
             alt={image.altText || product.title}
-            aspectRatio="4/5"
+            aspectRatio="1/1"
             data={image}
             loading={loading}
             sizes="(min-width: 64em) 25vw, 50vw"
           />
         ) : (
-          <span className="sx-card__placeholder" aria-hidden="true" />
+          <span className="st-card__placeholder" aria-hidden="true" />
         )}
       </div>
-      <div className="sx-card__info">
-        <h3 className="sx-card__title">{product.title}</h3>
-        <p className="sx-card__price">
-          {onSale && compareAt && (
-            <s>
-              <Price data={compareAt} />
-            </s>
-          )}
-          <Price data={price} />
-        </p>
-      </div>
+      <h3 className="st-card__title">{product.title}</h3>
+      <p className="st-card__price">
+        {onSale && (
+          <s>
+            <Price data={compareAt} />
+          </s>
+        )}
+        <Price
+          data={price}
+          className={onSale ? 'st-card__price--sale' : undefined}
+        />
+      </p>
+      {colors > 1 && (
+        <p className="st-card__colors">{t('store.colors', {count: colors})}</p>
+      )}
     </Link>
   );
 }

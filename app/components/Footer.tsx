@@ -5,6 +5,7 @@ import {BRAND} from '~/config/brand';
 import type {NavLinkConfig} from '~/config/navigation';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
+import {PaymentIcons} from '~/components/store/PaymentIcons';
 
 const LEGAL_LINKS: NavLinkConfig[] = [
   {labelKey: 'footer.privacy', to: '/legal/privacy'},
@@ -18,8 +19,16 @@ const SERVICE_LINKS: NavLinkConfig[] = [
   {labelKey: 'footer.trackOrder', to: '/order-tracking'},
 ];
 
+/** The brand's own photos, tilted, under "become part of the community". */
+const COMMUNITY_PHOTOS = [
+  '/brand/about-street.webp',
+  '/brand/hero-mobile-passage.webp',
+  '/brand/about.webp',
+];
+
 /**
- * Site footer, as in the reference shop: the newsletter on the left, then
+ * Site footer: a black "become part of the community" block (logo, title,
+ * the brand's photos), then the newsletter, then
  * socials (only the profiles set in app/config/brand.ts), legal pages and
  * order help; country, language and the logo at the bottom.
  */
@@ -32,7 +41,24 @@ export function Footer() {
   ].filter((social) => social.href);
 
   return (
-    <footer className="sx-footer">
+    <footer className="sx-footer st-footer">
+      <section className="st-community" aria-labelledby="st-community-title">
+        <span className="st-community__logo" aria-hidden="true">
+          <span className="brand-wordmark" />
+        </span>
+        <h2 className="st-community__title" id="st-community-title">
+          {t('store.communityTitle')}
+        </h2>
+        <div className="st-community__photos" aria-hidden="true">
+          {COMMUNITY_PHOTOS.map((src) => (
+            <img key={src} src={src} alt="" loading="lazy" decoding="async" />
+          ))}
+        </div>
+        <div className="st-community__about">
+          <h3>{t('store.about')}</h3>
+          <p>{t('footer.blurb')}</p>
+        </div>
+      </section>
       <div className="sx-footer__top">
         <div className="sx-footer__news">
           <p>{t('footer.newsletterText')}</p>
@@ -75,6 +101,7 @@ export function Footer() {
           <p className="sx-footer__copy">
             © {year}, {BRAND.name}
           </p>
+          <PaymentIcons className="st-footer__pay" />
         </div>
         <Link to="/" className="sx-footer__logo" aria-label={BRAND.name}>
           <span className="brand-wordmark" aria-hidden="true" />

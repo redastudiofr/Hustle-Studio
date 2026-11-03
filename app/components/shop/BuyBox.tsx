@@ -7,16 +7,21 @@ import {Accordion} from '~/components/Accordion';
 import {Price} from '~/components/Price';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
 import {SizeChartDialog} from '~/components/product/SizeChartDialog';
+import {PaymentIcons} from '~/components/store/PaymentIcons';
 import type {SizeChart} from '~/config/sizeCharts';
 import {extractComposition} from '~/data/faq';
 import {useAside} from '~/components/Aside';
 import {useT} from '~/lib/i18n';
 
+const COLOR = /^(colou?r|couleur)$/i;
+
 /**
- * The right column of the product page: title, price, options as plain
- * text (sold-out values struck through), add to cart, buy now, size chart,
- * the Shopify description, then "shipping, exchange & returns" and
- * "fabrics & care". Everything comes from the selected Shopify variant.
+ * The right column of the product page: title, price (the old one struck
+ * through, the new one in red with a "sale" label), options as rounded
+ * buttons — colours as photos of the variant —, add to cart, buy now (the
+ * Shopify checkout, where Google Pay, Apple Pay… appear when they are on),
+ * the payment methods Shopify accepts, size chart, description, shipping
+ * and care. Everything comes from the selected Shopify variant.
  */
 export function BuyBox({
   title,
@@ -26,7 +31,6 @@ export function BuyBox({
   sizeChart,
   description,
   descriptionHtml,
-  children,
 }: {
   title: string;
   variant: ProductVariantFragment | null | undefined;
@@ -35,8 +39,6 @@ export function BuyBox({
   sizeChart: SizeChart | null;
   description: string;
   descriptionHtml?: string | null;
-  /** Shown under the details ("complete the fit"). */
-  children?: React.ReactNode;
 }) {
   const t = useT();
   const {open} = useAside();
@@ -49,28 +51,29 @@ export function BuyBox({
   const composition = extractComposition(description);
 
   return (
-    <div className="sx-buy">
-      <h1 className="sx-buy__title">{title}</h1>
+    <div className="st-buy">
+      <h1 className="st-buy__title">{title}</h1>
       {price && (
-        <p className="sx-buy__price">
+        <p className="st-buy__price">
           {onSale && (
             <s>
               <Price data={compareAt} />
             </s>
           )}
-          <Price data={price} />
+          <Price data={price} className={onSale ? 'st-buy__now' : undefined} />
+          {onSale && <span className="st-buy__sale">{t('store.sale')}</span>}
         </p>
       )}
-      <p className="sx-buy__note">
-        <Link to="/legal/shipping">{t('product.shipping')}</Link>{' '}
-        {t('product.calculatedAtCheckout')}
-      </p>
 
       <OptionPicker productOptions={productOptions} />
 
-      <div className="sx-buy__actions">
+      <div className="st-buy__chart">
+        <SizeChartDialog title={title} chart={sizeChart} sizes={sizes} />
+      </div>
+
+      <div className="st-buy__actions">
         <AddToCartButton
-          className="sx-btn sx-btn--outline"
+          className="st-pill st-pill--outline st-pill--block"
           disabled={!available || !variant}
           onClick={() => open('cart')}
           lines={variant ? [{...lines[0], selectedVariant: variant}] : []}
@@ -78,24 +81,27 @@ export function BuyBox({
           {available ? t('product.addToCart') : t('product.soldOut')}
         </AddToCartButton>
         {available && (
-          <BuyNowButton className="sx-btn sx-btn--dark" lines={lines}>
+          <BuyNowButton
+            className="st-pill st-pill--dark st-pill--block"
+            lines={lines}
+          >
             {t('product.buyNow')}
           </BuyNowButton>
         )}
       </div>
 
-      <div className="sx-buy__chart">
-        <SizeChartDialog title={title} chart={sizeChart} sizes={sizes} />
+      <div className="st-buy__secure">
+        <PaymentIcons label={t('store.secureCheckout')} />
       </div>
 
       {descriptionHtml && (
         <div
-          className="sx-buy__description"
+          className="st-buy__description"
           dangerouslySetInnerHTML={{__html: descriptionHtml}}
         />
       )}
 
-      <div className="sx-buy__details">
+      <div className="st-buy__details">
         <Accordion title={t('pdp.shippingReturns')}>
           <p>
             <Link to="/legal/shipping">{t('footer.shipping')}</Link>
@@ -108,13 +114,14 @@ export function BuyBox({
           <p>{t('faqData.careA')}</p>
         </Accordion>
       </div>
-
-      {children}
     </div>
   );
 }
 
-/** Options as text: the chosen value underlined, sold-out values struck. */
+/**
+ * Options as rounded buttons (the chosen one filled, sold-out ones struck
+ * through); a colour option shows the photo of each colour's variant.
+ */
 function OptionPicker({
   productOptions,
 }: {
@@ -127,50 +134,69 @@ function OptionPicker({
     <>
       {productOptions
         .filter((option) => option.optionValues.length > 1)
-        .map((option) => (
-          <fieldset className="sx-option" key={option.name}>
-            <legend className="sx-option__label">
-              {/taille|size/i.test(option.name) ? t('pdp.size') : option.name}
-            </legend>
-            <div className="sx-option__values">
-              {option.optionValues.map((value) =>
-                value.isDifferentProduct ? (
-                  <Link
-                    key={value.name}
-                    className="sx-option__value"
-                    to={`/products/${value.handle}?${value.variantUriQuery}`}
-                    prefetch="intent"
-                    preventScrollReset
-                    replace
-                    aria-current={value.selected || undefined}
-                    data-unavailable={!value.available || undefined}
-                  >
-                    {value.name}
-                  </Link>
-                ) : (
-                  <button
-                    key={value.name}
-                    type="button"
-                    className="sx-option__value"
-                    aria-pressed={value.selected}
-                    data-unavailable={!value.available || undefined}
-                    disabled={!value.exists}
-                    onClick={() => {
-                      if (!value.selected) {
-                        void navigate(`?${value.variantUriQuery}`, {
-                          replace: true,
-                          preventScrollReset: true,
-                        });
-                      }
-                    }}
-                  >
-                    {value.name}
-                  </button>
-                ),
-              )}
-            </div>
-          </fieldset>
-        ))}
+        .map((option) => {
+          const isColor = COLOR.test(option.name.trim());
+          const selected = option.optionValues.find((value) => value.selected);
+          return (
+            <fieldset className="st-option" key={option.name}>
+              <legend className="st-option__label">
+                {/taille|size/i.test(option.name) ? t('pdp.size') : option.name}
+                {isColor && selected ? `: ${selected.name}` : ''}
+              </legend>
+              <div className="st-option__values">
+                {option.optionValues.map((value) => {
+                  const photo =
+                    value.swatch?.image?.previewImage?.url ??
+                    value.firstSelectableVariant?.image?.url;
+                  const content =
+                    isColor && photo ? (
+                      <img
+                        src={`${photo}${photo.includes('?') ? '&' : '?'}width=80`}
+                        alt={value.name}
+                      />
+                    ) : (
+                      value.name
+                    );
+                  const className = `st-option__value${isColor && photo ? ' st-option__value--photo' : ''}`;
+                  return value.isDifferentProduct ? (
+                    <Link
+                      key={value.name}
+                      className={className}
+                      to={`/products/${value.handle}?${value.variantUriQuery}`}
+                      prefetch="intent"
+                      preventScrollReset
+                      replace
+                      aria-current={value.selected || undefined}
+                      data-unavailable={!value.available || undefined}
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <button
+                      key={value.name}
+                      type="button"
+                      className={className}
+                      aria-pressed={value.selected}
+                      aria-label={isColor && photo ? value.name : undefined}
+                      data-unavailable={!value.available || undefined}
+                      disabled={!value.exists}
+                      onClick={() => {
+                        if (!value.selected) {
+                          void navigate(`?${value.variantUriQuery}`, {
+                            replace: true,
+                            preventScrollReset: true,
+                          });
+                        }
+                      }}
+                    >
+                      {content}
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+          );
+        })}
     </>
   );
 }

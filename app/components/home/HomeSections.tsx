@@ -2,6 +2,7 @@ import {Suspense} from 'react';
 import {Await, Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
 import type {HomeSection} from '~/config/home';
+import type {HomeProductFragment} from 'storefrontapi.generated';
 import type {
   FamilyTile,
   HomeFeatureData,
@@ -17,6 +18,7 @@ import {ProductRail} from '~/components/ProductRail';
 import {ProductItem} from '~/components/ProductItem';
 import {CollectionsSlider} from '~/components/CollectionsSlider';
 import {CollectionShowcase} from '~/components/CollectionShowcase';
+import {StoreHeading, ViewAll} from '~/components/store/StoreHeading';
 import {Newsletter} from '~/components/Newsletter';
 import {Reveal} from '~/components/Reveal';
 import {PackOffer} from '~/components/PackOffer';
@@ -261,6 +263,58 @@ function HomeSectionView({
         </Reveal>
       );
 
+    case 'sale':
+      if (data?.type !== 'sale') return null;
+      return (
+        <Suspense fallback={null}>
+          <Await resolve={data.data}>
+            {(products) =>
+              products.length ? (
+                <ProductGridSection
+                  id={id}
+                  title={l(section.title)}
+                  subtitle={section.subtitle ? l(section.subtitle) : undefined}
+                  products={products}
+                  link={
+                    section.link
+                      ? {label: l(section.link.label), to: section.link.to}
+                      : undefined
+                  }
+                />
+              ) : null
+            }
+          </Await>
+        </Suspense>
+      );
+
+    case 'collectionGrids':
+      if (data?.type !== 'collectionGrids') return null;
+      return (
+        <Suspense fallback={null}>
+          <Await resolve={data.data}>
+            {(grids) => (
+              <>
+                {grids.map((grid) => (
+                  <ProductGridSection
+                    key={grid.handle}
+                    id={`${id}-${grid.handle}`}
+                    title={grid.title}
+                    products={grid.products}
+                    link={{
+                      label: t('home.viewAll'),
+                      to: `/collections/${grid.handle}`,
+                    }}
+                  />
+                ))}
+              </>
+            )}
+          </Await>
+        </Suspense>
+      );
+
+    case 'usps':
+      return <UspBand items={section.items} />;
+
     default:
       return null;
   }
@@ -269,33 +323,66 @@ function HomeSectionView({
 function ProductGridSection({
   id,
   title,
+  subtitle,
   products,
   link,
 }: {
   id: string;
   title: string;
-  products: NonNullable<HomeProductsData>['products'];
+  subtitle?: string;
+  products: HomeProductFragment[];
   link?: {label: string; to: string};
 }) {
   return (
-    <section className="product-grid-section" aria-labelledby={`${id}-heading`}>
-      <div className="section-head">
-        <h2 className="section-title" id={`${id}-heading`}>
-          {title}
-        </h2>
-      </div>
-      <div className="product-grid">
+    <section className="st-section" aria-labelledby={`${id}-heading`}>
+      <StoreHeading id={`${id}-heading`} title={title} subtitle={subtitle} />
+      <div className="st-grid">
         {products.map((product) => (
           <ProductItem key={product.id} product={product} loading="lazy" />
         ))}
       </div>
-      {link && (
-        <div className="view-all">
-          <Link to={link.to} prefetch="intent" className="btn btn--outline">
-            {link.label}
-          </Link>
-        </div>
-      )}
+      {link && <ViewAll to={link.to} label={link.label} />}
+    </section>
+  );
+}
+
+const USP_ICONS: Record<string, React.ReactNode> = {
+  truck: (
+    <path d="M2 6h11v9H2zM13 9h4l3 3v3h-7zM6 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+  ),
+  return: <path d="M4 10a7 7 0 1 1 2 5M4 4v6h6" />,
+  lock: <path d="M6 10V7a5 5 0 0110 0v3M5 10h12v10H5zM11 14v3" />,
+  chat: <path d="M4 5h14v10H9l-4 4v-4H4z" />,
+};
+
+function UspBand({
+  items,
+}: {
+  items: Extract<HomeSection, {type: 'usps'}>['items'];
+}) {
+  const l = useLocalized();
+  return (
+    <section className="st-usps">
+      <ul className="st-usps__list">
+        {items.map((item) => (
+          <li key={l(item.title)} className="st-usps__card">
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 22 22"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              {USP_ICONS[item.icon]}
+            </svg>
+            <strong>{l(item.title)}</strong>
+            <span>{l(item.text)}</span>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

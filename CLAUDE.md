@@ -21,7 +21,11 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   The site runs in English only (`BRAND.languages`); legal pages keep a
   French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.
 - Styles: app.css (base) → promotions.css → brand.css → editorial.css →
-  shop.css (the current design, `sx-` classes, loaded last). Collection
+  shop.css (`sx-` classes) → store.css (the current design, `st-` classes,
+  loaded last: announcement band, header, cards, homepage sections, product
+  page, black footer). Homepage sections incl. `sale`, `collectionGrids`,
+  `usps` in app/config/home.ts; announcement messages in
+  app/config/navigation.ts. Collection
   pages share app/components/shop/CollectionShell.tsx; the product page is
   built from app/components/shop/ (ProductMedia, BuyBox, CompleteTheFit,
   AlsoLike).

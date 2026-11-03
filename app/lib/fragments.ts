@@ -227,6 +227,12 @@ export const HEADER_QUERY = `#graphql
     id
     name
     description
+    # Payment methods the checkout accepts — the icons under the buy buttons
+    # and in the footer show exactly these.
+    paymentSettings {
+      acceptedCardBrands
+      supportedDigitalWallets
+    }
     primaryDomain {
       url
     }

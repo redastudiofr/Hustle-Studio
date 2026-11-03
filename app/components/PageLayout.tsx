@@ -10,6 +10,7 @@ import {LanguagePrompt} from '~/components/LanguagePrompt';
 import {useT} from '~/lib/i18n';
 import {SearchIcon} from '~/components/Icons';
 import {HeaderToneProvider} from '~/lib/header-tone';
+import {AnnouncementBar} from '~/components/store/AnnouncementBar';
 import {
   SEARCH_ENDPOINT,
   SearchFormPredictive,
@@ -56,6 +57,7 @@ export function PageLayout({
         <CartAside cart={cart} />
         <SearchAside />
         <MobileMenuAside collections={navCollections} />
+        <AnnouncementBar />
         {header && (
           <Header
             header={header}

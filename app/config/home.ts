@@ -17,6 +17,7 @@
  * Without an image, the hero and editorial blocks use a typographic layout.
  */
 import type {Localized} from '~/lib/i18n/localized';
+import {LEGAL} from '~/config/legal';
 
 export type HomeImage = {
   /** Landscape crop, shown from tablet width upwards. */
@@ -149,6 +150,32 @@ export type HomeSection = (
       /** "Need help?": shipping, returns, terms, support (HelpFaq). */
       type: 'faq';
     }
+  | {
+      /**
+       * Products Shopify marks as discounted (compare-at price above the
+       * price). Hidden while there are none.
+       */
+      type: 'sale';
+      title: Localized;
+      subtitle?: Localized;
+      limit?: number;
+      link?: HomeLink;
+    }
+  | {
+      /** One product grid per Shopify collection, each with "view all". */
+      type: 'collectionGrids';
+      /** Products per collection. */
+      limit?: number;
+    }
+  | {
+      /** A band of short reassurance cards (icon, title, text). */
+      type: 'usps';
+      items: {
+        icon: 'truck' | 'return' | 'lock' | 'chat';
+        title: Localized;
+        text: Localized;
+      }[];
+    }
   | {type: 'newsletter'}
   | {
       /**
@@ -218,8 +245,15 @@ export const HOME_SECTIONS: HomeSection[] = [
         fr: 'T-shirt manches longues blanc sur un écran de studio, pendant un shooting photo',
       },
     },
-    // Purely visual: no title, text, countdown or button. To bring the
-    // drop countdown back, add `countdown` (see CountdownCopy) and a `cta`.
+    title: {
+      en: 'The new collection is here',
+      fr: 'La nouvelle collection est là',
+    },
+    cta: {label: {en: 'Shop now', fr: 'Découvrir'}, to: '/collections/all'},
+    secondaryCta: {
+      label: {en: 'Bestsellers', fr: 'Meilleures ventes'},
+      to: '/collections/all?sort=best-selling',
+    },
   },
   {
     // Hidden for now: remove `hidden` to bring the drop waitlist back.
@@ -236,26 +270,71 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
   },
   {
-    // Slider of every Shopify collection (appears as soon as one exists).
-    type: 'collections',
-    title: {en: 'Shop by category', fr: 'Par catégorie'},
+    // Discounted products (compare-at price set in Shopify). Hidden if none.
+    type: 'sale',
+    title: {en: 'On sale', fr: 'Promos'},
+    limit: 8,
   },
   {
-    // Slider of every product.
     type: 'products',
-    title: {en: 'All products', fr: 'Tous les produits'},
-    fallbackSort: 'newest',
-    limit: 'all',
-    layout: 'rail',
-    link: {label: {en: 'View all', fr: 'Tout voir'}, to: '/collections/all'},
+    title: {en: 'Bestsellers', fr: 'Meilleures ventes'},
+    fallbackSort: 'best-selling',
+    limit: 8,
+    layout: 'grid',
+    link: {
+      label: {en: 'View all', fr: 'Tout voir'},
+      to: '/collections/all?sort=best-selling',
+    },
+  },
+  {type: 'reviews'},
+  {
+    // One grid per Shopify collection (appears as soon as one has products).
+    type: 'collectionGrids',
+    limit: 4,
   },
   {
-    // Then the collections again, as large tiles.
-    type: 'collections',
-    title: {en: 'Collections', fr: 'Collections'},
-    layout: 'tiles',
+    type: 'usps',
+    items: [
+      {
+        icon: 'truck',
+        title: {en: 'Tracked shipping', fr: 'Livraison suivie'},
+        text: {
+          en: 'Delivery times on the shipping page',
+          fr: 'Délais sur la page livraison',
+        },
+      },
+      {
+        icon: 'return',
+        title: {
+          en: `${LEGAL.returnDays}-day returns`,
+          fr: `Retours sous ${LEGAL.returnDays} jours`,
+        },
+        text: {
+          en: 'Exchange or refund, see the returns page',
+          fr: 'Échange ou remboursement, voir la page retours',
+        },
+      },
+      {
+        icon: 'lock',
+        title: {en: 'Secure payment', fr: 'Paiement sécurisé'},
+        text: {
+          en: 'Encrypted checkout by Shopify',
+          fr: 'Paiement chiffré par Shopify',
+        },
+      },
+      {
+        icon: 'chat',
+        title: {en: 'Customer service', fr: 'Service client'},
+        text: {
+          en: 'Write to us from the contact page',
+          fr: 'Écris-nous depuis la page contact',
+        },
+      },
+    ],
   },
+  {type: 'faq'},
   {
+    hidden: true,
     type: 'brands',
     title: {en: 'Our labels', fr: 'Nos marques'},
   },
@@ -272,6 +351,7 @@ export const HOME_SECTIONS: HomeSection[] = [
     photos: FAMILY_PHOTOS,
   },
   {
+    hidden: true,
     type: 'about',
     eyebrow: {en: 'Our story — Nantes', fr: 'Notre histoire — Nantes'},
     title: 'Hustle Studio.',
@@ -302,6 +382,7 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
   },
   {
+    hidden: true,
     type: 'editorial',
     eyebrow: {en: 'The store', fr: 'Le magasin'},
     title: {en: 'Come see us in Nantes.', fr: 'Venez nous voir à Nantes.'},
@@ -314,6 +395,4 @@ export const HOME_SECTIONS: HomeSection[] = [
       to: '/about#store',
     },
   },
-  {type: 'reviews'},
-  {type: 'faq'},
 ];

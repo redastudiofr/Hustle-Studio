@@ -9,10 +9,29 @@
  * both languages.
  */
 import type {TranslationKey} from '~/lib/i18n/dictionary';
+import type {Localized} from '~/lib/i18n/localized';
+import {LEGAL} from '~/config/legal';
 
 export type NavLinkConfig = {labelKey: TranslationKey; to: string};
 
 export const NAVIGATION = {
+  /**
+   * The band scrolling above the header. Every message must be true for
+   * the shop (shipping zones and return window: app/config/legal.ts).
+   * Empty: no band.
+   */
+  announcements: [
+    {
+      en: 'Tracked shipping, France and worldwide',
+      fr: 'Livraison suivie, en France et dans le monde',
+    },
+    {
+      en: `${LEGAL.returnDays}-day returns`,
+      fr: `Retours sous ${LEGAL.returnDays} jours`,
+    },
+    {en: 'Secure payment', fr: 'Paiement sécurisé'},
+  ] as Localized[],
+
   /**
    * Order of collections in the menu, by title or handle (case, accents and
    * hyphens are ignored: "T-Shirts" = "tshirts"). Collections not listed keep
@@ -47,12 +66,6 @@ export const NAVIGATION = {
 
   /** Collections never shown in the menu or on /collections (handle or title). */
   hiddenCollections: ['frontpage', 'home page'],
-
-  /**
-   * Desktop header, left: "shop all", then these Shopify collections (by
-   * handle, in this order, shown only if they exist), then `headerLinks`.
-   */
-  headerCollections: [] as string[],
 
   /** Plain links after the collections in the desktop header. */
   headerLinks: [

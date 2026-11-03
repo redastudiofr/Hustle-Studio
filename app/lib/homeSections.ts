@@ -15,6 +15,13 @@ import type {Review} from '~/data/reviews';
 import {PACK_ENABLED} from '~/lib/packOffer';
 import {loadPack, type PackData} from '~/lib/packProducts';
 
+/** A collection and its first products, for the per-collection grids. */
+export type HomeCollectionGrid = {
+  handle: string;
+  title: string;
+  products: HomeProductFragment[];
+};
+
 export type HomeProductsData = {
   products: HomeProductFragment[];
   /** Set when the products came from the configured collection. */
@@ -48,6 +55,8 @@ export type HomeSectionData =
   | {type: 'collections'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'brands'; data: Promise<HomeCollectionFragment[]>}
   | {type: 'pack'; data: Promise<PackData | null>}
+  | {type: 'sale'; data: Promise<HomeProductFragment[]>}
+  | {type: 'collectionGrids'; data: Promise<HomeCollectionGrid[]>}
   | {type: 'static'};
 
 /** Largest page the Storefront API returns in one request. */
@@ -108,6 +117,20 @@ export function loadHomeSections(
         };
       case 'reviews':
         return {type: 'reviews', data: loadReviews(storefront)};
+      case 'sale':
+        return {
+          type: 'sale',
+          data: loadSale(storefront, section.limit ?? 8).catch(
+            logAndReturn([] as HomeProductFragment[]),
+          ),
+        };
+      case 'collectionGrids':
+        return {
+          type: 'collectionGrids',
+          data: loadCollectionGrids(storefront, section.limit ?? 4).catch(
+            logAndReturn([] as HomeCollectionGrid[]),
+          ),
+        };
       case 'family':
         // Photos from the config win; until there are some, the shop's own
         // product photos stand in, so the section is never empty or fake.
@@ -205,6 +228,43 @@ async function loadProducts(
   } while (after);
 
   return nodes.length ? {products: nodes, collection: null} : null;
+}
+
+/** Products whose compare-at price is above their price, best sellers first. */
+async function loadSale(
+  storefront: Storefront,
+  limit: number,
+): Promise<HomeProductFragment[]> {
+  const {products} = await storefront.query(HOME_SORTED_PRODUCTS_QUERY, {
+    variables: {first: SHOPIFY_PAGE_MAX, ...SORT_KEYS['best-selling']},
+    cache: storefront.CacheShort(),
+  });
+  return products.nodes
+    .filter(
+      (product) =>
+        Number(product.compareAtPriceRange?.minVariantPrice.amount ?? 0) >
+        Number(product.priceRange.minVariantPrice.amount),
+    )
+    .slice(0, limit);
+}
+
+/** Every collection that has products, each with its first `limit` ones. */
+async function loadCollectionGrids(
+  storefront: Storefront,
+  limit: number,
+): Promise<HomeCollectionGrid[]> {
+  const {collections} = await storefront.query(HOME_COLLECTION_GRIDS_QUERY, {
+    variables: {first: limit},
+    cache: storefront.CacheShort(),
+  });
+  return withoutAutoCollections(collections.nodes)
+    .filter((collection) => !isBrandCollection(collection))
+    .filter((collection) => collection.products.nodes.length > 0)
+    .map((collection) => ({
+      handle: collection.handle,
+      title: collection.title,
+      products: collection.products.nodes,
+    }));
 }
 
 async function loadFamilyStandIns(
@@ -389,6 +449,28 @@ const HOME_SORTED_PRODUCTS_QUERY = `#graphql
       pageInfo {
         hasNextPage
         endCursor
+      }
+    }
+  }
+  ${HOME_PRODUCT_FRAGMENT}
+` as const;
+
+const HOME_COLLECTION_GRIDS_QUERY = `#graphql
+  query HomeCollectionGrids(
+    $first: Int
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collections(first: 20, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        id
+        handle
+        title
+        products(first: $first) {
+          nodes {
+            ...HomeProduct
+          }
+        }
       }
     }
   }

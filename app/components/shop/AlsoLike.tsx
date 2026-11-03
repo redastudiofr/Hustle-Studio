@@ -2,23 +2,18 @@ import type {RecoProductFragment} from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {useT} from '~/lib/i18n';
 
-/** "You may also like": four products Shopify recommends. */
+/** "Related products": four products Shopify recommends. */
 export function AlsoLike({items}: {items: RecoProductFragment[]}) {
   const t = useT();
   if (!items.length) return null;
   return (
-    <section className="sx-also" aria-labelledby="sx-also-title">
-      <h2 className="sx-also__title" id="sx-also-title">
-        {t('pdp.alsoLike')}
+    <section className="st-related" aria-labelledby="st-related-title">
+      <h2 className="st-related__title" id="st-related-title">
+        {t('store.relatedProducts')}
       </h2>
-      <div className="sx-also__grid">
+      <div className="st-grid">
         {items.slice(0, 4).map((product) => (
-          <ProductItem
-            key={product.id}
-            product={product}
-            variant="rail"
-            loading="lazy"
-          />
+          <ProductItem key={product.id} product={product} loading="lazy" />
         ))}
       </div>
     </section>

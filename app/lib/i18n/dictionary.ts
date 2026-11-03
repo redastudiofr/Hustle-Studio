@@ -566,6 +566,16 @@ export const en = {
   'footer.trackOrder': 'track order',
   'footer.language': 'language',
   'footer.country': 'country',
+  // — store layout (cards, homepage, product page, footer) —
+  'store.percentOff': '{percent}% off',
+  'store.colors': '{count} colors available',
+  'store.sale': 'sale',
+  'store.home': 'homepage',
+  'store.onSale': 'on sale',
+  'store.secureCheckout': 'secure checkout with',
+  'store.relatedProducts': 'related products',
+  'store.communityTitle': 'become part of the community',
+  'store.about': 'about {brand}',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -1133,6 +1143,16 @@ export const fr: Record<TranslationKey, string> = {
   'footer.trackOrder': 'suivre ma commande',
   'footer.language': 'langue',
   'footer.country': 'pays',
+  // — mise en page boutique (cartes, accueil, fiche produit, pied de page) —
+  'store.percentOff': '-{percent} %',
+  'store.colors': '{count} couleurs disponibles',
+  'store.sale': 'promo',
+  'store.home': 'accueil',
+  'store.onSale': 'promos',
+  'store.secureCheckout': 'paiement sécurisé avec',
+  'store.relatedProducts': 'produits similaires',
+  'store.communityTitle': 'rejoins la communauté',
+  'store.about': 'à propos de {brand}',
 };
 
 export const DICTIONARIES: Record<Locale, Record<TranslationKey, string>> = {

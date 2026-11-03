@@ -13,7 +13,6 @@ import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
-import {NAVIGATION} from '~/config/navigation';
 import {
   NAV_HEADER_LINKS,
   NAV_SERVICE_LINKS,
@@ -59,8 +58,7 @@ export function Header({
 
   return (
     <header className={headerClassName}>
-      {/* Three tracks — left, centre, right — so the wordmark is optically
-          centred in the header whatever the nav or icons weigh. */}
+      {/* Logo left, menu centred, country and icons right. */}
       <div className="site-header__side site-header__side--start">
         <button
           className="site-header__icon-btn site-header__burger"
@@ -69,26 +67,28 @@ export function Header({
         >
           <BurgerIcon />
         </button>
-        <HeaderMenu collections={navCollections} viewport="desktop" />
+        <NavLink
+          to="/"
+          end
+          prefetch="intent"
+          className={`site-header__logo ${logoPressed ? 'site-header__logo--pressed' : ''}`}
+          aria-label={shop.name}
+          onClick={() => setLogoPressed(true)}
+          onAnimationEnd={() => setLogoPressed(false)}
+        >
+          {/* Painted with currentColor through a CSS mask; the text stays
+              for screen readers and as a fallback. */}
+          <span className="site-header__wordmark" aria-hidden="true" />
+          <span className="sr-only">{shop.name}</span>
+        </NavLink>
       </div>
 
-      <NavLink
-        to="/"
-        end
-        prefetch="intent"
-        className={`site-header__logo ${logoPressed ? 'site-header__logo--pressed' : ''}`}
-        aria-label={shop.name}
-        onClick={() => setLogoPressed(true)}
-        onAnimationEnd={() => setLogoPressed(false)}
-      >
-        {/* The wordmark is painted with currentColor through a CSS mask, so it
-            turns white by itself when the header goes transparent over the
-            hero. The text stays for screen readers and as a fallback. */}
-        <span className="site-header__wordmark" aria-hidden="true" />
-        <span className="sr-only">{shop.name}</span>
-      </NavLink>
+      <HeaderMenu collections={navCollections} viewport="desktop" />
 
       <div className="site-header__side site-header__side--end">
+        <span className="site-header__market">
+          France | {CURRENCY_CODE} {CURRENCY_SYMBOL}
+        </span>
         <button
           className="site-header__icon-btn"
           onClick={() => open('search')}
@@ -123,21 +123,25 @@ export function HeaderMenu({
   const t = useT();
 
   if (viewport === 'desktop') {
-    // Shop all, the collections picked in app/config/navigation.ts, contact.
-    const picked = NAVIGATION.headerCollections
-      .map((handle) => collections.find((c) => c.handle === handle))
-      .filter((c) => c != null);
+    // Homepage, "on sale" (a Shopify collection with the handle "sale"),
+    // every other collection, then the plain links (contact).
+    const sale = collections.find((c) => c.handle === 'sale');
+    const others = collections.filter((c) => c.handle !== 'sale').slice(0, 7);
     return (
       <nav className="site-header__nav" role="navigation">
-        <NavLink
-          to="/collections/all"
-          end
-          prefetch="intent"
-          className="site-header__nav-link"
-        >
-          {t('shop.all')}
+        <NavLink to="/" end prefetch="intent" className="site-header__nav-link">
+          {t('store.home')}
         </NavLink>
-        {picked.map((collection) => (
+        {sale && (
+          <NavLink
+            to="/collections/sale"
+            prefetch="intent"
+            className="site-header__nav-link"
+          >
+            {t('store.onSale')}
+          </NavLink>
+        )}
+        {others.map((collection) => (
           <NavLink
             key={collection.id}
             to={`/collections/${collection.handle}`}

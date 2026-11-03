@@ -12,16 +12,13 @@ import {
 import type {
   ProductFragment,
   ProductVariantFragment,
-  RecoProductFragment,
 } from 'storefrontapi.generated';
 import type {SizeEntry} from '~/components/ProductSizeGuide';
 import {ProductMedia} from '~/components/shop/ProductMedia';
 import {BuyBox} from '~/components/shop/BuyBox';
-import {
-  CompleteTheFit,
-  type FitProduct,
-} from '~/components/shop/CompleteTheFit';
 import {AlsoLike} from '~/components/shop/AlsoLike';
+import {ProductPromises} from '~/components/store/ProductPromises';
+import {HelpFaq} from '~/components/HelpFaq';
 import {sizeChartFor} from '~/config/sizeCharts';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {parseRating} from '~/lib/rating';
@@ -160,21 +157,13 @@ export default function Product() {
     available: value.available,
   }));
 
-  const current: FitProduct = {
-    title,
-    image: product.images.nodes[0] ?? null,
-    variants: product.allVariants.nodes.map((variant) => ({
-      id: variant.id,
-      availableForSale: variant.availableForSale,
-      price: variant.price,
-      label: variant.title,
-    })),
-  };
-
   return (
-    <div className="sx-product">
-      <div className="sx-product__main">
-        <ProductMedia images={galleryImages} title={title} />
+    <div className="st-product">
+      <div className="st-product__main">
+        <div className="st-product__media">
+          <ProductMedia images={galleryImages} title={title} />
+          <ProductPromises />
+        </div>
 
         <BuyBox
           title={title}
@@ -184,24 +173,7 @@ export default function Product() {
           sizeChart={sizeChartFor(product)}
           description={description ?? ''}
           descriptionHtml={descriptionHtml}
-        >
-          <Suspense fallback={null}>
-            <Await resolve={recommended} errorElement={null}>
-              {(items) => {
-                const partner = items.find((item) =>
-                  item.variants.nodes.some((v) => v.availableForSale),
-                );
-                return partner && selectedVariant?.availableForSale ? (
-                  <CompleteTheFit
-                    current={current}
-                    currentVariantId={selectedVariant.id}
-                    partner={fitProduct(partner)}
-                  />
-                ) : null;
-              }}
-            </Await>
-          </Suspense>
-        </BuyBox>
+        />
       </div>
 
       <Suspense fallback={null}>
@@ -209,6 +181,8 @@ export default function Product() {
           {(items) => <AlsoLike items={items} />}
         </Await>
       </Suspense>
+
+      <HelpFaq />
 
       <script
         type="application/ld+json"
@@ -242,20 +216,6 @@ export default function Product() {
  * schema.org Product with one Offer per known variant. `<` is escaped so the
  * JSON can never close the <script> tag early, whatever a description holds.
  */
-/** A recommended product in the shape of the "complete the fit" box. */
-function fitProduct(product: RecoProductFragment): FitProduct {
-  return {
-    title: product.title,
-    image: product.featuredImage ?? null,
-    variants: product.variants.nodes.map((variant) => ({
-      id: variant.id,
-      availableForSale: variant.availableForSale,
-      price: variant.price,
-      label: variant.selectedOptions.map((option) => option.value).join(' / '),
-    })),
-  };
-}
-
 function productJsonLd(
   product: ProductFragment,
   selected: ProductVariantFragment | null | undefined,
@@ -368,17 +328,6 @@ const PRODUCT_FRAGMENT = `#graphql
     }
     encodedVariantExistence
     encodedVariantAvailability
-    allVariants: variants(first: 50) {
-      nodes {
-        id
-        title
-        availableForSale
-        price {
-          amount
-          currencyCode
-        }
-      }
-    }
     images(first: 12) {
       nodes {
         id
