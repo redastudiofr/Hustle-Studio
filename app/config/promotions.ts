@@ -100,18 +100,17 @@ export const PROMOTIONS = {
   },
 
   /**
-   * Welcome pop-up — -15% on the first order, in exchange for a phone
-   * number, shown once per visitor. Each number is e-mailed to
-   * LAUNCH.notifyEmail through Resend (RESEND_API_KEY on Vercel), or stored
-   * in Notion when NOTION_API_KEY and NOTION_PHONE_DATABASE_ID are set.
+   * Welcome pop-up — -15% on the first order, in exchange for an e-mail
+   * and/or a phone number, shown once per visitor. Each sign-up goes to the
+   * Google Sheet (GOOGLE_SHEET_WEBHOOK_URL) and is e-mailed to
+   * LAUNCH.notifyEmail through Resend (RESEND_API_KEY) — see docs/POPUP.md.
    *
-   * It shows only once `code` is filled in AND one of those is configured:
-   * create the discount in Shopify first (docs/WAITLIST.md, "Pop-up -15%"),
-   * then type its exact code here.
+   * The code must exist in Shopify Admin → Discounts, written exactly the
+   * same; the pop-up shows once one of those two stores is configured.
    */
   welcomePopup: {
-    enabled: false,
-    code: 'WELCOME15',
+    enabled: true,
+    code: 'HUSTLE15',
     percent: 15,
   },
 };

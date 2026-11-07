@@ -111,14 +111,11 @@ export async function loader(args: Route.LoaderArgs) {
     accountEnabled: Boolean(env.PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID),
     // Only a yes/no reaches the browser: whether the welcome pop-up is on
     // (app/config/promotions.ts) and has somewhere to record numbers — a
-    // Notion database, or Resend e-mailing each one to the shop's inbox.
+    // Google Sheet, or Resend e-mailing each one to the shop's inbox.
     // The keys themselves never leave the server.
     promoSignupEnabled:
       PROMO_POPUP_ACTIVE &&
-      Boolean(
-        (env.NOTION_API_KEY && env.NOTION_PHONE_DATABASE_ID) ||
-        env.RESEND_API_KEY,
-      ),
+      Boolean(env.GOOGLE_SHEET_WEBHOOK_URL || env.RESEND_API_KEY),
     shop: getShopAnalytics({
       storefront,
       publicStorefrontId: env.PUBLIC_STOREFRONT_ID,

@@ -29,6 +29,11 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   pages share app/components/shop/CollectionShell.tsx; the product page is
   built from app/components/shop/ (ProductMedia, BuyBox, AlsoLike) and
   app/components/store/ (ProductPromises, PaymentIcons).
+- Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
+  `welcomePopup`; sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
+  by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo
+  centred, every page in the menu panel opened from the button on the right
+  (app/config/navigation.ts `mobileLinks`).
 - Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
 - Vercel build: keep server and client CSS identical (no `build.target` on the

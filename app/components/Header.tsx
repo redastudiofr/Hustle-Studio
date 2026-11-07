@@ -8,13 +8,12 @@ import {
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {useHeaderTone} from '~/lib/header-tone';
-import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
+import {BagIcon, GearIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
 import {
-  NAV_HEADER_LINKS,
   NAV_SERVICE_LINKS,
   NAV_MOBILE_LINKS,
   NAV_LEGAL_LINKS,
@@ -58,37 +57,25 @@ export function Header({
 
   return (
     <header className={headerClassName}>
-      {/* Logo left, menu centred, country and icons right. */}
-      <div className="site-header__side site-header__side--start">
-        <button
-          className="site-header__icon-btn site-header__burger"
-          onClick={() => open('mobile')}
-          aria-label={t('nav.openMenu')}
-        >
-          <BurgerIcon />
-        </button>
-        <NavLink
-          to="/"
-          end
-          prefetch="intent"
-          className={`site-header__logo ${logoPressed ? 'site-header__logo--pressed' : ''}`}
-          aria-label={shop.name}
-          onClick={() => setLogoPressed(true)}
-          onAnimationEnd={() => setLogoPressed(false)}
-        >
-          {/* Painted with currentColor through a CSS mask; the text stays
-              for screen readers and as a fallback. */}
-          <span className="site-header__wordmark" aria-hidden="true" />
-          <span className="sr-only">{shop.name}</span>
-        </NavLink>
-      </div>
+      {/* Logo centred; search, account, cart and the menu button right. */}
+      <div className="site-header__side site-header__side--start" />
 
-      <HeaderMenu collections={navCollections} viewport="desktop" />
+      <NavLink
+        to="/"
+        end
+        prefetch="intent"
+        className={`site-header__logo ${logoPressed ? 'site-header__logo--pressed' : ''}`}
+        aria-label={shop.name}
+        onClick={() => setLogoPressed(true)}
+        onAnimationEnd={() => setLogoPressed(false)}
+      >
+        {/* Painted with currentColor through a CSS mask; the text stays for
+            screen readers and as a fallback. */}
+        <span className="site-header__wordmark" aria-hidden="true" />
+        <span className="sr-only">{shop.name}</span>
+      </NavLink>
 
       <div className="site-header__side site-header__side--end">
-        <span className="site-header__market">
-          France | {CURRENCY_CODE} {CURRENCY_SYMBOL}
-        </span>
         <button
           className="site-header__icon-btn"
           onClick={() => open('search')}
@@ -107,6 +94,13 @@ export function Header({
           </NavLink>
         )}
         <CartToggle cart={cart} />
+        <button
+          className="site-header__icon-btn site-header__menu-btn"
+          onClick={() => open('mobile')}
+          aria-label={t('nav.openMenu')}
+        >
+          <GearIcon />
+        </button>
       </div>
     </header>
   );
@@ -122,51 +116,7 @@ export function HeaderMenu({
   const {close} = useAside();
   const t = useT();
 
-  if (viewport === 'desktop') {
-    // Homepage, "on sale" (a Shopify collection with the handle "sale"),
-    // every other collection, then the plain links (contact).
-    const sale = collections.find((c) => c.handle === 'sale');
-    const others = collections.filter((c) => c.handle !== 'sale').slice(0, 7);
-    return (
-      <nav className="site-header__nav" role="navigation">
-        <NavLink to="/" end prefetch="intent" className="site-header__nav-link">
-          {t('store.home')}
-        </NavLink>
-        {sale && (
-          <NavLink
-            to="/collections/sale"
-            prefetch="intent"
-            className="site-header__nav-link"
-          >
-            {t('store.onSale')}
-          </NavLink>
-        )}
-        {others.map((collection) => (
-          <NavLink
-            key={collection.id}
-            to={`/collections/${collection.handle}`}
-            prefetch="intent"
-            className="site-header__nav-link"
-          >
-            {collection.title}
-          </NavLink>
-        ))}
-        {NAV_HEADER_LINKS.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            end
-            prefetch="intent"
-            className="site-header__nav-link"
-          >
-            {t(link.labelKey)}
-          </NavLink>
-        ))}
-      </nav>
-    );
-  }
-
-  // Burger menu: every page as a plain link — no "shop" dropdown to open.
+  // The menu panel: every page as a plain link.
   return (
     <nav className="mobile-nav" role="navigation">
       {NAV_MOBILE_LINKS.map((link) => (

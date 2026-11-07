@@ -128,7 +128,10 @@ async function writeToClipboard(text: string): Promise<boolean> {
   }
 }
 
-type Status = 'idle' | 'loading' | 'done' | 'error' | 'invalid';
+type Status =
+  'idle' | 'loading' | 'done' | 'error' | 'invalid' | 'invalidEmail' | 'empty';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 /**
  * Welcome pop-up: -15% in exchange for a phone number.
@@ -137,8 +140,8 @@ type Status = 'idle' | 'loading' | 'done' | 'error' | 'invalid';
  * - Closing it (X, the backdrop, Escape) is remembered for DISMISS_DAYS, so it
  *   doesn't come back on every page or every visit — only after that pause.
  * - Hidden entirely while `enabled` is false, i.e. while the server has no
- *   Notion database to store numbers in: better no offer than a code handed
- *   out for a sign-up that was never saved.
+ *   way to record sign-ups (Google Sheet or e-mail): better no offer than a
+ *   code handed out for a sign-up that was never saved.
  *
  * The code shown is the one the server returns, and only after it has
  * confirmed the number is stored — see app/routes/newsletter.tsx.
@@ -152,8 +155,8 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
     'idle',
   );
   const [digitCount, setDigitCount] = useState(0);
-  // A short technical reference shown with a failed save (e.g. N404), so a
-  // screenshot is enough to tell what went wrong — see NotionError.
+  // A short technical reference shown with a failed save (e.g. S502), so a
+  // screenshot is enough to tell what went wrong.
   const [errorRef, setErrorRef] = useState('');
   const statusRef = useRef<Status>('idle');
   const codeRef = useRef<HTMLParagraphElement>(null);
@@ -214,15 +217,27 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
 
   async function submit(form: HTMLFormElement) {
     if (statusRef.current === 'loading') return;
-    const raw = (form.elements.namedItem('phone') as HTMLInputElement | null)
-      ?.value;
-    if (!raw) return;
+    const field = (name: string) =>
+      (
+        (form.elements.namedItem(name) as HTMLInputElement | null)?.value ?? ''
+      ).trim();
+    const rawEmail = field('email');
+    const rawPhone = field('phone');
 
-    // Checked before the request so a mistyped number never reaches the
-    // network — and again on the server, since this check can be bypassed.
-    const phone = normalizePhone(raw);
-    setDigitCount(countDigits(raw));
-    if (!phone) {
+    // E-mail and/or phone: at least one, each valid when given. Checked
+    // before the request, and again on the server (this can be bypassed).
+    if (!rawEmail && !rawPhone) {
+      setStatus('empty');
+      return;
+    }
+    const email = rawEmail.toLowerCase();
+    if (email && (email.length > 254 || !EMAIL_PATTERN.test(email))) {
+      setStatus('invalidEmail');
+      return;
+    }
+    const phone = rawPhone ? normalizePhone(rawPhone) : '';
+    setDigitCount(countDigits(rawPhone));
+    if (rawPhone && !phone) {
       setStatus('invalid');
       return;
     }
@@ -236,7 +251,8 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
           Accept: 'application/json',
         },
         body: new URLSearchParams({
-          'contact[phone]': phone,
+          'contact[email]': email,
+          'contact[phone]': phone ?? '',
           source: 'popup',
         }).toString(),
       });
@@ -255,7 +271,15 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
         setStatus('done');
       } else {
         setErrorRef(result?.ref ?? `H${res.status}`);
-        setStatus(result?.error === 'phone' ? 'invalid' : 'error');
+        setStatus(
+          result?.error === 'phone'
+            ? 'invalid'
+            : result?.error === 'email'
+              ? 'invalidEmail'
+              : result?.error === 'empty'
+                ? 'empty'
+                : 'error',
+        );
       }
     } catch {
       setErrorRef('NET');
@@ -361,13 +385,25 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
               </p>
               <form className="popup__form" onSubmit={onSubmit} noValidate>
                 <input
+                  type="email"
+                  name="email"
+                  placeholder={t('popup.emailPlaceholder')}
+                  aria-label={t('popup.emailLabel')}
+                  autoComplete="email"
+                  inputMode="email"
+                  onChange={() =>
+                    status !== 'loading' &&
+                    status !== 'idle' &&
+                    setStatus('idle')
+                  }
+                />
+                <input
                   type="tel"
                   name="phone"
                   placeholder={t('popup.phonePlaceholder')}
                   aria-label={t('popup.phoneLabel')}
                   autoComplete="tel"
                   inputMode="tel"
-                  required
                   onChange={() =>
                     status !== 'loading' &&
                     status !== 'idle' &&
@@ -390,6 +426,16 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
                         is obvious instead of leaving the visitor guessing. */}
                     {digitCount > 0 &&
                       ` (${t('popup.digitsTyped', {count: digitCount})})`}
+                  </p>
+                )}
+                {status === 'invalidEmail' && (
+                  <p className="form-error" role="alert">
+                    {t('popup.invalidEmail')}
+                  </p>
+                )}
+                {status === 'empty' && (
+                  <p className="form-error" role="alert">
+                    {t('popup.empty')}
                   </p>
                 )}
                 {status === 'error' && (

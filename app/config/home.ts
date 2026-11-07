@@ -270,12 +270,6 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
   },
   {
-    // Discounted products (compare-at price set in Shopify). Hidden if none.
-    type: 'sale',
-    title: {en: 'On sale', fr: 'Promos'},
-    limit: 8,
-  },
-  {
     type: 'products',
     title: {en: 'Bestsellers', fr: 'Meilleures ventes'},
     fallbackSort: 'best-selling',

@@ -23,8 +23,8 @@ type GridProduct =
  * nothing is left), the title, the prices — the old one struck through, the
  * new one in red — and how many colours exist. Everything comes from Shopify.
  *
- * With the collection page's "Model" switch on, the second Shopify image
- * (the piece worn) replaces the first.
+ * Hovering a card shows the product's second Shopify image. With the
+ * collection page's "Model" switch on, the two swap places.
  */
 export function ProductItem({
   product,
@@ -44,6 +44,7 @@ export function ProductItem({
   const featured = product.featuredImage;
   const second = images.find((img) => img.id !== featured?.id);
   const image = modelView && second ? second : featured;
+  const hoverImage = image === featured ? second : featured;
 
   const price = product.priceRange.minVariantPrice;
   const compareAt =
@@ -89,9 +90,21 @@ export function ProductItem({
             data={image}
             loading={loading}
             sizes="(min-width: 64em) 25vw, 50vw"
+            className="st-card__img"
           />
         ) : (
           <span className="st-card__placeholder" aria-hidden="true" />
+        )}
+        {/* The other photo, shown when the pointer is over the card. */}
+        {hoverImage && (
+          <Image
+            alt=""
+            aspectRatio="1/1"
+            data={hoverImage}
+            loading="lazy"
+            sizes="(min-width: 64em) 25vw, 50vw"
+            className="st-card__img st-card__img--hover"
+          />
         )}
       </div>
       <h3 className="st-card__title">{product.title}</h3>

@@ -14,8 +14,8 @@ declare global {
    */
   interface Env {
     // Optional, server-only — see .env.example and docs/PROMOTIONS.md.
-    NOTION_API_KEY?: string;
-    NOTION_PHONE_DATABASE_ID?: string;
+    /** Apps Script web app of the pop-up's Google Sheet (docs/POPUP.md). */
+    GOOGLE_SHEET_WEBHOOK_URL?: string;
     RESEND_API_KEY?: string;
     NOTIFICATION_EMAIL?: string;
   }

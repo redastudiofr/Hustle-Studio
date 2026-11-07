@@ -464,15 +464,15 @@ export const en = {
   'popup.copyFailed': 'select the code above to copy it.',
   'popup.cta': 'get my -{percent}% code',
   'popup.digitsTyped': '{count} digits received',
-  'popup.error': 'we couldn’t save your number. please try again in a moment.',
+  'popup.error': 'we couldn’t save your details. please try again in a moment.',
   'popup.fineprint':
-    'exclusive offers by SMS only. unsubscribe anytime, reply STOP.',
+    'offers by e-mail and/or SMS. unsubscribe anytime (link in each e-mail, reply STOP by SMS).',
   'popup.invalidPhone':
     'this number doesn’t look right: a French mobile has 10 digits, e.g. 06 12 34 56 78.',
   'popup.phoneLabel': 'phone number',
   'popup.phonePlaceholder': 'e.g. 06 12 34 56 78',
   'popup.text':
-    'leave your phone number and get your -{percent}% code instantly.',
+    'leave your e-mail and/or phone number and get your -{percent}% code instantly.',
   'popup.title': '-{percent}% off your first order',
   'product.worn': 'your product worn',
   'rail.nextVideo': 'next video',
@@ -576,6 +576,12 @@ export const en = {
   'store.relatedProducts': 'related products',
   'store.communityTitle': 'become part of the community',
   'store.about': 'about {brand}',
+  'popup.emailLabel': 'e-mail address',
+  'popup.emailPlaceholder': 'your e-mail',
+  'popup.invalidEmail': 'this e-mail address doesn’t look right.',
+  'popup.empty': 'enter an e-mail address or a phone number (or both).',
+  'store.allCollections': 'all collections',
+  'store.ourStory': 'our story',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -1039,15 +1045,15 @@ export const fr: Record<TranslationKey, string> = {
   'popup.cta': 'recevoir mon code -{percent} %',
   'popup.digitsTyped': '{count} chiffres reçus',
   'popup.error':
-    'votre numéro n’a pas pu être enregistré. réessayez dans un instant.',
+    'vos coordonnées n’ont pas pu être enregistrées. réessayez dans un instant.',
   'popup.fineprint':
-    'offres exclusives par sms uniquement. désinscription à tout moment en répondant stop.',
+    'offres par e-mail et/ou sms. désinscription à tout moment (lien dans chaque e-mail, stop par sms).',
   'popup.invalidPhone':
     'numéro invalide : un portable français compte 10 chiffres, ex. 06 12 34 56 78.',
   'popup.phoneLabel': 'numéro de téléphone',
   'popup.phonePlaceholder': 'ex. 06 12 34 56 78',
   'popup.text':
-    'laissez votre numéro et recevez votre code -{percent} % immédiatement.',
+    'laissez votre e-mail et/ou votre numéro et recevez votre code -{percent} % immédiatement.',
   'popup.title': '-{percent} % sur votre première commande',
   'product.worn': 'le produit porté',
   'rail.nextVideo': 'vidéo suivante',
@@ -1153,6 +1159,12 @@ export const fr: Record<TranslationKey, string> = {
   'store.relatedProducts': 'produits similaires',
   'store.communityTitle': 'rejoins la communauté',
   'store.about': 'à propos de {brand}',
+  'popup.emailLabel': 'adresse e-mail',
+  'popup.emailPlaceholder': 'votre e-mail',
+  'popup.invalidEmail': 'cette adresse e-mail semble incorrecte.',
+  'popup.empty': 'indiquez une adresse e-mail ou un numéro de téléphone (ou les deux).',
+  'store.allCollections': 'toutes les collections',
+  'store.ourStory': 'notre histoire',
 };
 
 export const DICTIONARIES: Record<Locale, Record<TranslationKey, string>> = {

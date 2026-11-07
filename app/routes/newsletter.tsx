@@ -11,16 +11,13 @@ import {localeFromRequest} from '~/lib/i18n/locale';
 import {sendNotificationEmail} from '~/lib/email';
 import {LAUNCH} from '~/config/launch';
 
-const NOTION_VERSION = '2022-06-28';
-const NOTION_TIMEOUT_MS = 8000;
 const SIGNUP_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
 
 /**
  * Newsletter sign-ups. Server-side only; no token ever reaches the browser.
  *
- * - **Pop-up (phone number → discount code)** — see app/config/promotions.ts.
- *   The number is stored in a Notion database first; the code is returned
- *   only once that has succeeded, then copied to Shopify and by e-mail.
+ * - **Pop-up (e-mail and/or phone → discount code)** — see
+ *   app/config/promotions.ts and popupSignup below.
  * - **Footer / homepage form (e-mail)** — described below.
  *
  * The e-mail becomes a Shopify customer who accepts e-mail marketing, so it
@@ -41,12 +38,26 @@ export async function action({request, context}: Route.ActionArgs) {
     if (!PROMO_POPUP_ACTIVE) {
       return Response.json({ok: false, error: 'unavailable'}, {status: 503});
     }
-    // Checked again here: the pop-up's own check can always be bypassed.
-    const phone = normalizePhone(String(form.get('contact[phone]') || ''));
-    if (!phone) {
+    // E-mail and/or phone, checked again here: the pop-up's own check can
+    // always be bypassed.
+    const rawEmail = String(form.get('contact[email]') || '')
+      .trim()
+      .toLowerCase();
+    const rawPhone = String(form.get('contact[phone]') || '').slice(0, 40);
+    if (!rawEmail && !rawPhone.trim()) {
+      return Response.json({ok: false, error: 'empty'}, {status: 400});
+    }
+    if (
+      rawEmail &&
+      (rawEmail.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(rawEmail))
+    ) {
+      return Response.json({ok: false, error: 'email'}, {status: 400});
+    }
+    const phone = rawPhone.trim() ? normalizePhone(rawPhone) : '';
+    if (rawPhone.trim() && !phone) {
       return Response.json({ok: false, error: 'phone'}, {status: 400});
     }
-    return popupSignup({phone, request, context});
+    return popupSignup({email: rawEmail, phone: phone || '', request, context});
   }
 
   const email = String(
@@ -130,85 +141,112 @@ async function postCustomerForm(
   }
 }
 
+/**
+ * Pop-up sign-up: the record goes to the Google Sheet (GOOGLE_SHEET_WEBHOOK_URL,
+ * see docs/POPUP.md) and, as a copy, by e-mail through Resend; the code is
+ * given only once at least one of them has it. The e-mail also becomes a
+ * Shopify customer who accepts marketing (Shopify Admin → Customers).
+ */
 async function popupSignup({
+  email,
   phone,
   request,
   context,
 }: {
+  email: string;
   phone: string;
   request: Request;
   context: Route.ActionArgs['context'];
 }) {
-  const notion = notionSettings(context.env);
   const locale = localeFromRequest(request);
-  if (!notion) {
-    // No Notion database: the e-mail to the shop's inbox is the record, so
-    // the code is handed out only once Resend has accepted it.
-    if (!context.env.RESEND_API_KEY) {
-      // The pop-up is hidden in this case (see root.tsx): a stale page or a
-      // hand-made request. There is nowhere to keep the number.
-      console.error('Promo pop-up: neither Notion nor Resend is configured');
-      return Response.json({ok: false, error: 'unavailable'}, {status: 503});
-    }
-    const sent = await sendNotificationEmail({
-      env: context.env,
-      to: LAUNCH.notifyEmail,
-      subject: `Pop-up -${NEWSLETTER_PROMO_PERCENT}% — ${phone}`,
-      text: popupEmailText(phone, locale),
-    });
-    if (!sent) {
-      return Response.json(
-        {ok: false, error: 'storage', ref: 'R'},
-        {status: 502},
-      );
-    }
-    await postCustomerForm(
-      context,
-      {phone},
-      'newsletter, newsletter-popup, phone-optin',
+  const env = context.env;
+  if (!env.GOOGLE_SHEET_WEBHOOK_URL && !env.RESEND_API_KEY) {
+    // The pop-up is hidden in this case (see root.tsx): a stale page or a
+    // hand-made request. There is nowhere to keep the sign-up.
+    console.error(
+      'Promo pop-up: neither Google Sheet nor Resend is configured',
     );
-    return popupSuccess(request, false);
+    return Response.json({ok: false, error: 'unavailable'}, {status: 503});
   }
 
-  let alreadyRegistered: boolean;
-  try {
-    alreadyRegistered = await isPhoneInNotion(notion, phone);
-    if (!alreadyRegistered) {
-      await addPhoneToNotion(notion, {phone, locale});
-    }
-  } catch (error) {
-    console.error('Promo pop-up: Notion request failed', error);
-    const ref = `N${error instanceof NotionError ? error.status : 0}`;
-    return Response.json({ok: false, error: 'storage', ref}, {status: 502});
-  }
+  const record = {
+    date: new Date().toISOString(),
+    email,
+    phone,
+    locale,
+    code: NEWSLETTER_PROMO_CODE,
+    source: 'popup',
+  };
 
-  // Secondary copies, only for a genuinely new number. Awaited so they aren't
-  // cut off when the response is sent, but their outcome never changes the
-  // answer: the number is already safe in Notion.
-  if (!alreadyRegistered) {
-    await Promise.allSettled([
-      postCustomerForm(
-        context,
-        {phone},
-        'newsletter, newsletter-popup, phone-optin',
-      ),
-      sendNotificationEmail({
-        env: context.env,
-        to: LAUNCH.notifyEmail,
-        subject: 'Nouveau numéro collecté — pop-up',
-        text: popupEmailText(phone, locale),
-      }),
-    ]);
-  }
+  const [sheet, mail] = await Promise.all([
+    saveToSheet(env, record),
+    sendNotificationEmail({
+      env,
+      to: LAUNCH.notifyEmail,
+      subject: `Pop-up -${NEWSLETTER_PROMO_PERCENT}% — ${email || phone}`,
+      text: popupEmailText(email, phone, locale),
+    }),
+    // Marketing copy in Shopify; its outcome never changes the answer.
+    email
+      ? createSubscriber(context, email, '')
+      : postCustomerForm(
+          context,
+          {phone},
+          'newsletter, newsletter-popup, phone-optin',
+        ),
+  ]);
 
-  return popupSuccess(request, alreadyRegistered);
+  if (!sheet && !mail) {
+    return Response.json(
+      {
+        ok: false,
+        error: 'storage',
+        ref: env.GOOGLE_SHEET_WEBHOOK_URL ? 'S' : 'R',
+      },
+      {status: 502},
+    );
+  }
+  return popupSuccess(request, false);
 }
 
-function popupEmailText(phone: string, locale: string): string {
+/** Appends one row to the Google Sheet through its Apps Script web app. */
+async function saveToSheet(
+  env: Env,
+  record: Record<string, string>,
+): Promise<boolean> {
+  const url = env.GOOGLE_SHEET_WEBHOOK_URL;
+  if (!url) return false;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(record),
+      signal: controller.signal,
+      // Apps Script answers through a redirect to googleusercontent.com.
+      redirect: 'follow',
+    });
+    const body = (await res.json().catch(() => null)) as {ok?: boolean} | null;
+    if (!res.ok || !body?.ok) {
+      console.error('Promo pop-up: Google Sheet refused', res.status);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Promo pop-up: Google Sheet unreachable', error);
+    return false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function popupEmailText(email: string, phone: string, locale: string): string {
   return [
-    `Nouveau numéro collecté par le pop-up -${NEWSLETTER_PROMO_PERCENT}% (première commande).`,
+    `Nouvelle inscription au pop-up -${NEWSLETTER_PROMO_PERCENT}% (première commande).`,
     '',
-    `Téléphone : ${phone}`,
+    `E-mail : ${email || '—'}`,
+    `Téléphone : ${phone || '—'}`,
     `Langue : ${locale}`,
     `Code promo donné : ${NEWSLETTER_PROMO_CODE}`,
     `Date : ${new Date().toISOString()}`,
@@ -226,90 +264,6 @@ function popupSuccess(request: Request, alreadyRegistered: boolean) {
       },
     },
   );
-}
-
-type NotionSettings = {token: string; databaseId: string};
-
-function notionSettings(env: Env): NotionSettings | null {
-  const token = env.NOTION_API_KEY;
-  const databaseId = env.NOTION_PHONE_DATABASE_ID;
-  return token && databaseId ? {token, databaseId} : null;
-}
-
-/**
- * The duplicate check. Numbers are stored normalised (+33612345678), so
- * "06 12 34 56 78" and "+33 6 12 34 56 78" are recognised as the same person.
- */
-async function isPhoneInNotion(notion: NotionSettings, phone: string) {
-  const result = (await notionPost(
-    notion,
-    `databases/${notion.databaseId}/query`,
-    {
-      filter: {property: 'Téléphone', title: {equals: phone}},
-      page_size: 1,
-    },
-  )) as {results?: unknown[]};
-  return (result.results?.length ?? 0) > 0;
-}
-
-/** "Date d'inscription" is a created-time column: Notion fills it in itself. */
-async function addPhoneToNotion(
-  notion: NotionSettings,
-  {phone, locale}: {phone: string; locale: string},
-) {
-  await notionPost(notion, 'pages', {
-    parent: {database_id: notion.databaseId},
-    properties: {
-      Téléphone: {title: [{text: {content: phone}}]},
-      'Code promo': {rich_text: [{text: {content: NEWSLETTER_PROMO_CODE}}]},
-      Langue: {select: {name: locale}},
-    },
-  });
-}
-
-/**
- * A failed Notion call. `status` is Notion's HTTP status (0 when the request
- * never got an answer), and is what the pop-up shows as a short reference —
- * enough to tell a wrong token (401) from a database not shared with the
- * integration (404) or a missing capability (403), without exposing anything.
- */
-class NotionError extends Error {
-  status: number;
-
-  constructor(status: number, detail: string) {
-    super(`Notion → ${status} ${detail}`);
-    this.status = status;
-  }
-}
-
-/** Throws on any failure, including a timeout, so callers can't mistake one for success. */
-async function notionPost(notion: NotionSettings, path: string, body: unknown) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), NOTION_TIMEOUT_MS);
-  let res: Response;
-  try {
-    res = await fetch(`https://api.notion.com/v1/${path}`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${notion.token}`,
-        'Notion-Version': NOTION_VERSION,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-  } catch (error) {
-    throw new NotionError(
-      0,
-      controller.signal.aborted ? 'timeout' : String(error),
-    );
-  } finally {
-    clearTimeout(timer);
-  }
-  if (!res.ok) {
-    throw new NotionError(res.status, `${path} ${await res.text()}`);
-  }
-  return (await res.json()) as unknown;
 }
 
 // Visiting /newsletter directly is not meaningful — send them home.

@@ -9,29 +9,10 @@
  * both languages.
  */
 import type {TranslationKey} from '~/lib/i18n/dictionary';
-import type {Localized} from '~/lib/i18n/localized';
-import {LEGAL} from '~/config/legal';
 
 export type NavLinkConfig = {labelKey: TranslationKey; to: string};
 
 export const NAVIGATION = {
-  /**
-   * The band scrolling above the header. Every message must be true for
-   * the shop (shipping zones and return window: app/config/legal.ts).
-   * Empty: no band.
-   */
-  announcements: [
-    {
-      en: 'Tracked shipping, France and worldwide',
-      fr: 'Livraison suivie, en France et dans le monde',
-    },
-    {
-      en: `${LEGAL.returnDays}-day returns`,
-      fr: `Retours sous ${LEGAL.returnDays} jours`,
-    },
-    {en: 'Secure payment', fr: 'Paiement sécurisé'},
-  ] as Localized[],
-
   /**
    * Order of collections in the menu, by title or handle (case, accents and
    * hyphens are ignored: "T-Shirts" = "tshirts"). Collections not listed keep
@@ -67,27 +48,21 @@ export const NAVIGATION = {
   /** Collections never shown in the menu or on /collections (handle or title). */
   hiddenCollections: ['frontpage', 'home page'],
 
-  /** Plain links after the collections in the desktop header. */
-  headerLinks: [
-    {labelKey: 'footer.contact', to: '/contact'},
-  ] as NavLinkConfig[],
-
   /**
-   * Main pages of the burger menu, one per line, no dropdown: every page of
-   * the site is one tap away. Service and legal links follow, smaller.
+   * The "menu" panel opened from the settings button, top right: every page
+   * of the site, one per line. Service and legal links follow, smaller.
    */
   mobileLinks: [
-    {labelKey: 'nav.home', to: '/'},
-    {labelKey: 'shop.all', to: '/collections/all'},
-    {labelKey: 'nav.collections', to: '/collections'},
-    {labelKey: 'footer.about', to: '/about'},
-    {labelKey: 'footer.faq', to: '/faq'},
+    {labelKey: 'store.allCollections', to: '/collections'},
+    {labelKey: 'nav.allProducts', to: '/collections/all'},
+    {labelKey: 'store.ourStory', to: '/about'},
+    {labelKey: 'footer.contact', to: '/contact'},
   ] as NavLinkConfig[],
 
   /** Service links under the main pages in the burger menu. */
   serviceLinks: [
     {labelKey: 'nav.track', to: '/order-tracking'},
-    {labelKey: 'footer.contact', to: '/contact'},
+    {labelKey: 'footer.faq', to: '/faq'},
   ] as NavLinkConfig[],
 
   footer: {
@@ -104,11 +79,11 @@ export const NAVIGATION = {
      * the business details they state live in app/config/legal.ts.
      */
     policies: [
-      {labelKey: 'footer.shipping', to: '/legal/shipping'},
-      {labelKey: 'footer.returns', to: '/legal/returns'},
+      {labelKey: 'footer.legalNotice', to: '/legal/legal-notice'},
       {labelKey: 'footer.termsOfSale', to: '/legal/terms'},
       {labelKey: 'footer.privacy', to: '/legal/privacy'},
-      {labelKey: 'footer.legalNotice', to: '/legal/legal-notice'},
+      {labelKey: 'footer.shipping', to: '/legal/shipping'},
+      {labelKey: 'footer.returns', to: '/legal/returns'},
     ] as NavLinkConfig[],
   },
 };
