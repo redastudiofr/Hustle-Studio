@@ -19,13 +19,19 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   (real ones, app/lib/reviews.ts) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
   The site runs in English only (`BRAND.languages`); legal pages keep a
-  French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.
+  French version via `?lang=fr`.
+- Homepage (app/routes/_index.tsx): Reda Studio's homepage, ported with
+  Hustle's photos and Shopify data — hero (AnimatedHero), collections
+  slider, every product, one showcase per collection with a Shopify photo,
+  real reviews, help, newsletter. Styles in reda-home.css, scoped under
+  `.rhome`. The older configurable homepage (app/config/home.ts +
+  components/home/HomeSections.tsx) is no longer rendered.
 - Styles: app.css (base) → promotions.css → brand.css → editorial.css →
   shop.css (`sx-` classes) → store.css (`st-` classes) → on.css (the current
   look, inspired by on.com: transparent header over a full-screen hero,
   bold sentence-case titles, grey product tiles, carousels with arrows and a
   progress bar — app/components/store/OnRail.tsx —, white footer) →
-  reda-pdp.css (product page only, scoped under `.rpdp`). Homepage sections incl. `sale`, `collectionGrids`,
+  reda-pdp.css (product page, `.rpdp`) → reda-home.css (homepage, `.rhome`). Homepage sections incl. `sale`, `collectionGrids`,
   `usps` in app/config/home.ts; announcement messages in
   app/config/navigation.ts. Collection
   pages share app/components/shop/CollectionShell.tsx. The product page is

@@ -326,7 +326,7 @@ function logAndReturn<T>(fallback: T) {
   };
 }
 
-const HOME_PRODUCT_FRAGMENT = `#graphql
+export const HOME_PRODUCT_FRAGMENT = `#graphql
   fragment HomeMoney on MoneyV2 {
     amount
     currencyCode
@@ -380,7 +380,7 @@ const HOME_PRODUCT_FRAGMENT = `#graphql
   }
 ` as const;
 
-const HOME_COLLECTION_FRAGMENT = `#graphql
+export const HOME_COLLECTION_FRAGMENT = `#graphql
   fragment HomeCollection on Collection {
     id
     title

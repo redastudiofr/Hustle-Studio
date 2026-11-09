@@ -1,47 +1,275 @@
-import {useLoaderData} from 'react-router';
+import {Await, Link, useLoaderData} from 'react-router';
+import {Suspense, useState} from 'react';
 import type {Route} from './+types/_index';
-import {HOME_SECTIONS} from '~/config/home';
-import {HomeSections} from '~/components/home/HomeSections';
-import {loadHomeSections} from '~/lib/homeSections';
+import type {
+  HomeProductFragment,
+  RedaHomeCollectionsQuery,
+} from 'storefrontapi.generated';
+import {AnimatedHero} from '~/components/reda/AnimatedHero';
+import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
+import {CollectionProductShowcase} from '~/components/reda/CollectionProductShowcase';
+import {ProductItem} from '~/components/reda/ProductItem';
+import {ReviewsSection} from '~/components/reda/ReviewsSection';
+import {HelpFaq} from '~/components/HelpFaq';
+import {Newsletter} from '~/components/Newsletter';
+import {Reveal} from '~/components/Reveal';
+import {BRAND} from '~/config/brand';
+import {withoutAutoCollections} from '~/lib/collections';
+import {
+  HOME_COLLECTION_FRAGMENT,
+  HOME_PRODUCT_FRAGMENT,
+} from '~/lib/homeSections';
+import {loadReviews} from '~/lib/reviews';
 import {seoMeta, originFromMatches} from '~/lib/seo';
+import {useT} from '~/lib/i18n';
+
+/**
+ * Homepage — the Reda Studio homepage (redastudiofr/reda-studio,
+ * app/routes/_index.tsx), with Hustle Studio's photos and Shopify data:
+ * hero, collections slider, every product, one showcase per collection
+ * (its Shopify photo and its products), real reviews, help, newsletter.
+ * Left out: Reda's Trustpilot badge, pack offer and community photos.
+ * Styles: reda-home.css, scoped under `.rhome`.
+ */
+
+/** Products beyond this many wait behind "view more" on mobile. */
+const MOBILE_INITIAL_PRODUCT_COUNT = 16;
+/** How many collection showcases follow the catalogue. */
+const SHOWCASE_COUNT = 3;
+
+const HERO_IMAGE_MOBILE = {
+  src: '/brand/hero-mobile-chair.webp',
+  alt: 'Grey zip hoodie and raw denim, worn sitting on a metal chair in a white studio',
+};
+
+const HERO_IMAGE_DESKTOP = {
+  src: '/brand/hero-desktop-chair.webp',
+  alt: 'Grey zip hoodie and raw denim, worn sitting on a metal chair in a white studio',
+};
 
 export const meta: Route.MetaFunction = ({matches}) =>
   seoMeta({path: '/', origin: originFromMatches(matches)});
 
-/** The homepage minus the sections switched off with `hidden: true`. */
-const SECTIONS = HOME_SECTIONS.filter((section) => !section.hidden);
-
-/** Preloads the hero photo (the page's LCP element) when one is configured. */
 export function links() {
-  const hero = SECTIONS.find((section) => section.type === 'hero');
-  if (!hero || hero.type !== 'hero' || !hero.image) return [];
-  const {desktop, mobile} = hero.image;
   return [
     {
       rel: 'preload',
       as: 'image',
-      href: mobile ?? desktop,
+      href: HERO_IMAGE_MOBILE.src,
       media: '(max-width: 47.99em)',
     },
-    {rel: 'preload', as: 'image', href: desktop, media: '(min-width: 48em)'},
+    {
+      rel: 'preload',
+      as: 'image',
+      href: HERO_IMAGE_DESKTOP.src,
+      media: '(min-width: 48em)',
+    },
   ];
 }
 
-/**
- * The homepage is entirely described by app/config/home.ts. Every Shopify
- * request is started here and streamed: the hero renders immediately, each
- * product section fills in as its data arrives.
- */
 export async function loader({context}: Route.LoaderArgs) {
-  return {sections: loadHomeSections(context.storefront, SECTIONS)};
+  const {storefront} = context;
+  const {collections} = await storefront.query(REDA_HOME_COLLECTIONS_QUERY);
+  const visible = withoutAutoCollections(collections.nodes);
+
+  const allProducts = storefront
+    .query(REDA_ALL_PRODUCTS_QUERY, {variables: {first: 100}})
+    .then((response) => response.products.nodes)
+    .catch((error: Error) => {
+      console.error(error);
+      return [] as HomeProductFragment[];
+    });
+
+  // The first collections that have a photo in Shopify, each with its
+  // products: the showcases under the catalogue.
+  const showcases = Promise.all(
+    visible
+      .filter((collection) => collection.image)
+      .slice(0, SHOWCASE_COUNT)
+      .map((collection) =>
+        storefront
+          .query(REDA_SHOWCASE_QUERY, {
+            variables: {handle: collection.handle, first: 20},
+          })
+          .then((response) => response.collection)
+          .catch((error: Error) => {
+            console.error(error);
+            return null;
+          }),
+      ),
+  );
+
+  const reviews = loadReviews(storefront).catch(() => []);
+
+  return {collections: visible, allProducts, showcases, reviews};
 }
 
 export default function Homepage() {
-  const {sections} = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const t = useT();
 
   return (
-    <div className="home">
-      <HomeSections sections={SECTIONS} data={sections} />
+    <div className="home rhome">
+      <AnimatedHero
+        tone="dark"
+        imageMobile={HERO_IMAGE_MOBILE}
+        imageDesktop={HERO_IMAGE_DESKTOP}
+        eyebrow={t('home.eyebrow')}
+        title={BRAND.name}
+        description={t('home.tagline')}
+        ctaButton={{text: t('home.shopNow'), href: '/collections'}}
+        secondaryCta={{text: t('home.ourStory'), href: '/about'}}
+      />
+
+      <CollectionsSlider collections={data.collections} />
+
+      <AllProducts products={data.allProducts} />
+
+      <Suspense fallback={null}>
+        <Await resolve={data.showcases}>
+          {(collections) => (
+            <>
+              {collections.map((collection) =>
+                collection?.image ? (
+                  <CollectionProductShowcase
+                    key={collection.id}
+                    title={collection.title}
+                    description={collection.description}
+                    imageSrcMobile={collection.image.url}
+                    imageSrcDesktop={collection.image.url}
+                    imageAlt={collection.image.altText || collection.title}
+                    mobileRatio="3 / 4"
+                    desktopRatio="16 / 9"
+                    collectionHandle={collection.handle}
+                    products={collection.products.nodes}
+                  />
+                ) : null,
+              )}
+            </>
+          )}
+        </Await>
+      </Suspense>
+
+      <Suspense fallback={null}>
+        <Await resolve={data.reviews}>
+          {(reviews) =>
+            reviews.length ? (
+              <ReviewsSection
+                heading={t('reviews.title')}
+                subheading={t('reviews.subtitle')}
+                reviews={reviews}
+              />
+            ) : null
+          }
+        </Await>
+      </Suspense>
+
+      <HelpFaq />
+
+      <Reveal as="section">
+        <Newsletter />
+      </Reveal>
     </div>
   );
 }
+
+function AllProducts({products}: {products: Promise<HomeProductFragment[]>}) {
+  const t = useT();
+  // Mobile only: the rest of the grid waits behind "view more" (see
+  // .product-grid--capped in reda-home.css). Desktop always shows them all.
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <section aria-labelledby="catalogue-heading">
+      <Reveal as="section">
+        <h2 id="catalogue-heading" className="section-title">
+          {t('home.allProducts')}
+        </h2>
+      </Reveal>
+      <Suspense fallback={<div className="product-grid" aria-hidden="true" />}>
+        <Await resolve={products}>
+          {(nodes) => (
+            <>
+              <div
+                className={`product-grid product-grid--capped ${
+                  expanded ? 'product-grid--expanded' : ''
+                }`}
+              >
+                {nodes.map((product, index) => (
+                  <ProductItem
+                    key={product.id}
+                    product={product}
+                    loading={index < 4 ? 'eager' : undefined}
+                  />
+                ))}
+              </div>
+              {!expanded && nodes.length > MOBILE_INITIAL_PRODUCT_COUNT && (
+                <button
+                  type="button"
+                  className="view-more-mobile"
+                  onClick={() => setExpanded(true)}
+                >
+                  {t('home.viewMore')}
+                </button>
+              )}
+            </>
+          )}
+        </Await>
+      </Suspense>
+      <div className="view-all">
+        <Link to="/collections/all">{t('home.viewAll')}</Link>
+      </div>
+    </section>
+  );
+}
+
+export type RedaHomeCollection =
+  RedaHomeCollectionsQuery['collections']['nodes'][number];
+
+const REDA_HOME_COLLECTIONS_QUERY = `#graphql
+  query RedaHomeCollections($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    collections(first: 50, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...HomeCollection
+      }
+    }
+  }
+  ${HOME_COLLECTION_FRAGMENT}
+` as const;
+
+const REDA_ALL_PRODUCTS_QUERY = `#graphql
+  query RedaAllProducts(
+    $country: CountryCode
+    $language: LanguageCode
+    $first: Int
+  ) @inContext(country: $country, language: $language) {
+    products(first: $first, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...HomeProduct
+      }
+    }
+  }
+  ${HOME_PRODUCT_FRAGMENT}
+` as const;
+
+const REDA_SHOWCASE_QUERY = `#graphql
+  query RedaShowcase(
+    $handle: String!
+    $first: Int
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collection(handle: $handle) {
+      ...HomeCollection
+      description
+      products(first: $first) {
+        nodes {
+          ...HomeProduct
+        }
+      }
+    }
+  }
+  ${HOME_COLLECTION_FRAGMENT}
+  ${HOME_PRODUCT_FRAGMENT}
+` as const;

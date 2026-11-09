@@ -21,6 +21,7 @@ import shopStyles from '~/styles/shop.css?url';
 import storeStyles from '~/styles/store.css?url';
 import redaPdpStyles from '~/styles/reda-pdp.css?url';
 import onStyles from '~/styles/on.css?url';
+import redaHomeStyles from '~/styles/reda-home.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
 import {withoutAutoCollections} from '~/lib/collections';
@@ -236,6 +237,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={storeStyles}></link>
         <link rel="stylesheet" href={onStyles}></link>
         <link rel="stylesheet" href={redaPdpStyles}></link>
+        <link rel="stylesheet" href={redaHomeStyles}></link>
         {/* The two latin font files every page uses (app/config/theme.css). */}
         <link
           rel="preload"

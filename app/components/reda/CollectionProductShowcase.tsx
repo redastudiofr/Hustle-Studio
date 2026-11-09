@@ -1,0 +1,120 @@
+import type {CSSProperties} from 'react';
+import {Link} from 'react-router';
+import type {HomeProductFragment} from 'storefrontapi.generated';
+import {ProductItem} from '~/components/reda/ProductItem';
+import {RailArrows} from '~/components/RailArrows';
+import {Reveal} from '~/components/Reveal';
+import {useHorizontalRail} from '~/lib/useHorizontalRail';
+import {useT} from '~/lib/i18n';
+
+/**
+ * One collection's homepage showcase: a large photo with the collection's
+ * name, description and a "shop now" link over a dark gradient (same
+ * caption layout as the homepage hero — see .collection-feature__cta,
+ * copied from AnimatedHero's glass buttons for the same look), then a
+ * horizontal slider of its real products (same card as everywhere else on
+ * the site — image, name, price, link).
+ *
+ * Deliberately generic — nothing here is specific to "Automne Drop" — so
+ * adding another collection later is one more query in the route loader
+ * (see app/routes/_index.tsx's COLLECTION_PRODUCTS_QUERY) plus one more of
+ * these, not a new component.
+ */
+export function CollectionProductShowcase({
+  title,
+  description,
+  imageSrcMobile,
+  imageSrcDesktop,
+  imageAlt,
+  mobileRatio,
+  desktopRatio,
+  collectionHandle,
+  products,
+}: {
+  title: string;
+  // Shopify's own collection description — only shown when the merchant has
+  // actually written one (see collections.$handle.tsx's own page, same
+  // rule): nothing here invents copy that isn't in the store's own data.
+  description?: string | null;
+  // Two crops of the same shot, like the homepage hero: a portrait one for
+  // the tall mobile frame, a landscape one for the wide desktop frame, each
+  // close enough to its frame's ratio that `cover` barely has to crop. The
+  // <picture> below means only the matching one is ever downloaded.
+  imageSrcMobile: string;
+  imageSrcDesktop: string;
+  imageAlt: string;
+  /*
+   * The frame each photo sits in, as a CSS aspect-ratio ("9 / 16"). Give
+   * each collection the ratio of its own crops and `cover` barely trims
+   * anything; leave them out and the frame falls back to Automne Drop's
+   * shape (see .collection-feature__media).
+   */
+  mobileRatio?: string;
+  desktopRatio?: string;
+  collectionHandle: string;
+  products: HomeProductFragment[];
+}) {
+  const t = useT();
+  const {ref, scrollByCard, atStart, atEnd} = useHorizontalRail<HTMLDivElement>();
+
+  if (!products.length) return null;
+
+  const headingId = `${collectionHandle}-heading`;
+
+  const frame = {
+    ...(mobileRatio ? {'--feature-ratio-mobile': mobileRatio} : {}),
+    ...(desktopRatio ? {'--feature-ratio-desktop': desktopRatio} : {}),
+  } as CSSProperties;
+
+  return (
+    <Reveal as="section" className="collection-feature" aria-labelledby={headingId}>
+      <div className="collection-feature__media" style={frame}>
+        <picture>
+          <source media="(min-width: 40em)" srcSet={imageSrcDesktop} />
+          <img
+            src={imageSrcMobile}
+            alt={imageAlt}
+            loading="lazy"
+            decoding="async"
+            className="collection-feature__img"
+          />
+        </picture>
+        <span className="collection-feature__overlay" aria-hidden="true" />
+
+        <div className="collection-feature__caption">
+          <h2 className="collection-feature__title" id={headingId}>
+            {title}
+          </h2>
+          {description && (
+            <p className="collection-feature__description">{description}</p>
+          )}
+          <Link
+            to={`/collections/${collectionHandle}`}
+            prefetch="intent"
+            className="collection-feature__cta"
+          >
+            {t('home.shopNow')}
+          </Link>
+        </div>
+      </div>
+
+      <div className="rail-wrap">
+        <div className="collection-feature__rail" ref={ref}>
+          {products.map((product) => (
+            <div className="collection-feature__item" key={product.id}>
+              <ProductItem product={product} />
+            </div>
+          ))}
+        </div>
+        <RailArrows
+          onPrev={() => scrollByCard(-1)}
+          onNext={() => scrollByCard(1)}
+          disablePrev={atStart}
+          disableNext={atEnd}
+          prevLabel={t('rail.prevProduct')}
+          nextLabel={t('rail.nextProduct')}
+        />
+      </div>
+    </Reveal>
+  );
+}

@@ -32,6 +32,12 @@ export const en = {
 
   // — home —
   'home.shopNow': 'shop now',
+  'home.eyebrow': 'new collection',
+  'home.tagline': 'independent streetwear, born in Nantes.',
+  'home.ourStory': 'our story',
+  'home.allProducts': 'all products',
+  'home.viewMore': 'view more',
+  'home.basics': 'our collections',
   'home.viewAll': 'view all',
 
   // — collections —
@@ -645,6 +651,12 @@ export const fr: Record<TranslationKey, string> = {
 
   // — accueil —
   'home.shopNow': 'découvrir',
+  'home.eyebrow': 'nouvelle collection',
+  'home.tagline': 'streetwear indépendant, né à Nantes.',
+  'home.ourStory': 'notre histoire',
+  'home.allProducts': 'tous les produits',
+  'home.viewMore': 'voir plus',
+  'home.basics': 'nos collections',
   'home.viewAll': 'tout voir',
 
   // — collections —
