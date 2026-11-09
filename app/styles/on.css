@@ -702,3 +702,60 @@ body:has(.home) .site-header {
   letter-spacing: 0;
   text-transform: none;
 }
+
+/* Nothing fades: product photos stay at full opacity, whether on screen,
+   next to the active one, in a thumbnail or just tapped. */
+.rpdp.pdp .gallery--multiple .gallery__slide-inner,
+.rpdp.pdp .gallery__slide-inner,
+.rpdp.pdp .gallery__thumb,
+.collections-slider__media img,
+.st-card,
+.st-card:active,
+.st-card__media img:not(.st-card__img--hover) {
+  opacity: 1;
+}
+
+.related-rail__item,
+.related-rail__item:nth-child(n) {
+  animation: none;
+}
+
+a.st-card,
+.related-rail__item a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Hero on a light photo (tone: 'dark' in home.ts): black text, black pills,
+   and a header in black while it is transparent over it. */
+.home .hero--ink .hero__title,
+.home .hero--ink .hero__text {
+  color: var(--on-ink);
+  text-shadow: none;
+}
+
+.home .hero--ink .hero__cta {
+  background: var(--on-ink);
+  color: #fff;
+}
+
+.home .hero--ink .hero__cta:hover {
+  background: #333;
+}
+
+.home .hero--ink .hero__cta:not(.hero__cta--primary) {
+  background: #fff;
+  color: var(--on-ink);
+}
+
+body:has(.hero--ink) .site-header.site-header--transparent,
+body:has(.hero--ink) .site-header.site-header--transparent .site-header__logo,
+body:has(.hero--ink) .site-header.site-header--transparent .site-header__icon-btn {
+  color: var(--on-ink);
+}
+
+@media (min-width: 64em) {
+  /* Keeps the title on the light wall, clear of the dark chair. */
+  .home .hero--ink.hero--photo:not(.hero--bare) .hero__content {
+    max-width: 24rem;
+  }
+}

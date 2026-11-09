@@ -63,6 +63,8 @@ export type HomeSection = (
       secondaryCta?: HomeLink;
       /** Countdown to LAUNCH.date, between the text and the button. */
       countdown?: CountdownCopy;
+      /** 'dark': black text and buttons, for a light photo (no veil). */
+      tone?: 'light' | 'dark';
     }
   | {
       /** A row or grid of product cards. */
@@ -233,16 +235,18 @@ const FAMILY_PHOTOS: FamilyPhoto[] = [
 export const HOME_SECTIONS: HomeSection[] = [
   {
     type: 'hero',
+    // Light photo: black text and buttons over it.
+    tone: 'dark',
     image: {
       // Two different photos, one per format — not one photo cropped twice.
-      desktop: '/brand/hero-desktop-shoot.webp',
-      mobile: '/brand/hero-mobile-shoot.webp',
+      desktop: '/brand/hero-desktop-chair.webp',
+      mobile: '/brand/hero-mobile-chair.webp',
       // Native pixel sizes: each format is shown whole, at its own ratio.
-      desktopSize: [2000, 1002],
-      mobileSize: [1072, 2000],
+      desktopSize: [1665, 944],
+      mobileSize: [940, 1672],
       alt: {
-        en: 'White long-sleeve t-shirt on a studio monitor, during a photo shoot',
-        fr: 'T-shirt manches longues blanc sur un écran de studio, pendant un shooting photo',
+        en: 'Grey zip hoodie and raw denim, worn sitting on a metal chair in a white studio',
+        fr: 'Hoodie zippé gris et jean brut, porté assis sur une chaise en métal dans un studio blanc',
       },
     },
     title: {

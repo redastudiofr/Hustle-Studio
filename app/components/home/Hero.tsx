@@ -38,6 +38,7 @@ export function Hero({
   cta,
   secondaryCta,
   countdown,
+  tone = 'light',
 }: {
   eyebrow?: Localized;
   title?: Localized;
@@ -46,6 +47,7 @@ export function Hero({
   cta?: HomeLink;
   secondaryCta?: HomeLink;
   countdown?: CountdownCopy;
+  tone?: 'light' | 'dark';
 }) {
   const l = useLocalized();
   // Nothing written on it: the photo alone, at its own ratio, no veil.
@@ -70,7 +72,7 @@ export function Hero({
 
   return (
     <section
-      className={`hero ${image ? 'hero--photo' : 'hero--type'} ${countdown ? 'hero--launch' : ''} ${bare ? 'hero--bare' : ''}`}
+      className={`hero ${image ? 'hero--photo' : 'hero--type'} ${countdown ? 'hero--launch' : ''} ${bare ? 'hero--bare' : ''} ${tone === 'dark' ? 'hero--ink' : ''}`}
       style={
         bare && image
           ? ({
