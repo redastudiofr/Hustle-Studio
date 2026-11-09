@@ -495,7 +495,7 @@ export const en = {
     'this form isn’t receiving submissions right now — write to us instead.',
   'reviews.ctaButton': 'Leave a review',
   'reviews.ctaText': 'seen it, worn it, loved it?',
-  'reviews.forProduct': 'reviews for {product}',
+  'reviews.forProduct': 'customer reviews',
   'reviews.next': 'next reviews',
   'reviews.prev': 'previous reviews',
   'reviews.subtitle': 'honest words from {brand} customers.',
@@ -582,6 +582,45 @@ export const en = {
   'popup.empty': 'enter an e-mail address or a phone number (or both).',
   'store.allCollections': 'all collections',
   'store.ourStory': 'our story',
+  // — Reda Studio product page —
+  'preorder.close': 'close',
+  'preorder.cta': 'pre-order',
+  'preorder.emailLabel': 'email address',
+  'preorder.emailPlaceholder': 'enter your email',
+  'preorder.errorEmail': 'please enter a valid email address.',
+  'preorder.errorGeneric': 'something went wrong, please try again.',
+  'preorder.errorPhone': 'please enter a valid phone number.',
+  'preorder.errorRequired': 'enter your email or phone number.',
+  'preorder.fineprint':
+    'no order is placed now. we’ll only reach out when it launches — with an exclusive offer for the waitlist.',
+  'preorder.phoneLabel': 'phone number',
+  'preorder.phonePlaceholder': '+33 6 12 34 56 78',
+  'preorder.submit': 'join the waitlist',
+  'preorder.submitting': 'joining…',
+  'preorder.subtitle': 'be the first to know when the {product} is released.',
+  'preorder.successBody':
+    'we’ll let you know as soon as the {product} is available.',
+  'preorder.successTitle': 'you’re on the list.',
+  'reviews.anonymous': 'customer',
+  'vision.ambition': 'ambition',
+  'vision.ambitionBody':
+    'A new generation driven by ambition and the will to build a future of its own.',
+  'vision.cta': 'discover the story behind the brand',
+  'vision.identity': 'identity',
+  'vision.identityBody':
+    'Distinctive pieces made for the people who refuse to go unnoticed.',
+  'vision.intro':
+    '{brand} builds a premium, minimalist vision of streetwear. Our pieces are made for founders, creators and anyone building something of their own: every design is shaped around ambition, identity and a refusal to overlook the detail.',
+  'vision.minimalism': 'minimalism',
+  'vision.minimalismBody':
+    'A stripped-back aesthetic where every cut, fabric and detail serves a real purpose.',
+  'vision.streetwear': 'streetwear',
+  'vision.streetwearBody':
+    'A contemporary take on streetwear, between elegance, character and city culture.',
+  'vision.title': 'the {brand} vision',
+  'vision.vision': 'vision',
+  'vision.visionBody':
+    '{brand} does not simply follow trends — the house builds a world of its own.',
 } as const;
 
 export type TranslationKey = keyof typeof en;
@@ -1078,7 +1117,7 @@ export const fr: Record<TranslationKey, string> = {
     'ce formulaire ne reçoit pas encore de réponses — écrivez-nous plutôt.',
   'reviews.ctaButton': 'Laisser un avis',
   'reviews.ctaText': 'vous l’avez porté ?',
-  'reviews.forProduct': 'avis sur {product}',
+  'reviews.forProduct': 'avis clients',
   'reviews.next': 'avis suivants',
   'reviews.prev': 'avis précédents',
   'reviews.subtitle': 'les mots de clients {brand}, sans filtre.',
@@ -1165,6 +1204,46 @@ export const fr: Record<TranslationKey, string> = {
   'popup.empty': 'indiquez une adresse e-mail ou un numéro de téléphone (ou les deux).',
   'store.allCollections': 'toutes les collections',
   'store.ourStory': 'notre histoire',
+  // — fiche produit Reda Studio —
+  'preorder.close': 'fermer',
+  'preorder.cta': 'précommander',
+  'preorder.emailLabel': 'adresse e-mail',
+  'preorder.emailPlaceholder': 'votre e-mail',
+  'preorder.errorEmail': 'veuillez saisir une adresse e-mail valide.',
+  'preorder.errorGeneric': 'une erreur est survenue, réessayez.',
+  'preorder.errorPhone': 'veuillez saisir un numéro de téléphone valide.',
+  'preorder.errorRequired': 'renseignez votre e-mail ou votre numéro de téléphone.',
+  'preorder.fineprint':
+    'aucune commande n’est passée maintenant. nous vous contacterons uniquement au lancement — avec une offre exclusive réservée à la liste d’attente.',
+  'preorder.phoneLabel': 'numéro de téléphone',
+  'preorder.phonePlaceholder': '+33 6 12 34 56 78',
+  'preorder.submit': 'rejoindre la liste d’attente',
+  'preorder.submitting': 'inscription…',
+  'preorder.subtitle':
+    'soyez averti·e dès la sortie du {product}.',
+  'preorder.successBody':
+    'nous vous préviendrons dès que le {product} sera disponible.',
+  'preorder.successTitle': 'vous êtes sur la liste.',
+  'reviews.anonymous': 'client',
+  'vision.ambition': 'ambition',
+  'vision.ambitionBody':
+    'Une nouvelle génération portée par l’ambition et la volonté de bâtir son propre avenir.',
+  'vision.cta': 'découvrir l’histoire de la marque',
+  'vision.identity': 'identité',
+  'vision.identityBody':
+    'Des pièces marquées, faites pour celles et ceux qui refusent de passer inaperçus.',
+  'vision.intro':
+    '{brand} construit une vision premium et minimaliste du streetwear. Nos pièces sont faites pour les fondateurs, les créateurs et celles et ceux qui bâtissent quelque chose : chaque design est pensé autour de l’ambition, de l’identité et du refus de négliger le détail.',
+  'vision.minimalism': 'minimalisme',
+  'vision.minimalismBody':
+    'Une esthétique épurée où chaque coupe, chaque tissu et chaque détail a une vraie raison d’être.',
+  'vision.streetwear': 'streetwear',
+  'vision.streetwearBody':
+    'Une lecture contemporaine du streetwear, entre élégance, caractère et culture urbaine.',
+  'vision.title': 'la vision {brand}',
+  'vision.vision': 'vision',
+  'vision.visionBody':
+    '{brand} ne suit pas les tendances — la maison construit son propre univers.',
 };
 
 export const DICTIONARIES: Record<Locale, Record<TranslationKey, string>> = {

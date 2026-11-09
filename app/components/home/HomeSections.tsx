@@ -1,3 +1,4 @@
+import {OnRail} from '~/components/store/OnRail';
 import {Suspense} from 'react';
 import {Await, Link} from 'react-router';
 import {Image} from '@shopify/hydrogen';
@@ -95,15 +96,8 @@ function HomeSectionView({
                       to: `/collections/${result.collection.handle}`,
                     }
                   : undefined;
-              return layout === 'grid' ? (
-                <ProductGridSection
-                  id={id}
-                  title={l(section.title)}
-                  products={result.products}
-                  link={link}
-                />
-              ) : (
-                <ProductRail
+              return (
+                <OnRail
                   id={id}
                   title={l(section.title)}
                   products={result.products}
@@ -295,7 +289,7 @@ function HomeSectionView({
             {(grids) => (
               <>
                 {grids.map((grid) => (
-                  <ProductGridSection
+                  <OnRail
                     key={grid.handle}
                     id={`${id}-${grid.handle}`}
                     title={grid.title}

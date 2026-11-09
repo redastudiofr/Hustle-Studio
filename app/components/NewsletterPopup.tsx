@@ -335,10 +335,10 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
 
         <div className="popup__media">
           <img
-            src="/brand/hero-mobile-passage.webp"
+            src="/brand/popup-business-after-hours.webp"
             alt=""
-            width="940"
-            height="1672"
+            width="800"
+            height="1421"
             loading="lazy"
             decoding="async"
           />

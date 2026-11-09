@@ -21,14 +21,17 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   The site runs in English only (`BRAND.languages`); legal pages keep a
   French version via `?lang=fr`. Homepage copy lives in `app/config/home.ts`.
 - Styles: app.css (base) → promotions.css → brand.css → editorial.css →
-  shop.css (`sx-` classes) → store.css (the current design, `st-` classes,
-  loaded last: announcement band, header, cards, homepage sections, product
-  page, black footer). Homepage sections incl. `sale`, `collectionGrids`,
+  shop.css (`sx-` classes) → store.css (`st-` classes) → on.css (the current
+  look, inspired by on.com: transparent header over a full-screen hero,
+  bold sentence-case titles, grey product tiles, carousels with arrows and a
+  progress bar — app/components/store/OnRail.tsx —, white footer) →
+  reda-pdp.css (product page only, scoped under `.rpdp`). Homepage sections incl. `sale`, `collectionGrids`,
   `usps` in app/config/home.ts; announcement messages in
   app/config/navigation.ts. Collection
-  pages share app/components/shop/CollectionShell.tsx; the product page is
-  built from app/components/shop/ (ProductMedia, BuyBox, AlsoLike) and
-  app/components/store/ (ProductPromises, PaymentIcons).
+  pages share app/components/shop/CollectionShell.tsx. The product page is
+  Reda Studio's (redastudiofr/reda-studio), ported into app/components/reda/
+  and app/lib/reda/: no synthetic ratings or stock, the bundle offer stays
+  off until a Hustle code is set in app/lib/reda/offers.ts.
 - Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
   `welcomePopup`; sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo

@@ -1,3 +1,8 @@
+/**
+ * Product page — the Reda Studio product page (redastudiofr/reda-studio),
+ * with Hustle Studio data: only real ratings and reviews, no offer without a
+ * Hustle code, no pre-order. Components in app/components/reda/.
+ */
 import {Await, useLoaderData} from 'react-router';
 import {Suspense} from 'react';
 import type {Route} from './+types/products.$handle';
@@ -9,21 +14,25 @@ import {
   getAdjacentAndFirstAvailableVariants,
   useSelectedOptionInUrlParam,
 } from '@shopify/hydrogen';
-import type {
-  ProductFragment,
-  ProductVariantFragment,
-} from 'storefrontapi.generated';
-import type {SizeEntry} from '~/components/ProductSizeGuide';
-import {ProductMedia} from '~/components/shop/ProductMedia';
-import {BuyBox} from '~/components/shop/BuyBox';
-import {AlsoLike} from '~/components/shop/AlsoLike';
-import {ProductPromises} from '~/components/store/ProductPromises';
-import {HelpFaq} from '~/components/HelpFaq';
-import {sizeChartFor} from '~/config/sizeCharts';
+import {ProductGallery} from '~/components/reda/ProductGallery';
+import {ProductPurchase} from '~/components/reda/ProductPurchase';
+import {ProductDescription} from '~/components/reda/ProductDescription';
+import {VisionSection} from '~/components/reda/VisionSection';
+import {CollectionShowcase} from '~/components/reda/CollectionShowcase';
+import {BundleOffer} from '~/components/reda/BundleOffer';
+import type {SizeEntry} from '~/components/reda/ProductSizeGuide';
+import {Accordion} from '~/components/reda/Accordion';
+import {ReviewsSection} from '~/components/reda/ReviewsSection';
+import {RelatedProductsRail} from '~/components/reda/RelatedProductsRail';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {parseRating} from '~/lib/rating';
-import {seoMeta, originFromMatches, absoluteUrl} from '~/lib/seo';
-import {BRAND} from '~/config/brand';
+import {getProductFaq} from '~/data/faq';
+import {parseRating} from '~/lib/reda/rating';
+import {withoutAutoCollections} from '~/lib/collections';
+import {loadReviews, reviewsForProduct} from '~/lib/reviews';
+import {OFFER_ENABLED} from '~/lib/reda/offers';
+import {seoMeta, originFromMatches} from '~/lib/seo';
+import {isPreorderHandle} from '~/lib/reda/preorder';
+import {useT} from '~/lib/i18n';
 
 /** Title, description and share image all come from the product in Shopify. */
 export const meta: Route.MetaFunction = ({data, matches}) => {
@@ -54,33 +63,34 @@ async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
   const {storefront} = context;
 
   if (!handle) {
-    throw new Response(null, {status: 404});
+    throw new Error('Expected product handle to be defined');
   }
 
-  const {product} = await storefront.query(PRODUCT_QUERY, {
-    variables: {handle, selectedOptions: getSelectedProductOptions(request)},
-  });
+  const [{product}] = await Promise.all([
+    storefront.query(PRODUCT_QUERY, {
+      variables: {handle, selectedOptions: getSelectedProductOptions(request)},
+    }),
+  ]);
 
-  // Unknown handle, or a product not published on this sales channel.
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
   redirectIfHandleIsLocalized(request, {handle, data: product});
 
-  return {product, origin: new URL(request.url).origin};
+  return {product};
 }
 
 const MAX_RECOMMENDATIONS = 16;
 
 /**
- * "You may also like": Shopify's own recommendations, topped up with best
- * sellers when it returns fewer than a full row (it returns nothing for a
- * brand-new product). Real, in-stock catalogue products either way; a failure
- * just hides the row.
+ * Shopify's `productRecommendations` often returns fewer than a full row (and
+ * nothing at all for a brand-new product). To keep the row filled we top it up
+ * with best sellers, de-duplicated and with the current product removed — real
+ * catalogue products either way, never placeholders.
  */
 function loadDeferredData(
-  {context}: Route.LoaderArgs,
+  {context, request}: Route.LoaderArgs,
   productId: string,
   handle: string,
 ) {
@@ -92,10 +102,7 @@ function loadDeferredData(
         return null;
       }),
     context.storefront
-      .query(FALLBACK_PRODUCTS_QUERY, {
-        variables: {first: 30},
-        cache: context.storefront.CacheShort(),
-      })
+      .query(FALLBACK_PRODUCTS_QUERY, {variables: {first: 30}})
       .catch((error: Error) => {
         console.error(error);
         return null;
@@ -107,26 +114,105 @@ function loadDeferredData(
       ...(recos?.productRecommendations ?? []),
       ...(fallback?.products?.nodes ?? []),
     ]) {
-      if (
-        !item ||
-        seen.has(item.id) ||
-        item.handle === handle ||
-        !item.availableForSale
-      ) {
+      // Recommending something the visitor can't actually buy defeats the
+      // point of the row, so an out-of-stock product is skipped rather than
+      // shown with a "sold out" badge here.
+      if (!item || seen.has(item.id) || item.handle === handle || !item.availableForSale) {
         continue;
       }
       seen.add(item.id);
       merged.push(item);
       if (merged.length >= MAX_RECOMMENDATIONS) break;
     }
+
     return merged;
   });
 
-  return {recommended};
+  /*
+   * The "join the community" showcase closing the page. It is deliberately
+   * restricted to the drops named in ~/lib/collections — an allowlist, so a
+   * new collection created in Shopify does not silently appear here. Every
+   * tile still comes from a real Shopify collection, so none of them 404.
+   */
+  const showcaseCollections = context.storefront
+    .query(SHOWCASE_COLLECTIONS_QUERY, {variables: {first: 50}})
+    .then((data) =>
+      withoutAutoCollections(data?.collections?.nodes ?? []).filter(
+        (collection) => collection.image,
+      ),
+    )
+    .catch((error: Error) => {
+      console.error(error);
+      return [];
+    });
+
+  /*
+   * The pieces the customer can choose from as the second half of the pair.
+   *
+   * Was a single hardcoded search for "casquette" — which made the offer look
+   * like a cap promotion when it has never been one: the Shopify discount
+   * applies to any second item. Now it offers a real choice, drawn from the
+   * catalogue, and the customer picks.
+   */
+  const pairChoices = context.storefront
+    .query(PAIR_CHOICES_QUERY, {variables: {first: 12}})
+    .then((data) =>
+      (data?.products?.nodes ?? [])
+        .filter(
+          (node) =>
+            // Never offer the product the customer is already looking at,
+            // never offer something that can't be bought, and never offer a
+            // product that's pre-order only (see app/lib/preorder.ts) — this
+            // pair-add goes through the same cart action a direct add-to-cart
+            // would, so it's the same purchase, just one page removed.
+            node.handle !== handle &&
+            !isPreorderHandle(node.handle) &&
+            node.availableForSale &&
+            node.variants?.nodes?.some((variant) => variant.availableForSale),
+        )
+        .map((node) => {
+          const variant = node.variants.nodes.find(
+            (candidate) => candidate.availableForSale,
+          )!;
+          return {
+            id: node.id,
+            title: node.title,
+            handle: node.handle,
+            featuredImage: node.featuredImage,
+            variantId: variant.id,
+            price: variant.price,
+          };
+        })
+        .slice(0, MAX_PAIR_CHOICES),
+    )
+    .catch((error: Error) => {
+      console.error(error);
+      return [];
+    });
+
+  // Real reviews only: this product's, then the shop's (app/lib/reviews.ts).
+  const reviews = loadReviews(context.storefront)
+    .then((all) => reviewsForProduct(all, handle))
+    .catch((error: Error) => {
+      console.error(error);
+      return [];
+    });
+
+  return {recommended, showcaseCollections, pairChoices, reviews};
+}
+
+/** First sentence of the product description, for the short blurb in the buy box. */
+function shortenDescription(description: string): string {
+  const trimmed = description.trim();
+  if (!trimmed) return '';
+  const firstSentence = trimmed.split(/(?<=[.!?])\s/)[0];
+  const blurb = firstSentence.length > 20 ? firstSentence : trimmed;
+  return blurb.length > 180 ? `${blurb.slice(0, 177).trimEnd()}…` : blurb;
 }
 
 export default function Product() {
-  const {product, recommended, origin} = useLoaderData<typeof loader>();
+  const {product, recommended, showcaseCollections, pairChoices, reviews} =
+    useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -140,7 +226,8 @@ export default function Product() {
     selectedOrFirstAvailableVariant: selectedVariant,
   });
 
-  const {title, description, descriptionHtml} = product;
+  const t = useT();
+  const {title, description, descriptionHtml, vendor} = product;
 
   const galleryImages = product.images.nodes.length
     ? product.images.nodes
@@ -148,7 +235,14 @@ export default function Product() {
       ? [selectedVariant.image]
       : [];
 
-  // Real size values for this product, with their live availability.
+  const available = Boolean(selectedVariant?.availableForSale);
+
+  // Scoped to exactly one product handle — see app/lib/preorder.ts. Every
+  // other product's buy box, bundle offer and cart behaviour is untouched.
+  const preorder = isPreorderHandle(product.handle);
+
+  // Real size values for this product, with their live availability. Used by
+  // the size guide; empty for products that have no size option at all.
   const sizeOption = productOptions.find((option) =>
     /taille|size|pointure/i.test(option.name),
   );
@@ -158,40 +252,116 @@ export default function Product() {
   }));
 
   return (
-    <div className="st-product">
-      <div className="st-product__main">
-        <div className="st-product__media">
-          <ProductMedia images={galleryImages} title={title} />
-          <ProductPromises />
+    <div className="pdp rpdp">
+      {/* Gallery + buy box only. A sticky element is clamped to its grid
+          CONTAINER's box (not to its own grid area), so every section that
+          comes after the gallery must stay OUTSIDE this wrapper — otherwise
+          the sticky panel can travel down over them. */}
+      <div className="pdp__main">
+        <div className="pdp__gallery">
+          <ProductGallery images={galleryImages} title={title} />
         </div>
 
-        <BuyBox
-          title={title}
-          variant={selectedVariant}
-          productOptions={productOptions}
-          sizes={sizes}
-          sizeChart={sizeChartFor(product)}
-          description={description ?? ''}
-          descriptionHtml={descriptionHtml}
-        />
+        <aside className="pdp__buy">
+          <ProductPurchase
+            title={title}
+            price={selectedVariant?.price}
+            compareAtPrice={selectedVariant?.compareAtPrice}
+            productOptions={productOptions}
+            sizes={sizes}
+            available={available}
+            quantityAvailable={selectedVariant?.quantityAvailable ?? null}
+            productId={product.id}
+            shortDescription={shortenDescription(description ?? '')}
+            variantId={selectedVariant?.id}
+            preorder={preorder}
+            // Only a real review app's score (Shopify metafields): no
+            // review app, no stars.
+            rating={parseRating(product.rating, product.ratingCount)}
+          />
+
+          {/* The "take two" box, on every product — the pack is sold on the
+              homepage and /pack, never here. Skipped during pre-order: it
+              exists to add a product to the cart, which is exactly what is
+              not allowed yet. */}
+          {/* Hidden until Hustle Studio has the offer's code in Shopify
+              (app/lib/reda/offers.ts). */}
+          {!preorder && OFFER_ENABLED && (
+            <Suspense fallback={null}>
+              <Await resolve={pairChoices}>
+                {(choices) => (
+                  <BundleOffer
+                    productTitle={title}
+                    productImage={product.images.nodes[0] ?? selectedVariant?.image}
+                    productPrice={selectedVariant?.price}
+                    productVariantId={selectedVariant?.id}
+                    choices={choices}
+                    available={available}
+                  />
+                )}
+              </Await>
+            </Suspense>
+          )}
+
+          {/* Description, characteristics and FAQ sit in the right column,
+              directly under the payment buttons. */}
+          <div className="pdp__details">
+            {descriptionHtml && (
+              <section className="pdp__section">
+                <ProductDescription
+                  html={descriptionHtml}
+                  intro={shortenDescription(description ?? '')}
+                />
+              </section>
+            )}
+
+            <section className="pdp__section">
+              <h2 className="pdp__section-title">{t('product.faqTitle')}</h2>
+              <div className="pdp__accordions">
+                {getProductFaq(t, description ?? '').map((item) => (
+                  <Accordion key={item.question} title={item.question}>
+                    <p>{item.answer}</p>
+                  </Accordion>
+                ))}
+              </div>
+            </section>
+          </div>
+        </aside>
       </div>
 
       <Suspense fallback={null}>
-        <Await resolve={recommended} errorElement={null}>
-          {(items) => <AlsoLike items={items} />}
+        <Await resolve={recommended}>
+          {(items) => (items.length ? <RelatedProductsRail items={items} /> : null)}
         </Await>
       </Suspense>
 
-      <HelpFaq />
+      <VisionSection />
 
-      <script
-        type="application/ld+json"
-        // Product structured data for Google (price, availability, images),
-        // built from the same Shopify data the page shows.
-        dangerouslySetInnerHTML={{
-          __html: productJsonLd(product, selectedVariant, origin),
-        }}
-      />
+      <div className="pdp__reviews">
+        <Suspense fallback={null}>
+          <Await resolve={reviews}>
+            {(items) => (
+              <ReviewsSection
+                heading={t('reviews.forProduct')}
+                reviews={items}
+                productTitle={title}
+              />
+            )}
+          </Await>
+        </Suspense>
+      </div>
+
+      {/* Closing the page: full-bleed collection tiles. */}
+      <Suspense fallback={null}>
+        <Await resolve={showcaseCollections}>
+          {(collections) => (
+            <CollectionShowcase
+              collections={collections}
+              heading={t('store.communityTitle')}
+            />
+          )}
+        </Await>
+      </Suspense>
 
       <Analytics.ProductView
         data={{
@@ -210,57 +380,6 @@ export default function Product() {
       />
     </div>
   );
-}
-
-/**
- * schema.org Product with one Offer per known variant. `<` is escaped so the
- * JSON can never close the <script> tag early, whatever a description holds.
- */
-function productJsonLd(
-  product: ProductFragment,
-  selected: ProductVariantFragment | null | undefined,
-  origin: string,
-): string {
-  const url = absoluteUrl(`/products/${product.handle}`, origin);
-  const rating = parseRating(product.rating, product.ratingCount);
-  const variants = [
-    selected,
-    ...product.adjacentVariants.filter(
-      (variant) => variant.id !== selected?.id,
-    ),
-  ].filter(Boolean) as ProductVariantFragment[];
-
-  const json = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.title,
-    description: product.description,
-    url,
-    image: product.images.nodes.map((image) => image.url),
-    brand: {'@type': 'Brand', name: product.vendor || BRAND.name},
-    sku: selected?.sku || undefined,
-    aggregateRating: rating
-      ? {
-          '@type': 'AggregateRating',
-          ratingValue: rating.value,
-          reviewCount: rating.count ?? undefined,
-        }
-      : undefined,
-    offers: variants.map((variant) => ({
-      '@type': 'Offer',
-      url: `${url}?${new URLSearchParams(
-        variant.selectedOptions.map((option) => [option.name, option.value]),
-      ).toString()}`,
-      sku: variant.sku || undefined,
-      price: variant.price.amount,
-      priceCurrency: variant.price.currencyCode,
-      availability: variant.availableForSale
-        ? 'https://schema.org/InStock'
-        : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-    })),
-  };
-  return JSON.stringify(json).replace(/</g, '\\u003c');
 }
 
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
@@ -309,17 +428,10 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
-    productType
-    # Optional per-product content, written in Shopify Admin (see
-    # app/config/productPage.ts): highlights, size chart.
-    highlights: metafield(namespace: "custom", key: "highlights") {
-      value
-    }
-    sizeChart: metafield(namespace: "custom", key: "size_chart") {
-      value
-    }
-    # Written by review apps (Shopify Product Reviews, Judge.me…). Absent
-    # when there is no review app — no rating is then shown at all.
+    # Publication date, kept from the Reda Studio page.
+    createdAt
+    # Standard Shopify review metafields, written by review apps. Absent when
+    # the shop has no review app — no rating is then shown at all.
     rating: metafield(namespace: "reviews", key: "rating") {
       value
     }
@@ -392,6 +504,10 @@ const RECO_PRODUCT_FRAGMENT = `#graphql
     title
     handle
     availableForSale
+    # Publication date, kept from the Reda Studio page.
+    createdAt
+    # Standard Shopify review metafields, written by review apps. Absent when
+    # the shop has no review app — the UI then shows no rating at all.
     rating: metafield(namespace: "reviews", key: "rating") {
       value
     }
@@ -460,6 +576,70 @@ const PRODUCT_RECOMMENDATIONS_QUERY = `#graphql
     }
   }
   ${RECO_PRODUCT_FRAGMENT}
+` as const;
+
+/**
+ * How many pieces the offer proposes. Enough to feel like a real choice,
+ * few enough that the box stays a box rather than a second catalogue.
+ */
+const MAX_PAIR_CHOICES = 6;
+
+const PAIR_CHOICES_QUERY = `#graphql
+  query PdpPairChoices(
+    $first: Int
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    products(first: $first, sortKey: BEST_SELLING) {
+      nodes {
+        id
+        title
+        handle
+        availableForSale
+        featuredImage {
+          id
+          url
+          altText
+          width
+          height
+        }
+        variants(first: 10) {
+          nodes {
+            id
+            availableForSale
+            price {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+` as const;
+
+/** Collections for the showcase tiles that close the product page. */
+const SHOWCASE_COLLECTIONS_QUERY = `#graphql
+  query PdpShowcaseCollections(
+    $first: Int
+    $country: CountryCode
+    $language: LanguageCode
+  ) @inContext(country: $country, language: $language) {
+    collections(first: $first, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        id
+        title
+        handle
+        image {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
 ` as const;
 
 /** Tops the recommendation row up to a full set with real catalogue products. */

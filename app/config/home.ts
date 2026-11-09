@@ -249,6 +249,10 @@ export const HOME_SECTIONS: HomeSection[] = [
       en: 'The new collection is here',
       fr: 'La nouvelle collection est là',
     },
+    text: {
+      en: 'Independent streetwear, born in Nantes.',
+      fr: 'Streetwear indépendant, né à Nantes.',
+    },
     cta: {label: {en: 'Shop now', fr: 'Découvrir'}, to: '/collections/all'},
     secondaryCta: {
       label: {en: 'Bestsellers', fr: 'Meilleures ventes'},
@@ -270,21 +274,65 @@ export const HOME_SECTIONS: HomeSection[] = [
     },
   },
   {
+    // on.com "Voir": tall tiles of the Shopify collections, label on the photo.
+    type: 'collections',
+    title: {en: 'Shop by category', fr: 'Voir'},
+  },
+  {
+    type: 'products',
+    title: {en: 'New in', fr: 'Nouveautés'},
+    fallbackSort: 'newest',
+    limit: 12,
+    link: {
+      label: {en: 'View all', fr: 'Tout voir'},
+      to: '/collections/all',
+    },
+  },
+  {
     type: 'products',
     title: {en: 'Bestsellers', fr: 'Meilleures ventes'},
     fallbackSort: 'best-selling',
-    limit: 8,
-    layout: 'grid',
+    limit: 12,
     link: {
       label: {en: 'View all', fr: 'Tout voir'},
       to: '/collections/all?sort=best-selling',
+    },
+  },
+  {
+    type: 'about',
+    eyebrow: {en: 'Our story — Nantes', fr: 'Notre histoire — Nantes'},
+    title: 'Hustle Studio.',
+    paragraphs: [
+      {
+        en: 'Hustle Studio is an independent brand, born in Nantes. No big group behind it, no shortcuts: just an idea, and the work it takes to make it real.',
+        fr: 'Hustle Studio est une marque indépendante, née à Nantes. Pas de grand groupe derrière, pas de raccourci : juste une idée, et le travail pour la faire exister.',
+      },
+      {
+        en: 'We make it for the ones who keep moving. Those building their own path, looking further than next season, and not waiting for anyone to open the door.',
+        fr: 'On la fait pour ceux qui avancent. Ceux qui construisent leur propre chemin, qui voient plus loin que la prochaine saison et qui n’attendent pas qu’on leur ouvre la porte.',
+      },
+      {
+        en: 'Our streetwear is minimal by choice. Clean cuts, a strong identity, details you notice up close. Few pieces, each one made to last.',
+        fr: 'Notre streetwear est minimaliste par choix. Des coupes nettes, une identité affirmée, des détails qu’on remarque de près. Peu de pièces, chacune pensée pour durer.',
+      },
+    ],
+    image: {
+      desktop: '/brand/about-street.webp',
+      alt: {
+        en: 'White waffle henley with red embroidered sleeves and raw denim, worn in the street',
+        fr: 'Henley gaufré blanc aux manches brodées de rouge et jean brut, porté dans la rue',
+      },
+    },
+    cta: {
+      label: {en: 'Read our story', fr: 'Lire notre histoire'},
+      to: '/about',
     },
   },
   {type: 'reviews'},
   {
     // One grid per Shopify collection (appears as soon as one has products).
     type: 'collectionGrids',
-    limit: 4,
+    limit: 8,
   },
   {
     type: 'usps',
@@ -343,37 +391,6 @@ export const HOME_SECTIONS: HomeSection[] = [
       fr: 'Notre sélection, portée dans la rue.',
     },
     photos: FAMILY_PHOTOS,
-  },
-  {
-    hidden: true,
-    type: 'about',
-    eyebrow: {en: 'Our story — Nantes', fr: 'Notre histoire — Nantes'},
-    title: 'Hustle Studio.',
-    paragraphs: [
-      {
-        en: 'Hustle Studio is an independent brand, born in Nantes. No big group behind it, no shortcuts: just an idea, and the work it takes to make it real.',
-        fr: 'Hustle Studio est une marque indépendante, née à Nantes. Pas de grand groupe derrière, pas de raccourci : juste une idée, et le travail pour la faire exister.',
-      },
-      {
-        en: 'We make it for the ones who keep moving. Those building their own path, looking further than next season, and not waiting for anyone to open the door.',
-        fr: 'On la fait pour ceux qui avancent. Ceux qui construisent leur propre chemin, qui voient plus loin que la prochaine saison et qui n’attendent pas qu’on leur ouvre la porte.',
-      },
-      {
-        en: 'Our streetwear is minimal by choice. Clean cuts, a strong identity, details you notice up close. Few pieces, each one made to last.',
-        fr: 'Notre streetwear est minimaliste par choix. Des coupes nettes, une identité affirmée, des détails qu’on remarque de près. Peu de pièces, chacune pensée pour durer.',
-      },
-    ],
-    image: {
-      desktop: '/brand/about-street.webp',
-      alt: {
-        en: 'White waffle henley with red embroidered sleeves and raw denim, worn in the street',
-        fr: 'Henley gaufré blanc aux manches brodées de rouge et jean brut, porté dans la rue',
-      },
-    },
-    cta: {
-      label: {en: 'Read our story', fr: 'Lire notre histoire'},
-      to: '/about',
-    },
   },
   {
     hidden: true,
