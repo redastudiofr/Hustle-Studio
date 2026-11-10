@@ -794,3 +794,12 @@ html .reviews .reviews-row .reviews-row__item {
   opacity: 1;
   will-change: auto;
 }
+
+/* Nor on arrival: the review cards appear sharp at once (the entrance blur
+   was the other filter Safari could fringe). !important because this layer
+   must beat every older stylesheet's reveal rule, whatever its weight. */
+html .reviews .review-card {
+  filter: none !important;
+  opacity: 1 !important;
+  transition: border-color 0.3s;
+}
