@@ -147,37 +147,27 @@ export const en = {
   'faqPage.groupPieces': 'the pieces',
   // — FAQ content (app/data/faq.tsx) —
   'faqData.shippingQ': 'how long does shipping take?',
-  'faqData.shippingA':
-    'delivery options, prices and estimated times are shown at checkout, before you pay. every parcel is tracked.',
-  'faqData.madeQ': 'how do i choose my size?',
-  'faqData.madeA':
-    'each product page lists its available sizes and the cut when it is specified. between two sizes? write to us before ordering.',
-  'faqData.qualityQ': 'how do i pay?',
-  'faqData.qualityA':
-    'payment happens on shopify’s secure checkout. we never see or store your card details.',
+  'faqData.shippingA': 'we ship from our studio in paris and deliver within 48 hours anywhere in france.',
+  'faqData.madeQ': 'where are your pieces made?',
+  'faqData.madeA': 'every piece is manufactured in portugal.',
+  'faqData.qualityQ': 'how is quality controlled?',
+  'faqData.qualityA': 'each piece is checked one by one against our quality and finishing standards before it goes on sale.',
   'faqData.refundQ': 'can i get a refund?',
-  'faqData.refundA':
-    'yes, under the conditions of our refund policy, once the returned item reaches us.',
+  'faqData.refundA': 'refunds are issued once the returned item reaches us.',
   'faqData.fitQ': 'fit & sizing',
-  'faqData.fitA':
-    'the cut and size guidance are given in the product description wherever they are available. if you fall between two sizes, write to us before ordering.',
+  'faqData.fitA': 'the cut and size guidance are given in the product description wherever they are available. if you fall between two sizes, reach out to us before ordering and we will advise.',
   'faqData.compositionQ': 'composition',
-  'faqData.compositionA':
-    'the exact composition of this piece — materials and percentages — is printed on the label sewn inside the garment.',
-  'faqData.manufacturingQ': 'where is it made?',
-  'faqData.manufacturingA':
-    'the country of manufacture is printed on the label sewn inside the garment.',
+  'faqData.compositionA': 'the exact composition of this piece — materials and percentages — is printed on the label sewn inside the garment.',
+  'faqData.manufacturingQ': 'manufacturing',
+  'faqData.manufacturingA': 'our pieces are made in portugal, then checked one by one against our quality and finishing standards before going on sale.',
   'faqData.shipping2Q': 'shipping',
-  'faqData.shipping2A':
-    'prepared and shipped within 1 to 3 business days: 48 hours in france, 3 to 5 days worldwide, tracked. full details on our',
+  'faqData.shipping2A': 'shipped from our studio in paris and delivered within 48 hours anywhere in france, with tracking. full details on our',
   'faqData.shippingLink': 'shipping page',
   'faqData.returnsQ': 'returns',
-  'faqData.returnsA':
-    'returns and exchanges within 30 days of delivery, on unworn pieces in their original packaging. full details on our',
+  'faqData.returnsA': 'returns and exchanges accepted within 30 days. full details on our',
   'faqData.returnsLink': 'returns page',
   'faqData.careQ': 'care',
-  'faqData.careA':
-    'wash inside out at a low temperature, and follow the specific instructions printed on the garment’s label.',
+  'faqData.careA': 'wash inside out at a low temperature, and follow the specific instructions printed on the garment’s label.',
   'search.articles': 'articles',
   'search.pages': 'pages',
   'search.products': 'products',
@@ -770,37 +760,27 @@ export const fr: Record<TranslationKey, string> = {
   'faqPage.groupPieces': 'les pièces',
   // — contenu de la FAQ (app/data/faq.tsx) —
   'faqData.shippingQ': 'quels sont les délais de livraison ?',
-  'faqData.shippingA':
-    'les options, tarifs et délais estimés de livraison sont affichés au paiement, avant de payer. chaque colis est suivi.',
-  'faqData.madeQ': 'comment choisir ma taille ?',
-  'faqData.madeA':
-    'chaque fiche produit indique les tailles disponibles et la coupe quand elle est précisée. entre deux tailles ? écrivez-nous avant de commander.',
-  'faqData.qualityQ': 'comment payer ?',
-  'faqData.qualityA':
-    'le paiement se fait sur le checkout sécurisé de shopify. nous ne voyons ni ne stockons jamais vos données bancaires.',
+  'faqData.shippingA': 'nous expédions depuis notre studio à paris, avec une livraison en 48 heures partout en france.',
+  'faqData.madeQ': 'où sont fabriquées vos pièces ?',
+  'faqData.madeA': 'chaque pièce est fabriquée au portugal.',
+  'faqData.qualityQ': 'comment la qualité est-elle contrôlée ?',
+  'faqData.qualityA': 'chaque pièce est contrôlée une à une selon nos exigences de qualité et de finition avant la mise en vente.',
   'faqData.refundQ': 'puis-je être remboursé ?',
-  'faqData.refundA':
-    'oui, selon les conditions de notre politique de retour, à réception de l’article retourné.',
+  'faqData.refundA': 'le remboursement est effectué dès réception de l’article retourné.',
   'faqData.fitQ': 'coupe et taille',
-  'faqData.fitA':
-    'la coupe et les conseils de taille figurent dans la description du produit quand ils sont disponibles. entre deux tailles ? écrivez-nous avant de commander.',
+  'faqData.fitA': 'la coupe et les conseils de taille figurent dans la description du produit lorsqu’ils sont disponibles. si vous hésitez entre deux tailles, écrivez-nous avant de commander et nous vous conseillerons.',
   'faqData.compositionQ': 'composition',
-  'faqData.compositionA':
-    'la composition exacte de cette pièce — matières et pourcentages — est indiquée sur l’étiquette cousue à l’intérieur du vêtement.',
-  'faqData.manufacturingQ': 'où est-ce fabriqué ?',
-  'faqData.manufacturingA':
-    'le pays de fabrication est indiqué sur l’étiquette cousue à l’intérieur du vêtement.',
+  'faqData.compositionA': 'la composition exacte de cette pièce — matières et pourcentages — est indiquée sur l’étiquette cousue à l’intérieur du vêtement.',
+  'faqData.manufacturingQ': 'fabrication',
+  'faqData.manufacturingA': 'nos pièces sont fabriquées au portugal, puis contrôlées une à une selon nos exigences de qualité et de finition avant la mise en vente.',
   'faqData.shipping2Q': 'livraison',
-  'faqData.shipping2A':
-    'préparée et expédiée sous 1 à 3 jours ouvrés : 48 h en france, 3 à 5 jours dans le monde, avec suivi. tous les détails sur notre',
+  'faqData.shipping2A': 'expédié depuis notre studio à paris et livré en 48 heures partout en france, avec suivi. tous les détails sur notre',
   'faqData.shippingLink': 'page livraison',
   'faqData.returnsQ': 'retours',
-  'faqData.returnsA':
-    'retours et échanges sous 30 jours après réception, sur des pièces non portées dans leur emballage d’origine. tous les détails sur notre',
+  'faqData.returnsA': 'retours et échanges acceptés sous 30 jours. tous les détails sur notre',
   'faqData.returnsLink': 'page retours',
   'faqData.careQ': 'entretien',
-  'faqData.careA':
-    'lavez sur l’envers à basse température, et suivez les instructions indiquées sur l’étiquette du vêtement.',
+  'faqData.careA': 'lavez sur l’envers à basse température, et suivez les instructions indiquées sur l’étiquette du vêtement.',
   'search.articles': 'articles',
   'search.pages': 'pages',
   'search.products': 'produits',

@@ -39,8 +39,9 @@ const RETURN_DAYS = LEGAL.returnDays;
 export type LegalField = {
   label: string;
   /**
-   * The real value, or the "[à compléter]" placeholder — a field holding the
-   * placeholder is not shown at all. See the module doc above.
+   * The real value, or a bracketed placeholder such as "[à compléter]" —
+   * anything matching `/^\[.*\]$/` renders with the "still to fill in" style
+   * instead of as real data. See the module doc above.
    */
   value: string;
   /** Renders `value` as a link (a mailto:, typically) when set. */
@@ -76,7 +77,8 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
     handle: 'terms',
     title: 'terms & conditions',
     navLabel: 'terms & conditions',
-    intro: `The terms on which ${B} sells to you, and the rules for using this site.`,
+    intro:
+      `The terms on which ${B} sells to you, and the rules for using this site.`,
     updated: LEGAL.updated.en,
     sections: [
       {
@@ -160,7 +162,7 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
         heading: '12. complaints and disputes',
         body: [
           `Write to us first, from the contact page on this site. Most things are settled that way.`,
-          `If we cannot agree, you may use the European Commission's online dispute resolution platform at ec.europa.eu/consumers/odr, or refer the matter to a consumer mediator, free of charge to you.`,
+          `If we cannot agree, you may refer the matter to a consumer mediator, free of charge to you.`,
           `These terms are governed by French law. If you are a consumer, you keep the protection of the mandatory rules of the country where you live.`,
         ],
       },
@@ -183,7 +185,9 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       },
       {
         heading: 'delivery times',
-        body: [`Once your parcel leaves us, expect:`],
+        body: [
+          `Once your parcel leaves us, expect:`,
+        ],
         list: LEGAL.shipping.zones.en,
       },
       {
@@ -392,66 +396,60 @@ const LEGAL_DOCUMENTS_EN: LegalDocument[] = [
       {
         heading: 'payment',
         body: [
-          `Payments made on this site are processed securely by Shopify Payments. ${B} neither stores nor directly processes card details: they are passed to the payment provider concerned.`,
+          `Payments made on this site are processed securely by Shopify Payments. ${B} neither stores nor directly handles card details: they go straight to that payment provider.`,
         ],
       },
       {
         heading: 'intellectual property',
         body: [
-          `All elements on the ${B} site, including texts, photographs, images, logos, graphics, icons, visual elements, products and layout, are protected by applicable intellectual property law.`,
-          `Any reproduction, representation, modification, adaptation or exploitation of these elements, in whole or in part, without prior authorisation is prohibited, except where the law allows.`,
+          `Everything on the ${B} site — texts, photographs, images, logos, graphics, icons, visual elements, products and layout — is protected by applicable intellectual property law.`,
+          `Reproducing, representing, modifying, adapting or exploiting any of it, in whole or in part, without prior authorisation is prohibited, except where the law allows.`,
         ],
       },
       {
         heading: 'personal data',
         body: [
-          `In running this site, ${B} may collect and process certain personal data, in particular in the following situations:`,
+          `Running this site means ${B} collects and processes some personal data, in these cases only:`,
         ],
         list: [
-          'Orders and delivery: name, address, email address and phone number needed to process and ship orders.',
-          'Payment: payments processed by Shopify Payments or the provider concerned, under the applicable terms.',
-          'Customer service and reviews: information sent through the contact page or review forms, to answer requests or manage customer feedback.',
-          'Newsletter and commercial offers: email address or phone number given voluntarily, subject to the required consent.',
-          'Security: technical data needed to run the site, keep it secure and prevent abuse.',
+          'orders and delivery — name, address, email and phone, passed to our carrier for shipping',
+          `payment — handled directly by Shopify Payments; ${B} never sees any banking data`,
+          'customer service and reviews — what you send through the contact page or the review form, to answer you or publish your feedback',
+          'newsletter and offers — the email address or phone number you chose to leave, to send commercial offers, with your consent only',
+          'security — technical data needed to keep the site working and prevent abuse',
         ],
       },
       {
         heading: 'personal data — your rights',
         body: [
-          `Personal data is kept for as long as needed for the purposes it was collected for, in line with applicable regulations, in particular the General Data Protection Regulation (GDPR).`,
-          `Under these regulations, and subject to the applicable conditions, you have the right to access, rectify, erase, restrict the processing of, object to and port your data. You may also withdraw your consent to marketing communications at any time.`,
-          `To exercise your rights, contact us at ${EMAIL}, or use the site's contact page.`,
-          `For exactly what data is collected, why, how long it is kept and who receives it, see our Privacy Policy.`,
+          `This data is kept for as long as those purposes require, in line with the General Data Protection Regulation (GDPR). You have the right to access, correct, erase, restrict, object to and port your data, and to withdraw your consent to marketing at any time.`,
+          `The full detail — what is collected, why, for how long and with whom it is shared — is in our Privacy Policy. To exercise these rights, write to ${EMAIL} or use the contact page.`,
         ],
       },
       {
         heading: 'cookies',
         body: [
-          `This site uses cookies and other trackers needed for it to work, in particular for the cart, the browsing session and user preferences.`,
-          `Audience measurement tools may also be used to analyse visits and orders, depending on their configuration. Where the regulations require it, the user's prior consent is obtained before non-essential cookies or trackers are set.`,
-          `You can manage your preferences through the site's cookie management tool, where available, and through your browser settings. Refusing some cookies may affect how certain features work.`,
+          `This site uses cookies that are strictly necessary for it to work — your cart, your browsing session and your language preference — which require no consent.`,
+          `It also uses Shopify's own built-in analytics for our own visit and order statistics. No third-party advertising pixel (Meta, TikTok, Google Ads or similar) is used to date.`,
+          `You can set your browser to refuse cookies at any time; some features, the cart in particular, may then stop working properly.`,
         ],
       },
       {
         heading: 'liability',
         body: [
-          `${B} strives to keep the information on this site as accurate and up to date as possible. Information about products, prices and lead times may change.`,
-          `${B} cannot be held liable for temporary interruptions of the site due to maintenance, technical problems or events beyond its control, within the limits set by law.`,
+          `${B} works to keep the information on this site as accurate and current as possible. That information — products, prices and lead times in particular — may nonetheless change without notice.`,
+          `${B} cannot be held liable for temporary interruptions of the site caused by maintenance, technical issues or events beyond its control.`,
         ],
       },
       {
-        heading: 'mediation and dispute resolution',
+        heading: 'mediation',
         body: [
-          `Under the French Consumer Code, any consumer may, subject to the applicable legal conditions, refer a dispute with a business to a consumer mediator free of charge, with a view to an amicable settlement.`,
-          `The details of the competent mediator are to be provided once one has actually been appointed, in line with the applicable legal obligations.`,
-          `For cross-border disputes, consumers may also consult the official European Union information and services on resolving consumer disputes.`,
+          `Under article L.612-1 of the French Consumer Code, you may refer a dispute to a consumer mediator free of charge.`,
         ],
       },
       {
         heading: 'contact us',
-        body: [
-          `For any question about this legal notice, an order or your personal data, you can contact us:`,
-        ],
+        body: [`A question about this notice, an order or your data?`],
         fields: [
           {label: 'Email', value: EMAIL, href: MAILTO},
           {label: 'Phone', value: C.phone},

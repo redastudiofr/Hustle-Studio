@@ -1538,3 +1538,94 @@
     gap: 3rem;
   }
 }
+
+/* Hustle changes, after Reda's rules so they win at equal weight. */
+/* Hero text over the Paris photo: eyebrow, serif title, line, two outlined
+   buttons; a soft shade rising from the bottom of the photo. */
+.rhome .hero--top .hero__scrim {
+  display: block;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.5) 0%,
+    rgba(0, 0, 0, 0.22) 25%,
+    rgba(0, 0, 0, 0) 50%
+  );
+}
+
+.rhome .hero--top > :last-child > p {
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.2);
+}
+
+.rhome .hero--top h1 + p {
+  margin-top: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.rhome .hero--top > :last-child > div {
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+@media (min-width: 48em) {
+  .rhome .hero--top h1 + p {
+    font-size: 1rem;
+  }
+}
+
+/* Collections slider: a small frosted label, lifting on hover and pressing
+   in on click. */
+.rhome .collections-slider__label {
+  right: auto;
+  width: auto;
+  max-width: calc(100% - 1.5rem);
+  padding: 0.4rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: rgba(17, 17, 17, 0.35);
+  color: #fff;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.3s,
+    color 0.3s;
+}
+
+@media (min-width: 48em) {
+  .rhome .collections-slider__label {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.66rem;
+  }
+}
+
+.rhome .collections-slider__tile:hover .collections-slider__label,
+.rhome .collections-slider__tile:focus-visible .collections-slider__label {
+  background: rgba(255, 255, 255, 0.85);
+  color: #111;
+  transform: translateY(-3px);
+}
+
+.rhome .collections-slider__tile:active .collections-slider__label {
+  transform: scale(0.94);
+  transition-duration: 0.1s;
+}
+
+.rhome .collections-slider__tile:active .collections-slider__media img {
+  transform: scale(0.99);
+}
+/* Phones: the portrait photo has no free sky beside the face, so the text
+   sits at the bottom, over the shade. Desktop keeps it high on the left. */
+@media (max-width: 47.99em) {
+  .rhome .hero--top > :last-child {
+    top: auto;
+    bottom: 5%;
+    left: 50%;
+    width: 90%;
+    max-width: none;
+    transform: translateX(-50%);
+  }
+}

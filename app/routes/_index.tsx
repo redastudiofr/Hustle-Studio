@@ -7,12 +7,12 @@ import type {
 } from 'storefrontapi.generated';
 import {AnimatedHero} from '~/components/reda/AnimatedHero';
 import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
-import {CollectionProductShowcase} from '~/components/reda/CollectionProductShowcase';
 import {ProductItem} from '~/components/reda/ProductItem';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
 import {HelpFaq} from '~/components/HelpFaq';
 import {Newsletter} from '~/components/Newsletter';
 import {Reveal} from '~/components/Reveal';
+import {BRAND} from '~/config/brand';
 import {withoutAutoCollections} from '~/lib/collections';
 import {
   HOME_COLLECTION_FRAGMENT,
@@ -25,16 +25,14 @@ import {useT} from '~/lib/i18n';
 /**
  * Homepage — the Reda Studio homepage (redastudiofr/reda-studio,
  * app/routes/_index.tsx), with Hustle Studio's photos and Shopify data:
- * hero, collections slider, every product, one showcase per collection
- * (its Shopify photo and its products), real reviews, help, newsletter.
+ * hero, collections slider, every product, real reviews, help, newsletter.
+ * The collection banners (photo + product slider) are left out on purpose.
  * Left out: Reda's Trustpilot badge, pack offer and community photos.
  * Styles: reda-home.css, scoped under `.rhome`.
  */
 
 /** Products beyond this many wait behind "view more" on mobile. */
 const MOBILE_INITIAL_PRODUCT_COUNT = 16;
-/** How many collection showcases follow the catalogue. */
-const SHOWCASE_COUNT = 3;
 
 const HERO_IMAGE_MOBILE = {
   src: '/brand/hero-mobile-paris.webp',
@@ -80,28 +78,9 @@ export async function loader({context}: Route.LoaderArgs) {
       return [] as HomeProductFragment[];
     });
 
-  // The first collections that have a photo in Shopify, each with its
-  // products: the showcases under the catalogue.
-  const showcases = Promise.all(
-    visible
-      .filter((collection) => collection.image)
-      .slice(0, SHOWCASE_COUNT)
-      .map((collection) =>
-        storefront
-          .query(REDA_SHOWCASE_QUERY, {
-            variables: {handle: collection.handle, first: 20},
-          })
-          .then((response) => response.collection)
-          .catch((error: Error) => {
-            console.error(error);
-            return null;
-          }),
-      ),
-  );
-
   const reviews = loadReviews(storefront).catch(() => []);
 
-  return {collections: visible, allProducts, showcases, reviews};
+  return {collections: visible, allProducts, reviews};
 }
 
 export default function Homepage() {
@@ -114,38 +93,16 @@ export default function Homepage() {
         layout="top"
         imageMobile={HERO_IMAGE_MOBILE}
         imageDesktop={HERO_IMAGE_DESKTOP}
-        title={t('home.heroTitle')}
-        ctaButton={{text: t('home.shopTheLook'), href: '/collections/all'}}
+        eyebrow={t('home.eyebrow')}
+        title={BRAND.name}
+        description={t('home.tagline')}
+        ctaButton={{text: t('home.shopNow'), href: '/collections'}}
+        secondaryCta={{text: t('home.ourStory'), href: '/about'}}
       />
 
       <CollectionsSlider collections={data.collections} />
 
       <AllProducts products={data.allProducts} />
-
-      <Suspense fallback={null}>
-        <Await resolve={data.showcases}>
-          {(collections) => (
-            <>
-              {collections.map((collection) =>
-                collection?.image ? (
-                  <CollectionProductShowcase
-                    key={collection.id}
-                    title={collection.title}
-                    description={collection.description}
-                    imageSrcMobile={collection.image.url}
-                    imageSrcDesktop={collection.image.url}
-                    imageAlt={collection.image.altText || collection.title}
-                    mobileRatio="3 / 4"
-                    desktopRatio="16 / 9"
-                    collectionHandle={collection.handle}
-                    products={collection.products.nodes}
-                  />
-                ) : null,
-              )}
-            </>
-          )}
-        </Await>
-      </Suspense>
 
       <Suspense fallback={null}>
         <Await resolve={data.reviews}>
@@ -247,26 +204,5 @@ const REDA_ALL_PRODUCTS_QUERY = `#graphql
       }
     }
   }
-  ${HOME_PRODUCT_FRAGMENT}
-` as const;
-
-const REDA_SHOWCASE_QUERY = `#graphql
-  query RedaShowcase(
-    $handle: String!
-    $first: Int
-    $country: CountryCode
-    $language: LanguageCode
-  ) @inContext(country: $country, language: $language) {
-    collection(handle: $handle) {
-      ...HomeCollection
-      description
-      products(first: $first) {
-        nodes {
-          ...HomeProduct
-        }
-      }
-    }
-  }
-  ${HOME_COLLECTION_FRAGMENT}
   ${HOME_PRODUCT_FRAGMENT}
 ` as const;

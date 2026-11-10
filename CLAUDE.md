@@ -9,7 +9,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   navigation) and `public/brand/`. Do not hardcode the brand name elsewhere;
   dictionary strings can use `{brand}`.
 - Products, collections, stock and prices come from Shopify. Legal pages
-  (`/legal/*`) are in `app/data/legal*.ts`, fed by `app/config/legal.ts`.
+  (`/legal/*`) are in `app/data/legal*.ts`, fed by `app/config/legal.ts`;
+  their text, like the FAQ (`faqData.*` in the dictionary), is Reda
+  Studio's, with Hustle's name, company details and host.
   Never add hardcoded products, fake reviews, fake stock counts or promises
   (delivery times, return windows) that Shopify does not back.
 - Promotions live in `app/config/promotions.ts` and stay invisible until a
@@ -21,9 +23,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   The site runs in English only (`BRAND.languages`); legal pages keep a
   French version via `?lang=fr`.
 - Homepage (app/routes/_index.tsx): Reda Studio's homepage, ported with
-  Hustle's photos and Shopify data — hero (AnimatedHero), collections
-  slider, every product, one showcase per collection with a Shopify photo,
-  real reviews, help, newsletter. Styles in reda-home.css, scoped under
+  Hustle's photos and Shopify data — hero (AnimatedHero, Paris photos
+  served as supplied), collections slider, every product, real reviews,
+  help, newsletter; no collection banners. Styles in reda-home.css, scoped under
   `.rhome`. The older configurable homepage (app/config/home.ts +
   components/home/HomeSections.tsx) is no longer rendered.
 - Styles: app.css (base) → promotions.css → brand.css → editorial.css →
