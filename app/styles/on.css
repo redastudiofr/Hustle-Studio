@@ -785,3 +785,12 @@ html .product-card:is(:active, :focus) .product-card__media .product-card__img--
 }
 
 /* The on.com homepage rules above stop at the Reda homepage (.rhome). */
+
+/* Reviews: no blur or fade on the cards beside the centred one. Safari draws
+   a coloured line along the edge of a blurred card (filter: blur); a sharp
+   card has nothing to draw it from. */
+html .reviews .reviews-row .reviews-row__item {
+  filter: none;
+  opacity: 1;
+  will-change: auto;
+}
