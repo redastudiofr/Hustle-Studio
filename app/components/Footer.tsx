@@ -1,4 +1,6 @@
-import {Link, NavLink} from 'react-router';
+import {Suspense, useEffect, useRef, useState} from 'react';
+import {Await, Link, NavLink, useRouteLoaderData} from 'react-router';
+import type {RootLoader} from '~/root';
 import {Newsletter} from '~/components/Newsletter';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {BRAND} from '~/config/brand';
@@ -6,6 +8,7 @@ import type {NavLinkConfig} from '~/config/navigation';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
 import {PaymentIcons} from '~/components/store/PaymentIcons';
+import {TIKTOK_PHOTOS} from '~/config/community';
 
 const LEGAL_LINKS: NavLinkConfig[] = [
   {labelKey: 'footer.privacy', to: '/legal/privacy'},
@@ -27,8 +30,8 @@ const COMMUNITY_PHOTOS = [
 ];
 
 /**
- * Site footer: a black "become part of the community" block (logo, title,
- * the brand's photos), then the newsletter, then
+ * Site footer: "become part of the community" (logo, title, the brand's
+ * photos, a link to the story), the brand's TikTok, then the newsletter, then
  * socials (only the profiles set in app/config/brand.ts), legal pages and
  * order help; country, language and the logo at the bottom.
  */
@@ -42,23 +45,8 @@ export function Footer() {
 
   return (
     <footer className="sx-footer st-footer">
-      <section className="st-community" aria-labelledby="st-community-title">
-        <span className="st-community__logo" aria-hidden="true">
-          <span className="brand-wordmark" />
-        </span>
-        <h2 className="st-community__title" id="st-community-title">
-          {t('store.communityTitle')}
-        </h2>
-        <div className="st-community__photos" aria-hidden="true">
-          {COMMUNITY_PHOTOS.map((src) => (
-            <img key={src} src={src} alt="" loading="lazy" decoding="async" />
-          ))}
-        </div>
-        <div className="st-community__about">
-          <h3>{t('store.about')}</h3>
-          <p>{t('footer.blurb')}</p>
-        </div>
-      </section>
+      <CommunityBlock />
+      <TiktokBlock />
       <div className="sx-footer__top">
         <div className="sx-footer__news">
           <p>{t('footer.newsletterText')}</p>
@@ -126,5 +114,135 @@ function FooterColumn({title, links}: {title: string; links: NavLinkConfig[]}) {
         ))}
       </ul>
     </nav>
+  );
+}
+
+/**
+ * "become part of the community": the black disc of the logo fills in from
+ * its centre, then the photos rise one by one and keep floating gently.
+ *
+ * Everything starts visible. Only once JavaScript runs is the block armed
+ * (the starting state of the animation); the observer then plays it, and a
+ * timer plays it anyway if the observer never answers, so the photos can
+ * never stay hidden.
+ */
+function CommunityBlock() {
+  const t = useT();
+  const ref = useRef<HTMLElement | null>(null);
+  const [state, setState] = useState<'idle' | 'armed' | 'in'>('idle');
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    setState('armed');
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setState('in');
+          observer.disconnect();
+        }
+      },
+      {threshold: 0.25},
+    );
+    observer.observe(node);
+    const safety = window.setTimeout(() => setState('in'), 6000);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(safety);
+    };
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      className={`st-community ${state === 'armed' ? 'st-community--armed' : ''} ${state === 'in' ? 'st-community--in' : ''}`}
+      aria-labelledby="st-community-title"
+    >
+      <span className="st-community__logo" aria-hidden="true">
+        <span className="st-community__fill" />
+        <span className="brand-wordmark" />
+      </span>
+      <h2 className="st-community__title" id="st-community-title">
+        {t('store.communityTitle')}
+      </h2>
+      <div className="st-community__photos" aria-hidden="true">
+        {COMMUNITY_PHOTOS.map((src) => (
+          <img key={src} src={src} alt="" loading="lazy" decoding="async" />
+        ))}
+      </div>
+      <div className="st-community__about">
+        <Link to="/about" prefetch="intent" className="st-community__story">
+          {t('store.storyButton')}
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * The brand's TikTok: a row of photos sliding on its own, and the account
+ * link once BRAND.social.tiktok is set. The photos are TIKTOK_PHOTOS
+ * (app/config/community.ts); while that list is empty, the shop's product
+ * photos from Shopify stand in.
+ */
+function TiktokBlock() {
+  const t = useT();
+  const root = useRouteLoaderData<RootLoader>('root');
+  const tiktok = BRAND.social.tiktok;
+
+  const row = (photos: {src: string; alt: string}[]) =>
+    photos.length ? (
+      <div className="st-tiktok__rail" aria-hidden="true">
+        <div className="st-tiktok__track">
+          {[...photos, ...photos].map((photo, index) => (
+            <img
+              // Two copies back to back: the row loops without a jump.
+              key={`${index < photos.length ? "a" : "b"}-${photo.src}`}
+              src={photo.src}
+              alt=""
+              loading="lazy"
+              decoding="async"
+            />
+          ))}
+        </div>
+      </div>
+    ) : null;
+
+  return (
+    <section className="st-tiktok" aria-labelledby="st-tiktok-title">
+      <h2 className="st-tiktok__title" id="st-tiktok-title">
+        {t('store.tiktokTitle')}
+      </h2>
+      <p className="st-tiktok__text">{t('store.tiktokText')}</p>
+      {TIKTOK_PHOTOS.length ? (
+        row(TIKTOK_PHOTOS.map((src) => ({src, alt: ''})))
+      ) : (
+        <Suspense fallback={null}>
+          <Await resolve={root?.cartSuggestions}>
+            {(response) =>
+              row(
+                (response?.products.nodes ?? [])
+                  .filter((product) => product.featuredImage)
+                  .map((product) => ({
+                    src: `${product.featuredImage!.url}${product.featuredImage!.url.includes('?') ? '&' : '?'}width=480`,
+                    alt: product.title,
+                  })),
+              )
+            }
+          </Await>
+        </Suspense>
+      )}
+      {tiktok && (
+        <a
+          className="st-tiktok__cta"
+          href={tiktok}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('store.tiktokButton')}
+        </a>
+      )}
+    </section>
   );
 }

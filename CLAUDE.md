@@ -40,6 +40,10 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   Reda Studio's (redastudiofr/reda-studio), ported into app/components/reda/
   and app/lib/reda/: no synthetic ratings or stock, the bundle offer stays
   off until a Hustle code is set in app/lib/reda/offers.ts.
+- Footer: "become part of the community" (logo disc fills in, photos rise
+  and float; Footer.tsx), a link to the story page (/about, dictionary
+  story.*), then a TikTok row — photos from app/config/community.ts, product
+  photos meanwhile; the account link appears once BRAND.social.tiktok is set.
 - Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
   `welcomePopup`; sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo

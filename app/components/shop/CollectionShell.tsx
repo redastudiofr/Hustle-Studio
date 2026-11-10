@@ -3,7 +3,7 @@ import {Form, NavLink, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
 import {SortSelect} from '~/components/SortSelect';
 import {useT} from '~/lib/i18n';
-import {ModelViewProvider, useModelView} from '~/lib/modelView';
+import {ModelViewProvider} from '~/lib/modelView';
 import type {SortOption} from '~/lib/sort';
 import {hasFilters, type ShopFilters} from '~/lib/shopFilters';
 
@@ -62,7 +62,6 @@ export function CollectionShell({
               ))}
             </nav>
           )}
-          <ModelSwitch />
         </div>
 
         <div className="sx-collection__tools">
@@ -89,25 +88,6 @@ export function CollectionShell({
         {children}
       </div>
     </ModelViewProvider>
-  );
-}
-
-function ModelSwitch() {
-  const t = useT();
-  const {on, toggle} = useModelView();
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      className="sx-switch"
-      onClick={toggle}
-    >
-      <span className="sx-switch__label">{t('shop.model')}</span>
-      <span className="sx-switch__track" aria-hidden="true">
-        <span className="sx-switch__thumb" />
-      </span>
-    </button>
   );
 }
 
