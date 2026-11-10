@@ -15,6 +15,7 @@ import {parseRating} from '~/lib/reda/rating';
 import {StarRating} from '~/components/StarRating';
 import {useT} from '~/lib/i18n';
 import {useInAppBrowser} from '~/lib/inAppBrowser';
+import {HsFavoriteButton, HsQuickAdd} from '~/components/hs/HsCardActions';
 
 type GridProduct =
   | CollectionItemFragment
@@ -42,7 +43,7 @@ export function ProductItem({
   const image = product.featuredImage;
   const soldOut = !product.availableForSale;
 
-  const images = 'images' in product ? product.images?.nodes ?? [] : [];
+  const images = 'images' in product ? (product.images?.nodes ?? []) : [];
   const altImage = images.find((img) => img.id !== image?.id);
   const video =
     !inApp && 'media' in product
@@ -62,66 +63,90 @@ export function ProductItem({
   // placeholder or invented score.
   const rating =
     'rating' in product
-      ? parseRating(product.rating, 'ratingCount' in product ? product.ratingCount : null)
+      ? parseRating(
+          product.rating,
+          'ratingCount' in product ? product.ratingCount : null,
+        )
       : null;
 
   return (
-    <Link
-      className={`product-card ${soldOut ? 'product-card--sold-out' : ''}`}
-      prefetch="intent"
-      to={variantUrl}
+    // The heart and "add to cart" are buttons, which cannot sit inside a
+    // link: the photo and the text each link to the product instead, only
+    // the text link in the tab order.
+    <div
+      className={`product-card hs-card ${soldOut ? 'product-card--sold-out' : ''}`}
     >
-      <div className="product-card__media" ref={ref}>
-        {soldOut ? (
-          <span className="badge-sold-out">{t('product.soldOut')}</span>
-        ) : (
-          onSale && <span className="badge-sale">{t('product.saleBadge')}</span>
-        )}
-        {video && near ? (
-          <video
-            ref={videoRef}
-            className="product-card__img product-card__img--main"
-            autoPlay
-            muted
-            loop
-            playsInline
-            // Legacy spellings, for embedded browsers that read those only.
-            // eslint-disable-next-line react/no-unknown-property
-            webkit-playsinline="true"
-            // eslint-disable-next-line react/no-unknown-property
-            x5-playsinline="true"
-            preload="metadata"
-            poster={video.previewImage?.url ?? image?.url}
-            disablePictureInPicture
-          >
-            {video.sources.map((source) => (
-              <source key={source.url} src={source.url} type={source.mimeType} />
-            ))}
-          </video>
-        ) : (
-          image && (
-            <Image
-              alt={image.altText || product.title}
-              aspectRatio="1/1"
-              data={image}
-              loading={loading}
-              sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw"
+      <div className="product-card__media hs-card__media" ref={ref}>
+        <Link
+          className="hs-card__media-link"
+          prefetch="intent"
+          to={variantUrl}
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          {soldOut ? (
+            <span className="badge-sold-out">{t('product.soldOut')}</span>
+          ) : (
+            onSale && (
+              <span className="badge-sale">{t('product.saleBadge')}</span>
+            )
+          )}
+          {video && near ? (
+            <video
+              ref={videoRef}
               className="product-card__img product-card__img--main"
+              autoPlay
+              muted
+              loop
+              playsInline
+              // Legacy spellings, for embedded browsers that read those only.
+              // eslint-disable-next-line react/no-unknown-property
+              webkit-playsinline="true"
+              // eslint-disable-next-line react/no-unknown-property
+              x5-playsinline="true"
+              preload="metadata"
+              poster={video.previewImage?.url ?? image?.url}
+              disablePictureInPicture
+            >
+              {video.sources.map((source) => (
+                <source
+                  key={source.url}
+                  src={source.url}
+                  type={source.mimeType}
+                />
+              ))}
+            </video>
+          ) : (
+            image && (
+              <Image
+                alt={image.altText || product.title}
+                aspectRatio="1/1"
+                data={image}
+                loading={loading}
+                sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw"
+                className="product-card__img product-card__img--main"
+              />
+            )
+          )}
+          {altImage && !video && (
+            <Image
+              alt={altImage.altText || product.title}
+              aspectRatio="1/1"
+              data={altImage}
+              loading="lazy"
+              sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw"
+              className="product-card__img product-card__img--alt"
             />
-          )
-        )}
-        {altImage && !video && (
-          <Image
-            alt={altImage.altText || product.title}
-            aspectRatio="1/1"
-            data={altImage}
-            loading="lazy"
-            sizes="(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw"
-            className="product-card__img product-card__img--alt"
-          />
-        )}
+          )}
+        </Link>
+        <HsFavoriteButton product={product} />
+        <HsQuickAdd product={product} />
       </div>
-      <div className="product-card__info">
+      <Link
+        className="product-card__info hs-card__info"
+        prefetch="intent"
+        to={variantUrl}
+      >
         <h3 className="product-card__title">{product.title}</h3>
         <div className="product-card__price">
           <Money data={price} />
@@ -134,7 +159,7 @@ export function ProductItem({
         {rating && (
           <StarRating rating={rating.value} className="product-card__rating" />
         )}
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }

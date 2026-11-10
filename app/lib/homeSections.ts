@@ -377,6 +377,14 @@ export const HOME_PRODUCT_FRAGMENT = `#graphql
         height
       }
     }
+    # Quick add on the card: only a product with a single variant is added
+    # straight from the grid.
+    variants(first: 2) {
+      nodes {
+        id
+        availableForSale
+      }
+    }
   }
 ` as const;
 

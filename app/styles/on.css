@@ -775,15 +775,6 @@ body:has(.hero--ink) .site-header.site-header--transparent .site-header__icon-bt
   }
 }
 
-html .st-card:is(:active, :focus) .st-card__img--hover,
-html .product-card:is(:active, :focus) .product-card__media .product-card__img--alt {
-  opacity: 0;
-}
-
-html .product-card:is(:active, :focus) .product-card__media .product-card__img--main {
-  opacity: 1;
-}
-
 /* The on.com homepage rules above stop at the Reda homepage (.rhome). */
 
 /* Reviews: no blur or fade on the cards beside the centred one. Safari draws
@@ -831,24 +822,7 @@ html .reviews .review-card {
   }
 }
 
-/* ── No hover animation on product cards ─────────────────────────────
-   The photo neither zooms nor slides; the second photo, where a card has
-   one, simply replaces the first while the mouse rests on it. */
-html body .st-card .st-card__media img,
-html body .st-card:hover .st-card__media img,
-html body .product-card .product-card__media .product-card__img,
-html body .product-card .product-card__media:hover .product-card__img {
-  transform: none;
-  transition: none;
-}
-
-html body .st-card,
-html body .st-card:hover,
-html body .product-card,
-html body .product-card:hover {
-  transform: none;
-  transition: none;
-}
+/* Product card hover, heart and quick add: hs-product-card.css. */
 
 /* ── "become part of the community": logo fill, floating photos ───────
    Visible by default; the animation's starting state applies only while

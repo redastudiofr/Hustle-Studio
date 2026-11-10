@@ -22,6 +22,10 @@ import storeStyles from '~/styles/store.css?url';
 import redaPdpStyles from '~/styles/reda-pdp.css?url';
 import onStyles from '~/styles/on.css?url';
 import redaHomeStyles from '~/styles/reda-home.css?url';
+import hsProductCardStyles from '~/styles/hs-product-card.css?url';
+import {HS_LOADER_CSS, HS_LOADER_SCRIPT} from '~/lib/hs-loader';
+import {HsLoader} from '~/components/hs/HsLoader';
+import {HsToastViewport} from '~/components/hs/HsToast';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from './components/PageLayout';
 import {withoutAutoCollections} from '~/lib/collections';
@@ -214,6 +218,9 @@ export function Layout({children}: {children?: React.ReactNode}) {
   return (
     <html
       lang={locale}
+      // The head scripts add classes to <html> before React hydrates ("js",
+      // "hs-loader-run"); they are not React's to reconcile.
+      suppressHydrationWarning
       // The header and footer paint the wordmark through a CSS mask; its file
       // comes from app/config/brand.ts rather than being hardcoded in CSS.
       style={
@@ -226,6 +233,13 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content={BRAND.themeColor} />
+        {/* Opening loader: critical CSS and the first-visit check, inline so
+            nothing waits on a file (app/lib/hs-loader.ts). */}
+        <style dangerouslySetInnerHTML={{__html: HS_LOADER_CSS}} />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{__html: HS_LOADER_SCRIPT}}
+        />
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
@@ -238,6 +252,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={onStyles}></link>
         <link rel="stylesheet" href={redaPdpStyles}></link>
         <link rel="stylesheet" href={redaHomeStyles}></link>
+        <link rel="stylesheet" href={hsProductCardStyles}></link>
         {/* The two latin font files every page uses (app/config/theme.css). */}
         <link
           rel="preload"
@@ -271,7 +286,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
         />
       </head>
       <body>
-        <I18nProvider locale={locale}>{children}</I18nProvider>
+        <I18nProvider locale={locale}>
+          <HsLoader />
+          {children}
+          <HsToastViewport />
+        </I18nProvider>
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>

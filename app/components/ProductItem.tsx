@@ -10,6 +10,7 @@ import {useVariantUrl} from '~/lib/variants';
 import {useT} from '~/lib/i18n';
 import {useModelView} from '~/lib/modelView';
 import {Price} from '~/components/Price';
+import {HsFavoriteButton, HsQuickAdd} from '~/components/hs/HsCardActions';
 
 type GridProduct =
   | CollectionItemFragment
@@ -66,62 +67,75 @@ export function ProductItem({
   const colors = colorOption?.optionValues.length ?? 0;
 
   return (
-    <Link
-      className={`st-card${soldOut ? ' st-card--sold-out' : ''}`}
-      prefetch="intent"
-      to={variantUrl}
-    >
-      <div className="st-card__media">
-        {soldOut ? (
-          <span className="st-card__badge st-card__badge--dark">
-            {t('shop.soldOut')}
-          </span>
-        ) : (
-          percent > 0 && (
-            <span className="st-card__badge st-card__badge--sale">
-              {t('store.percentOff', {percent})}
+    // Not one big link any more: the heart and "add to cart" are buttons, and
+    // a button cannot sit inside a link. The photo and the text each link to
+    // the product; only the text link is in the tab order.
+    <div className={`st-card hs-card${soldOut ? ' st-card--sold-out' : ''}`}>
+      <div className="st-card__media hs-card__media">
+        <Link
+          className="hs-card__media-link"
+          prefetch="intent"
+          to={variantUrl}
+          tabIndex={-1}
+          aria-hidden="true"
+        >
+          {soldOut ? (
+            <span className="st-card__badge st-card__badge--dark">
+              {t('shop.soldOut')}
             </span>
-          )
-        )}
-        {image ? (
-          <Image
-            alt={image.altText || product.title}
-            aspectRatio="1/1"
-            data={image}
-            loading={loading}
-            sizes="(min-width: 64em) 25vw, 50vw"
-            className="st-card__img"
-          />
-        ) : (
-          <span className="st-card__placeholder" aria-hidden="true" />
-        )}
-        {/* The other photo, shown when the pointer is over the card. */}
-        {hoverImage && (
-          <Image
-            alt=""
-            aspectRatio="1/1"
-            data={hoverImage}
-            loading="lazy"
-            sizes="(min-width: 64em) 25vw, 50vw"
-            className="st-card__img st-card__img--hover"
-          />
-        )}
+          ) : (
+            percent > 0 && (
+              <span className="st-card__badge st-card__badge--sale">
+                {t('store.percentOff', {percent})}
+              </span>
+            )
+          )}
+          {image ? (
+            <Image
+              alt={image.altText || product.title}
+              aspectRatio="1/1"
+              data={image}
+              loading={loading}
+              sizes="(min-width: 64em) 25vw, 50vw"
+              className="st-card__img hs-card__img"
+            />
+          ) : (
+            <span className="st-card__placeholder" aria-hidden="true" />
+          )}
+          {/* The other photo, shown when the pointer is over the card. */}
+          {hoverImage && (
+            <Image
+              alt=""
+              aspectRatio="1/1"
+              data={hoverImage}
+              loading="lazy"
+              sizes="(min-width: 64em) 25vw, 50vw"
+              className="st-card__img st-card__img--hover hs-card__img--alt"
+            />
+          )}
+        </Link>
+        <HsFavoriteButton product={product} />
+        <HsQuickAdd product={product} />
       </div>
-      <h3 className="st-card__title">{product.title}</h3>
-      <p className="st-card__price">
-        {onSale && (
-          <s>
-            <Price data={compareAt} />
-          </s>
+      <Link className="hs-card__info" prefetch="intent" to={variantUrl}>
+        <h3 className="st-card__title">{product.title}</h3>
+        <p className="st-card__price">
+          {onSale && (
+            <s>
+              <Price data={compareAt} />
+            </s>
+          )}
+          <Price
+            data={price}
+            className={onSale ? 'st-card__price--sale' : undefined}
+          />
+        </p>
+        {colors > 1 && (
+          <p className="st-card__colors">
+            {t('store.colors', {count: colors})}
+          </p>
         )}
-        <Price
-          data={price}
-          className={onSale ? 'st-card__price--sale' : undefined}
-        />
-      </p>
-      {colors > 1 && (
-        <p className="st-card__colors">{t('store.colors', {count: colors})}</p>
-      )}
-    </Link>
+      </Link>
+    </div>
   );
 }

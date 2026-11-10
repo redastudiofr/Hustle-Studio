@@ -49,6 +49,13 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo
   centred, every page in the menu panel opened from the button on the right
   (app/config/navigation.ts `mobileLinks`).
+- Opening loader (first page load of a session, skipped with reduced
+  motion): app/lib/hs-loader.ts (inline CSS + head script) +
+  app/components/hs/HsLoader.tsx. Product cards (ProductItem and
+  reda/ProductItem): hover zoom, favourites heart (localStorage), quick add
+  through the cart's LinesAdd for single-variant products only (others link
+  to their page), header count bump and toasts — app/components/hs/,
+  app/styles/hs-product-card.css. Animate transform/opacity/clip-path only.
 - Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
 - Vercel build: keep server and client CSS identical (no `build.target` on the

@@ -1,4 +1,4 @@
-import {Suspense, useState} from 'react';
+import {Suspense, useCallback, useState} from 'react';
 import {Await, NavLink, useAsyncValue} from 'react-router';
 import {
   type CartViewPayload,
@@ -11,6 +11,7 @@ import {useHeaderTone} from '~/lib/header-tone';
 import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
+import {useCartAdded} from '~/components/hs/HsToast';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
 import {
@@ -182,6 +183,8 @@ function CartButton({count}: {count: number}) {
   const {open} = useAside();
   const t = useT();
   const {publish, shop, cart, prevCart} = useAnalytics();
+  const [bump, setBump] = useState(0);
+  useCartAdded(useCallback(() => setBump((n) => n + 1), []));
   return (
     <button
       className="site-header__icon-btn"
@@ -197,7 +200,15 @@ function CartButton({count}: {count: number}) {
       }}
     >
       <BagIcon />
-      {count > 0 && <span className="site-header__cart-count">{count}</span>}
+      {count > 0 && (
+        // A new key after every add restarts the bump animation.
+        <span
+          key={bump}
+          className={`site-header__cart-count${bump ? ' hs-bump' : ''}`}
+        >
+          {count}
+        </span>
+      )}
     </button>
   );
 }
