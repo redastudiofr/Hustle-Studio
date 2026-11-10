@@ -15,7 +15,7 @@ import {parseRating} from '~/lib/reda/rating';
 import {StarRating} from '~/components/StarRating';
 import {useT} from '~/lib/i18n';
 import {useInAppBrowser} from '~/lib/inAppBrowser';
-import {HsFavoriteButton, HsQuickAdd} from '~/components/hs/HsCardActions';
+import {HsQuickAdd} from '~/components/hs/HsCardActions';
 
 type GridProduct =
   | CollectionItemFragment
@@ -139,7 +139,6 @@ export function ProductItem({
             />
           )}
         </Link>
-        <HsFavoriteButton product={product} />
         <HsQuickAdd product={product} />
       </div>
       <Link

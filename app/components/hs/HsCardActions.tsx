@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {
   Link,
   useRouteLoaderData,
@@ -30,102 +30,6 @@ export type HsCardProduct = {
   options?: Array<{name: string}> | null;
   variants?: {nodes: Array<{id: string; availableForSale: boolean}>} | null;
 };
-
-/* ── Favourites ───────────────────────────────────────────────────────── */
-
-const FAVORITES_KEY = 'hs-favorites';
-const FAVORITES_EVENT = 'hs:favorites';
-
-function readFavorites(): string[] {
-  try {
-    const parsed: unknown = JSON.parse(
-      window.localStorage.getItem(FAVORITES_KEY) ?? '[]',
-    );
-    return Array.isArray(parsed)
-      ? parsed.filter((item): item is string => typeof item === 'string')
-      : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeFavorites(list: string[]) {
-  try {
-    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(list));
-  } catch {
-    // Storage refused (private mode, quota): the heart still toggles for
-    // this page, it just won't be remembered.
-  }
-  window.dispatchEvent(new Event(FAVORITES_EVENT));
-}
-
-/**
- * Whether a product is in the favourites, kept in localStorage (the shop has
- * no favourites of its own). Every heart showing the same product stays in
- * step, in this tab and in others.
- */
-export function useFavorite(handle: string) {
-  const [on, setOn] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setOn(readFavorites().includes(handle));
-    sync();
-    window.addEventListener(FAVORITES_EVENT, sync);
-    window.addEventListener('storage', sync);
-    return () => {
-      window.removeEventListener(FAVORITES_EVENT, sync);
-      window.removeEventListener('storage', sync);
-    };
-  }, [handle]);
-
-  const toggle = useCallback(() => {
-    const list = readFavorites();
-    const next = list.includes(handle)
-      ? list.filter((item) => item !== handle)
-      : [...list, handle];
-    setOn(next.includes(handle));
-    writeFavorites(next);
-    return next.includes(handle);
-  }, [handle]);
-
-  return [on, toggle] as const;
-}
-
-export function HsFavoriteButton({product}: {product: HsCardProduct}) {
-  const t = useT();
-  const [on, toggle] = useFavorite(product.handle);
-  // Bumped each time the heart fills: the key restarts the "pop".
-  const [pop, setPop] = useState(0);
-
-  return (
-    <button
-      type="button"
-      className={`hs-heart${on ? ' hs-heart--on' : ''}`}
-      aria-pressed={on}
-      aria-label={t(on ? 'card.removeFavorite' : 'card.addFavorite', {
-        title: product.title,
-      })}
-      onClick={() => {
-        if (toggle()) setPop((n) => n + 1);
-      }}
-    >
-      <svg
-        key={pop}
-        className={`hs-heart__icon${pop ? ' hs-heart__icon--pop' : ''}`}
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          d="M12 20.3s-7.6-4.6-9.2-9.4C1.7 7.6 3.9 4.5 7.2 4.5c2 0 3.6 1.1 4.8 2.8 1.2-1.7 2.8-2.8 4.8-2.8 3.3 0 5.5 3.1 4.4 6.4-1.6 4.8-9.2 9.4-9.2 9.4z"
-          strokeWidth="1.6"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
-  );
-}
 
 /* ── Quick add ────────────────────────────────────────────────────────── */
 

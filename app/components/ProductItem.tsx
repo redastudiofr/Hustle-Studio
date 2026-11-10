@@ -10,7 +10,7 @@ import {useVariantUrl} from '~/lib/variants';
 import {useT} from '~/lib/i18n';
 import {useModelView} from '~/lib/modelView';
 import {Price} from '~/components/Price';
-import {HsFavoriteButton, HsQuickAdd} from '~/components/hs/HsCardActions';
+import {HsQuickAdd} from '~/components/hs/HsCardActions';
 
 type GridProduct =
   | CollectionItemFragment
@@ -114,7 +114,6 @@ export function ProductItem({
             />
           )}
         </Link>
-        <HsFavoriteButton product={product} />
         <HsQuickAdd product={product} />
       </div>
       <Link className="hs-card__info" prefetch="intent" to={variantUrl}>

@@ -9,9 +9,10 @@
  * waits on the loader, and if JavaScript never runs the overlay never shows.
  *
  * Timeline (total 1.75s, removed at 1.8s):
- *   0s     HUSTLE letters rise from a mask, 55ms apart (0.7s each)
- *   0s     the 160px line fills left to right (1s)
- *   0.35s  STUDIO fades in while its letter-spacing opens (0.8s)
+ *   0s     the site's own wordmark (BRAND.logo.wordmark, painted through a
+ *          CSS mask) is written left to right — a clip-path wipe, like the
+ *          signature it is — while it settles up into place
+ *   0.1s   the 160px line fills left to right (1s)
  *   1.15s  the overlay leaves upwards (clip-path, 0.6s); its content rises
  *          48px and fades out
  */
@@ -36,15 +37,12 @@ html.hs-loader-run .hs-loader{display:flex;animation:hs-loader-exit .6s var(--hs
 html.hs-loader-run,html.hs-loader-run body{overflow:hidden}
 .hs-loader__inner{display:flex;flex-direction:column;align-items:center}
 html.hs-loader-run .hs-loader__inner{animation:hs-loader-inner-out .6s var(--hs-ease-inout) 1.15s forwards}
-.hs-loader__word{display:flex;margin:0;overflow:hidden;font-family:var(--font-display,'Archivo','Arial Narrow',Arial,sans-serif);font-size:clamp(3.4rem,13vw,8.5rem);font-weight:800;line-height:1;letter-spacing:.01em;text-transform:uppercase}
-.hs-loader__letter{display:inline-block;transform:translateY(110%)}
-html.hs-loader-run .hs-loader__letter{animation:hs-loader-rise .7s var(--hs-ease-out) forwards;animation-delay:calc(var(--i) * 55ms)}
-.hs-loader__sub{margin:.9rem 0 0;padding-left:.6em;font-family:var(--font-display,'Archivo','Arial Narrow',Arial,sans-serif);font-size:clamp(.8rem,2.4vw,1.05rem);font-weight:700;line-height:1;letter-spacing:.2em;text-transform:uppercase;opacity:0}
-html.hs-loader-run .hs-loader__sub{animation:hs-loader-sub .8s var(--hs-ease-out) .35s forwards}
-.hs-loader__line{display:block;width:160px;height:1px;margin-top:1.2rem;background:var(--hs-loader-fg);transform:scaleX(0);transform-origin:0 50%}
-html.hs-loader-run .hs-loader__line{animation:hs-loader-line 1s var(--hs-ease-inout) forwards}
-@keyframes hs-loader-rise{to{transform:translateY(0)}}
-@keyframes hs-loader-sub{to{opacity:1;letter-spacing:.6em}}
+.hs-loader__logo{display:block;width:min(420px,72vw);aspect-ratio:1200/441;background:var(--hs-loader-fg);-webkit-mask:var(--brand-wordmark) center/contain no-repeat;mask:var(--brand-wordmark) center/contain no-repeat;clip-path:inset(0 100% 0 0);transform:translateY(14px) scale(.96)}
+html.hs-loader-run .hs-loader__logo{animation:hs-loader-write 1s var(--hs-ease-inout) forwards,hs-loader-settle .9s var(--hs-ease-out) forwards}
+.hs-loader__line{display:block;width:160px;height:1px;margin-top:1.4rem;background:var(--hs-loader-fg);transform:scaleX(0);transform-origin:0 50%;opacity:.7}
+html.hs-loader-run .hs-loader__line{animation:hs-loader-line 1s var(--hs-ease-inout) .1s forwards}
+@keyframes hs-loader-write{to{clip-path:inset(0 0 0 0)}}
+@keyframes hs-loader-settle{to{transform:none}}
 @keyframes hs-loader-line{to{transform:scaleX(1)}}
 @keyframes hs-loader-exit{to{clip-path:inset(0 0 100% 0)}}
 @keyframes hs-loader-inner-out{to{transform:translateY(-48px);opacity:0}}

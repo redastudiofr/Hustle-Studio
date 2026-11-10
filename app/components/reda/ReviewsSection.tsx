@@ -102,14 +102,25 @@ function ReviewRow({
   );
 }
 
+/** Three rows: right, left, then right again. */
+const ROW_DIRECTIONS = ['right', 'left', 'right'] as const;
+
 /**
- * One row, travelling right.
- *
- * It was two, in opposite directions. One row shows fewer reviews at a time
- * and reads as a single thing going somewhere, rather than as a wall of text
- * sliding both ways at once — and it leaves the cards the room to be bigger.
+ * Deals the reviews across the three rows (1st, 4th, 7th… to the first row,
+ * and so on). With too few to fill three rows, each row shows all of them,
+ * starting from a different one so the rows never line up.
  */
-const ROW_DIRECTION = 'right' as const;
+function rowsOf(reviews: Review[]): Review[][] {
+  if (reviews.length < 6) {
+    return ROW_DIRECTIONS.map((_, row) => {
+      const start = (row * Math.ceil(reviews.length / 3)) % reviews.length;
+      return [...reviews.slice(start), ...reviews.slice(0, start)];
+    });
+  }
+  return ROW_DIRECTIONS.map((_, row) =>
+    reviews.filter((__, index) => index % 3 === row),
+  );
+}
 
 /**
  * Customer reviews, shared by the homepage and every product page.
@@ -147,7 +158,15 @@ export function ReviewsSection({
       </div>
 
       <div className="reviews__rows">
-        <ReviewRow reviews={reviews} direction={ROW_DIRECTION} />
+        {rowsOf(reviews).map((row, index) => (
+          <ReviewRow
+            // Fixed set of three rows, never reordered.
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            reviews={row}
+            direction={ROW_DIRECTIONS[index]}
+          />
+        ))}
       </div>
 
       <div className="reviews__cta">

@@ -22,11 +22,15 @@ const SERVICE_LINKS: NavLinkConfig[] = [
   {labelKey: 'footer.trackOrder', to: '/order-tracking'},
 ];
 
-/** The brand's own photos, tilted, under "become part of the community". */
+/** The brand's own photos, floating in the "become part of the community" slider. */
 const COMMUNITY_PHOTOS = [
   '/brand/about-street.webp',
+  '/brand/hero-mobile-paris.webp',
   '/brand/hero-mobile-passage.webp',
+  '/brand/popup-business-after-hours.webp',
   '/brand/about.webp',
+  '/brand/hero-mobile-chair.webp',
+  '/brand/hero-mobile-shoot.webp',
 ];
 
 /**
@@ -118,8 +122,9 @@ function FooterColumn({title, links}: {title: string; links: NavLinkConfig[]}) {
 }
 
 /**
- * "become part of the community": the black disc of the logo fills in from
- * its centre, then the photos rise one by one and keep floating gently.
+ * "become part of the community": the whole block fills with black from the
+ * logo outwards, then the photos arrive one by one in a slow slider, every
+ * one of them floating.
  *
  * Everything starts visible: without JavaScript, or with reduced motion,
  * nothing is hidden. Once JavaScript runs the block is armed (empty disc,
@@ -155,17 +160,32 @@ function CommunityBlock() {
       className={`st-community ${state === 'armed' ? 'st-community--armed' : ''} ${state === 'in' ? 'st-community--in' : ''}`}
       aria-labelledby="st-community-title"
     >
+      {/* The black that spreads from the logo over the whole block. */}
+      <span className="st-community__bg" aria-hidden="true" />
       <span className="st-community__logo" aria-hidden="true">
-        <span className="st-community__fill" />
         <span className="brand-wordmark" />
       </span>
       <h2 className="st-community__title" id="st-community-title">
         {t('store.communityTitle')}
       </h2>
       <div className="st-community__photos" aria-hidden="true">
-        {COMMUNITY_PHOTOS.map((src) => (
-          <img key={src} src={src} alt="" loading="lazy" decoding="async" />
-        ))}
+        <div className="st-community__track">
+          {/* Two copies back to back: the slider loops without a jump. */}
+          {[...COMMUNITY_PHOTOS, ...COMMUNITY_PHOTOS].map((src, position) => (
+            <img
+              key={`${position < COMMUNITY_PHOTOS.length ? 'a' : 'b'}-${src}`}
+              src={src}
+              alt=""
+              loading="lazy"
+              decoding="async"
+              style={
+                {
+                  '--i': position % COMMUNITY_PHOTOS.length,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
       </div>
       <div className="st-community__about">
         <Link to="/about" prefetch="intent" className="st-community__story">
@@ -194,7 +214,7 @@ function TiktokBlock() {
           {[...photos, ...photos].map((photo, index) => (
             <img
               // Two copies back to back: the row loops without a jump.
-              key={`${index < photos.length ? "a" : "b"}-${photo.src}`}
+              key={`${index < photos.length ? 'a' : 'b'}-${photo.src}`}
               src={photo.src}
               alt=""
               loading="lazy"

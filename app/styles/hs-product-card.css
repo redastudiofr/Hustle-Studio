@@ -46,11 +46,6 @@
   gap: inherit;
 }
 
-/* Reda's badges sat top-right, where the heart now is. */
-.product-card.hs-card :is(.badge-sale, .badge-sold-out) {
-  right: auto;
-  left: 0.75rem;
-}
 
 /* ── Photo: slow zoom, fade to the second photo ──────────────────────── */
 .hs-card.hs-card .hs-card__media :is(.hs-card__img, .product-card__img--main) {
@@ -97,64 +92,36 @@
   }
 }
 
+/* Phones: the product photo fills more of its square (the shop's photos
+   carry a wide white margin), like the "you might also like" row, and the
+   bar is slimmer so it hides less of it. */
+@media (max-width: 47.99em) {
+  .hs-card.hs-card .hs-card__media :is(.hs-card__img, .product-card__img--main),
+  .hs-card.hs-card .hs-card__media:hover :is(.hs-card__img, .product-card__img--main) {
+    padding: 0;
+    object-fit: cover;
+    transform: scale(1.12);
+  }
+
+  .hs-card .hs-quick {
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+  }
+
+  .hs-card .hs-quick .hs-quick__btn {
+    min-height: 34px;
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+  }
+}
+
 /* Touch screens: no second photo. */
 @media (hover: none) {
   .hs-card.hs-card
     .hs-card__media
     :is(.hs-card__img--alt, .product-card__img--alt) {
     display: none;
-  }
-}
-
-/* ── Favourites heart ─────────────────────────────────────────────────── */
-.hs-heart {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgb(242 240 235 / 0.9);
-  color: var(--hs-ink);
-  cursor: pointer;
-  transition: transform 0.2s var(--hs-ease-out);
-}
-
-.hs-heart:active {
-  transform: scale(0.88);
-}
-
-.hs-heart__icon {
-  display: block;
-}
-
-.hs-heart__icon path {
-  fill: transparent;
-  stroke: currentColor;
-}
-
-.hs-heart--on .hs-heart__icon path {
-  fill: var(--hs-ink);
-}
-
-.hs-heart__icon--pop {
-  animation: hs-pop 0.45s var(--hs-ease-out);
-}
-
-@keyframes hs-pop {
-  0% {
-    transform: scale(1);
-  }
-  40% {
-    transform: scale(1.35);
-  }
-  100% {
-    transform: scale(1);
   }
 }
 
@@ -280,8 +247,7 @@
   transform: scale(0.97);
 }
 
-.hs-quick__btn:focus-visible,
-.hs-heart:focus-visible {
+.hs-quick__btn:focus-visible {
   outline: 2px solid var(--hs-ink);
   outline-offset: 2px;
   box-shadow: 0 0 0 4px var(--hs-cream);

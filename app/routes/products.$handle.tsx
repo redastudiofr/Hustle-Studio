@@ -26,13 +26,15 @@ import {ReviewsSection} from '~/components/reda/ReviewsSection';
 import {RelatedProductsRail} from '~/components/reda/RelatedProductsRail';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductFaq} from '~/data/faq';
+import {buildProductDetails} from '~/lib/productDetails';
+import {ProductDetailsList} from '~/components/reda/ProductDetailsList';
 import {parseRating} from '~/lib/reda/rating';
 import {withoutAutoCollections} from '~/lib/collections';
 import {loadReviews, reviewsForProduct} from '~/lib/reviews';
 import {OFFER_ENABLED} from '~/lib/reda/offers';
 import {seoMeta, originFromMatches} from '~/lib/seo';
 import {isPreorderHandle} from '~/lib/reda/preorder';
-import {useT} from '~/lib/i18n';
+import {useI18n, useT} from '~/lib/i18n';
 
 /** Title, description and share image all come from the product in Shopify. */
 export const meta: Route.MetaFunction = ({data, matches}) => {
@@ -49,13 +51,37 @@ export const meta: Route.MetaFunction = ({data, matches}) => {
 };
 
 export async function loader(args: Route.LoaderArgs) {
+  // Started first so it runs alongside the product query: the stars next to
+  // the title come from the real reviews (app/lib/reviews.ts).
+  const allReviews = loadReviews(args.context.storefront).catch(
+    (error: Error) => {
+      console.error(error);
+      return [];
+    },
+  );
   const criticalData = await loadCriticalData(args);
   const deferredData = loadDeferredData(
     args,
     criticalData.product.id,
     criticalData.product.handle,
   );
-  return {...deferredData, ...criticalData};
+  const reviewRating = ratingFromReviews(
+    reviewsForProduct(await allReviews, criticalData.product.handle),
+  );
+  return {...deferredData, ...criticalData, reviewRating};
+}
+
+/**
+ * The average of the reviews shown on this page — this product's own and the
+ * shop's — so the stars by the title always match the reviews further down.
+ * None: no stars.
+ */
+function ratingFromReviews(reviews: Array<{rating: number}>) {
+  const rated = reviews.filter((review) => review.rating > 0);
+  if (!rated.length) return null;
+  const average =
+    rated.reduce((sum, review) => sum + review.rating, 0) / rated.length;
+  return {value: Math.round(average * 10) / 10, count: rated.length};
 }
 
 async function loadCriticalData({context, params, request}: Route.LoaderArgs) {
@@ -211,8 +237,14 @@ function shortenDescription(description: string): string {
 }
 
 export default function Product() {
-  const {product, recommended, showcaseCollections, pairChoices, reviews} =
-    useLoaderData<typeof loader>();
+  const {
+    product,
+    recommended,
+    showcaseCollections,
+    pairChoices,
+    reviews,
+    reviewRating,
+  } = useLoaderData<typeof loader>();
 
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
@@ -227,7 +259,24 @@ export default function Product() {
   });
 
   const t = useT();
+  const {locale} = useI18n();
   const {title, description, descriptionHtml, vendor} = product;
+  // Cut, sizes, material, details and care written from this product's own
+  // data (description, options, metafields) — app/lib/productDetails.ts.
+  const details = buildProductDetails(
+    {
+      title,
+      handle: product.handle,
+      description,
+      productType: product.productType,
+      options: product.options,
+      fit: product.fitNote,
+      composition: product.composition,
+      madeIn: product.madeIn,
+      care: product.careNote,
+    },
+    locale,
+  );
 
   const galleryImages = product.images.nodes.length
     ? product.images.nodes
@@ -277,7 +326,9 @@ export default function Product() {
             preorder={preorder}
             // Only a real review app's score (Shopify metafields): no
             // review app, no stars.
-            rating={parseRating(product.rating, product.ratingCount)}
+            rating={
+              parseRating(product.rating, product.ratingCount) ?? reviewRating
+            }
           />
 
           {/* The "take two" box, on every product — the pack is sold on the
@@ -315,10 +366,12 @@ export default function Product() {
               </section>
             )}
 
+            <ProductDetailsList details={details} />
+
             <section className="pdp__section">
               <h2 className="pdp__section-title">{t('product.faqTitle')}</h2>
               <div className="pdp__accordions">
-                {getProductFaq(t, description ?? '').map((item) => (
+                {getProductFaq(t, description ?? '', details).map((item) => (
                   <Accordion key={item.question} title={item.question}>
                     <p>{item.answer}</p>
                   </Accordion>
@@ -428,6 +481,22 @@ const PRODUCT_FRAGMENT = `#graphql
     handle
     descriptionHtml
     description
+    productType
+    # Optional product facts the shop can fill (Admin → product →
+    # Metafields, namespace "custom"); shown as written, over anything the
+    # description suggests — see app/lib/productDetails.ts.
+    fitNote: metafield(namespace: "custom", key: "fit") {
+      value
+    }
+    composition: metafield(namespace: "custom", key: "composition") {
+      value
+    }
+    madeIn: metafield(namespace: "custom", key: "made_in") {
+      value
+    }
+    careNote: metafield(namespace: "custom", key: "care") {
+      value
+    }
     # Publication date, kept from the Reda Studio page.
     createdAt
     # Standard Shopify review metafields, written by review apps. Absent when

@@ -40,8 +40,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   Reda Studio's (redastudiofr/reda-studio), ported into app/components/reda/
   and app/lib/reda/: no synthetic ratings or stock, the bundle offer stays
   off until a Hustle code is set in app/lib/reda/offers.ts.
-- Footer: "become part of the community" (logo disc fills in, photos rise
-  and float; Footer.tsx), a link to the story page (/about, dictionary
+- Footer: "become part of the community" (the whole block fills black from
+  the logo, then a slider of floating brand photos; Footer.tsx), a link to the story page (/about, dictionary
   story.*), then a TikTok row — photos from app/config/community.ts, product
   photos meanwhile; the account link appears once BRAND.social.tiktok is set.
 - Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
@@ -52,10 +52,16 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 - Opening loader (first page load of a session, skipped with reduced
   motion): app/lib/hs-loader.ts (inline CSS + head script) +
   app/components/hs/HsLoader.tsx. Product cards (ProductItem and
-  reda/ProductItem): hover zoom, favourites heart (localStorage), quick add
+  reda/ProductItem): hover zoom, quick add
   through the cart's LinesAdd for single-variant products only (others link
   to their page), header count bump and toasts — app/components/hs/,
   app/styles/hs-product-card.css. Animate transform/opacity/clip-path only.
+- Product page: "the details" and the FAQ answers are written per product
+  from its own data (description, options, metafields custom.fit /
+  composition / made_in / care) — app/lib/productDetails.ts; never invent a
+  fabric or a country. Stars by the title: review-app metafields, else the
+  average of the real reviews shown on the page. Reviews: three rows
+  (right, left, right).
 - Secrets only in env vars (`.env.example` lists them). Never commit tokens.
 - Before pushing: `npm run typecheck`, `npm run lint`, `npm run build:vercel`.
 - Vercel build: keep server and client CSS identical (no `build.target` on the

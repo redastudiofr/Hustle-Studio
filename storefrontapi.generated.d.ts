@@ -1565,10 +1565,15 @@ export type ProductFragment = Pick<
   | 'handle'
   | 'descriptionHtml'
   | 'description'
+  | 'productType'
   | 'createdAt'
   | 'encodedVariantExistence'
   | 'encodedVariantAvailability'
 > & {
+  fitNote?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+  composition?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+  madeIn?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+  careNote?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
   rating?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
   ratingCount?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
   images: {
@@ -1687,10 +1692,15 @@ export type ProductQuery = {
       | 'handle'
       | 'descriptionHtml'
       | 'description'
+      | 'productType'
       | 'createdAt'
       | 'encodedVariantExistence'
       | 'encodedVariantAvailability'
     > & {
+      fitNote?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      composition?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      madeIn?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
+      careNote?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
       rating?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
       ratingCount?: StorefrontAPI.Maybe<Pick<StorefrontAPI.Metafield, 'value'>>;
       images: {
@@ -2342,7 +2352,7 @@ interface GeneratedQueryTypes {
     return: PoliciesQuery;
     variables: PoliciesQueryVariables;
   };
-  '#graphql\n  query Product(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n    $selectedOptions: [SelectedOptionInput!]!\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    # Publication date, kept from the Reda Studio page.\n    createdAt\n    # Standard Shopify review metafields, written by review apps. Absent when\n    # the shop has no review app — no rating is then shown at all.\n    rating: metafield(namespace: "reviews", key: "rating") {\n      value\n    }\n    ratingCount: metafield(namespace: "reviews", key: "rating_count") {\n      value\n    }\n    encodedVariantExistence\n    encodedVariantAvailability\n    images(first: 12) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    quantityAvailable\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n': {
+  '#graphql\n  query Product(\n    $country: CountryCode\n    $handle: String!\n    $language: LanguageCode\n    $selectedOptions: [SelectedOptionInput!]!\n  ) @inContext(country: $country, language: $language) {\n    product(handle: $handle) {\n      ...Product\n    }\n  }\n  #graphql\n  fragment Product on Product {\n    id\n    title\n    vendor\n    handle\n    descriptionHtml\n    description\n    productType\n    # Optional product facts the shop can fill (Admin → product →\n    # Metafields, namespace "custom"); shown as written, over anything the\n    # description suggests — see app/lib/productDetails.ts.\n    fitNote: metafield(namespace: "custom", key: "fit") {\n      value\n    }\n    composition: metafield(namespace: "custom", key: "composition") {\n      value\n    }\n    madeIn: metafield(namespace: "custom", key: "made_in") {\n      value\n    }\n    careNote: metafield(namespace: "custom", key: "care") {\n      value\n    }\n    # Publication date, kept from the Reda Studio page.\n    createdAt\n    # Standard Shopify review metafields, written by review apps. Absent when\n    # the shop has no review app — no rating is then shown at all.\n    rating: metafield(namespace: "reviews", key: "rating") {\n      value\n    }\n    ratingCount: metafield(namespace: "reviews", key: "rating_count") {\n      value\n    }\n    encodedVariantExistence\n    encodedVariantAvailability\n    images(first: 12) {\n      nodes {\n        id\n        url\n        altText\n        width\n        height\n      }\n    }\n    options {\n      name\n      optionValues {\n        name\n        firstSelectableVariant {\n          ...ProductVariant\n        }\n        swatch {\n          color\n          image {\n            previewImage {\n              url\n            }\n          }\n        }\n      }\n    }\n    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {\n      ...ProductVariant\n    }\n    adjacentVariants (selectedOptions: $selectedOptions) {\n      ...ProductVariant\n    }\n    seo {\n      description\n      title\n    }\n  }\n  #graphql\n  fragment ProductVariant on ProductVariant {\n    availableForSale\n    quantityAvailable\n    compareAtPrice {\n      amount\n      currencyCode\n    }\n    id\n    image {\n      __typename\n      id\n      url\n      altText\n      width\n      height\n    }\n    price {\n      amount\n      currencyCode\n    }\n    product {\n      title\n      handle\n    }\n    selectedOptions {\n      name\n      value\n    }\n    sku\n    title\n    unitPrice {\n      amount\n      currencyCode\n    }\n  }\n\n\n': {
     return: ProductQuery;
     variables: ProductQueryVariables;
   };

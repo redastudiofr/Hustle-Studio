@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
 import type {Translate} from '~/lib/i18n';
+import type {ProductDetails} from '~/lib/productDetails';
 
 export interface FaqItem {
   question: string;
@@ -61,18 +62,40 @@ export function extractComposition(description: string): string | null {
  * Product-page FAQ. `composition` is derived from the product's own
  * description, so each product states its real materials.
  */
-export function getProductFaq(t: Translate, description = ''): FaqItem[] {
-  const composition = extractComposition(description);
+export function getProductFaq(
+  t: Translate,
+  description = '',
+  details?: ProductDetails,
+): FaqItem[] {
+  const composition = details?.composition ?? extractComposition(description);
+
+  // Product-specific answers when the product says enough about itself
+  // (app/lib/productDetails.ts); the shop-wide answer otherwise.
+  const fitParts = details
+    ? [
+        details.fit ? t('details.fitIs', {fit: details.fit}) : null,
+        details.sizes ? t('details.sizesAre', {sizes: details.sizes}) : null,
+      ].filter(Boolean)
+    : [];
+  const advice = details?.sizeAdvice ?? t('details.fitAdvice');
+  const fitAnswer = fitParts.length
+    ? `${fitParts.join(' ')} ${advice}`
+    : details?.sizeAdvice ?? t('faqData.fitA');
+
+  const compositionAnswer = composition
+    ? `${composition}.`
+    : details?.material
+      ? t('details.materialIs', {material: details.material})
+      : t('faqData.compositionA');
 
   return [
-    {question: t('faqData.fitQ'), answer: t('faqData.fitA')},
-    {
-      question: t('faqData.compositionQ'),
-      answer: composition ? `${composition}.` : t('faqData.compositionA'),
-    },
+    {question: t('faqData.fitQ'), answer: fitAnswer},
+    {question: t('faqData.compositionQ'), answer: compositionAnswer},
     {
       question: t('faqData.manufacturingQ'),
-      answer: t('faqData.manufacturingA'),
+      answer: details?.madeIn
+        ? t('details.madeIn', {country: details.madeIn})
+        : t('faqData.manufacturingA'),
     },
     {
       question: t('faqData.shipping2Q'),
@@ -92,6 +115,9 @@ export function getProductFaq(t: Translate, description = ''): FaqItem[] {
         </>
       ),
     },
-    {question: t('faqData.careQ'), answer: t('faqData.careA')},
+    {
+      question: t('faqData.careQ'),
+      answer: details?.care ?? t('faqData.careA'),
+    },
   ];
 }

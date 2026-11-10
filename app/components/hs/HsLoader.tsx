@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import {BRAND} from '~/config/brand';
 import {HS_LOADER_DURATION_MS} from '~/lib/hs-loader';
 import {useT} from '~/lib/i18n';
 
@@ -36,15 +35,6 @@ export function HsLoader() {
 
   if (gone) return null;
 
-  const [first, ...rest] = BRAND.name.trim().split(/\s+/);
-  const second = rest.join(' ');
-  // Letters can repeat, so each carries its position in its key.
-  const letters = [...first].map((letter, position) => ({
-    letter,
-    key: `${position}-${letter}`,
-    position,
-  }));
-
   return (
     <div
       className="hs-loader"
@@ -52,18 +42,8 @@ export function HsLoader() {
       aria-label={t('loader.label')}
     >
       <div className="hs-loader__inner" aria-hidden="true">
-        <p className="hs-loader__word">
-          {letters.map(({letter, key, position}) => (
-            <span
-              key={key}
-              className="hs-loader__letter"
-              style={{'--i': position} as React.CSSProperties}
-            >
-              {letter}
-            </span>
-          ))}
-        </p>
-        {second && <p className="hs-loader__sub">{second}</p>}
+        {/* The site's wordmark, through the same CSS mask as the header. */}
+        <span className="hs-loader__logo" />
         <span className="hs-loader__line" />
       </div>
     </div>

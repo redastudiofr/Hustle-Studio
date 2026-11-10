@@ -236,6 +236,14 @@ export function Layout({children}: {children?: React.ReactNode}) {
         {/* Opening loader: critical CSS and the first-visit check, inline so
             nothing waits on a file (app/lib/hs-loader.ts). */}
         <style dangerouslySetInnerHTML={{__html: HS_LOADER_CSS}} />
+        {/* The wordmark the loader and the header paint (a CSS mask, which
+            the browser fetches in CORS mode — hence crossOrigin). */}
+        <link
+          rel="preload"
+          as="image"
+          href={BRAND.logo.wordmark}
+          crossOrigin="anonymous"
+        />
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{__html: HS_LOADER_SCRIPT}}
