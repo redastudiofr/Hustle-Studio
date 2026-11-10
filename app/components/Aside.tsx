@@ -18,7 +18,7 @@ type AsideContextValue = {
 };
 
 /**
- * Right-side drawer with dimmed overlay. Closes on Escape and on
+ * Drawer with dimmed overlay (from the right; the menu from the left). Closes on Escape and on
  * outside click. Used for cart, search and mobile menu.
  */
 export function Aside({
@@ -65,6 +65,7 @@ export function Aside({
     <div
       aria-modal
       className={`overlay ${expanded ? 'expanded' : ''}`}
+      data-aside={type}
       role="dialog"
       aria-labelledby={id}
     >

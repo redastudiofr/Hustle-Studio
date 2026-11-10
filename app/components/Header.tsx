@@ -8,7 +8,7 @@ import {
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {useHeaderTone} from '~/lib/header-tone';
-import {BagIcon, GearIcon, PersonIcon, SearchIcon} from '~/components/Icons';
+import {BagIcon, BurgerIcon, PersonIcon, SearchIcon} from '~/components/Icons';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {CURRENCY_SYMBOL, CURRENCY_CODE} from '~/lib/currency';
 import {useT} from '~/lib/i18n';
@@ -57,8 +57,16 @@ export function Header({
 
   return (
     <header className={headerClassName}>
-      {/* Logo centred; search, account, cart and the menu button right. */}
-      <div className="site-header__side site-header__side--start" />
+      {/* Menu button left, logo centred, search, account and cart right. */}
+      <div className="site-header__side site-header__side--start">
+        <button
+          className="site-header__icon-btn site-header__menu-btn"
+          onClick={() => open('mobile')}
+          aria-label={t('nav.openMenu')}
+        >
+          <BurgerIcon />
+        </button>
+      </div>
 
       <NavLink
         to="/"
@@ -94,13 +102,6 @@ export function Header({
           </NavLink>
         )}
         <CartToggle cart={cart} />
-        <button
-          className="site-header__icon-btn site-header__menu-btn"
-          onClick={() => open('mobile')}
-          aria-label={t('nav.openMenu')}
-        >
-          <GearIcon />
-        </button>
       </div>
     </header>
   );

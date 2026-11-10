@@ -51,6 +51,7 @@ export function AnimatedHero({
   ctaButton,
   secondaryCta,
   tone = 'light',
+  layout = 'bottom',
 }: {
   imageMobile: HeroImage;
   imageDesktop: HeroImage;
@@ -63,6 +64,11 @@ export function AnimatedHero({
   secondaryCta?: HeroCta;
   /** 'dark': black text and buttons, for a light photo (no veil over it). */
   tone?: 'light' | 'dark';
+  /**
+   * 'top': the photo shown whole at its own ratio (never cropped), no veil,
+   * the title and one outlined button high on the left.
+   */
+  layout?: 'bottom' | 'top';
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const {setTransparent} = useHeaderTone();
@@ -84,7 +90,7 @@ export function AnimatedHero({
 
   return (
     <section
-      className={`hero ${tone === 'dark' ? 'hero--ink' : ''}`}
+      className={`hero ${tone === 'dark' ? 'hero--ink' : ''} ${layout === 'top' ? 'hero--top' : ''}`}
       ref={sectionRef}
     >
       <motion.div

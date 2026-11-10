@@ -13,7 +13,6 @@ import {ReviewsSection} from '~/components/reda/ReviewsSection';
 import {HelpFaq} from '~/components/HelpFaq';
 import {Newsletter} from '~/components/Newsletter';
 import {Reveal} from '~/components/Reveal';
-import {BRAND} from '~/config/brand';
 import {withoutAutoCollections} from '~/lib/collections';
 import {
   HOME_COLLECTION_FRAGMENT,
@@ -38,13 +37,14 @@ const MOBILE_INITIAL_PRODUCT_COUNT = 16;
 const SHOWCASE_COUNT = 3;
 
 const HERO_IMAGE_MOBILE = {
-  src: '/brand/hero-mobile-chair.webp',
-  alt: 'Grey zip hoodie and raw denim, worn sitting on a metal chair in a white studio',
+  src: '/brand/hero-mobile-paris.webp',
+  alt: 'Grey zip hoodie and raw denim, worn at dusk in front of the Eiffel Tower',
 };
 
+// Served exactly as supplied (no re-encoding, no resizing) and shown whole.
 const HERO_IMAGE_DESKTOP = {
-  src: '/brand/hero-desktop-chair.webp',
-  alt: 'Grey zip hoodie and raw denim, worn sitting on a metal chair in a white studio',
+  src: '/brand/hero-desktop-paris.webp',
+  alt: 'Grey zip hoodie and raw denim, worn at dusk in front of the Eiffel Tower',
 };
 
 export const meta: Route.MetaFunction = ({matches}) =>
@@ -111,14 +111,11 @@ export default function Homepage() {
   return (
     <div className="home rhome">
       <AnimatedHero
-        tone="dark"
+        layout="top"
         imageMobile={HERO_IMAGE_MOBILE}
         imageDesktop={HERO_IMAGE_DESKTOP}
-        eyebrow={t('home.eyebrow')}
-        title={BRAND.name}
-        description={t('home.tagline')}
-        ctaButton={{text: t('home.shopNow'), href: '/collections'}}
-        secondaryCta={{text: t('home.ourStory'), href: '/about'}}
+        title={t('home.heroTitle')}
+        ctaButton={{text: t('home.shopTheLook'), href: '/collections/all'}}
       />
 
       <CollectionsSlider collections={data.collections} />
