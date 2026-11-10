@@ -1,6 +1,5 @@
-import {Suspense, useEffect, useRef, useState} from 'react';
-import {Await, Link, NavLink, useRouteLoaderData} from 'react-router';
-import type {RootLoader} from '~/root';
+import {useEffect, useRef, useState} from 'react';
+import {Link, NavLink} from 'react-router';
 import {Newsletter} from '~/components/Newsletter';
 import {LanguageSwitcher} from '~/components/LanguageSwitcher';
 import {BRAND} from '~/config/brand';
@@ -8,7 +7,7 @@ import type {NavLinkConfig} from '~/config/navigation';
 import {useT} from '~/lib/i18n';
 import {HAS_LANGUAGE_CHOICE} from '~/lib/i18n/locale';
 import {PaymentIcons} from '~/components/store/PaymentIcons';
-import {TIKTOK_PHOTOS} from '~/config/community';
+import {TIKTOK_VIDEOS, type CommunityVideo} from '~/config/community';
 
 const LEGAL_LINKS: NavLinkConfig[] = [
   {labelKey: 'footer.privacy', to: '/legal/privacy'},
@@ -197,68 +196,81 @@ function CommunityBlock() {
 }
 
 /**
- * The brand's TikTok: a row of photos sliding on its own, and the account
- * link once BRAND.social.tiktok is set. The photos are TIKTOK_PHOTOS
- * (app/config/community.ts); while that list is empty, the shop's product
- * photos from Shopify stand in.
+ * "follow us": the brand's videos in a row (app/config/community.ts), each
+ * playing muted while it is on screen and paused otherwise, and the two
+ * accounts — Instagram and TikTok — as bold links that open the profile.
  */
 function TiktokBlock() {
   const t = useT();
-  const root = useRouteLoaderData<RootLoader>('root');
-  const tiktok = BRAND.social.tiktok;
-
-  const row = (photos: {src: string; alt: string}[]) =>
-    photos.length ? (
-      <div className="st-tiktok__rail" aria-hidden="true">
-        <div className="st-tiktok__track">
-          {[...photos, ...photos].map((photo, index) => (
-            <img
-              // Two copies back to back: the row loops without a jump.
-              key={`${index < photos.length ? 'a' : 'b'}-${photo.src}`}
-              src={photo.src}
-              alt=""
-              loading="lazy"
-              decoding="async"
-            />
-          ))}
-        </div>
-      </div>
-    ) : null;
+  const accounts = [
+    {name: 'Instagram', href: BRAND.social.instagram},
+    {name: 'TikTok', href: BRAND.social.tiktok},
+  ].filter((account) => account.href);
 
   return (
     <section className="st-tiktok" aria-labelledby="st-tiktok-title">
       <h2 className="st-tiktok__title" id="st-tiktok-title">
-        {t('store.tiktokTitle')}
+        {t('store.followTitle')}
       </h2>
-      <p className="st-tiktok__text">{t('store.tiktokText')}</p>
-      {TIKTOK_PHOTOS.length ? (
-        row(TIKTOK_PHOTOS.map((src) => ({src, alt: ''})))
-      ) : (
-        <Suspense fallback={null}>
-          <Await resolve={root?.cartSuggestions}>
-            {(response) =>
-              row(
-                (response?.products.nodes ?? [])
-                  .filter((product) => product.featuredImage)
-                  .map((product) => ({
-                    src: `${product.featuredImage!.url}${product.featuredImage!.url.includes('?') ? '&' : '?'}width=480`,
-                    alt: product.title,
-                  })),
-              )
-            }
-          </Await>
-        </Suspense>
+      {accounts.length > 0 && (
+        <p className="st-tiktok__accounts">
+          {accounts.map((account) => (
+            <a
+              key={account.name}
+              href={account.href}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {account.name}
+            </a>
+          ))}
+        </p>
       )}
-      {tiktok && (
-        <a
-          className="st-tiktok__cta"
-          href={tiktok}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {t('store.tiktokButton')}
-        </a>
+      <p className="st-tiktok__text">{t('store.tiktokText')}</p>
+      {TIKTOK_VIDEOS.length > 0 && (
+        <div className="st-tiktok__rail">
+          <div className="st-tiktok__videos">
+            {TIKTOK_VIDEOS.map((video) => (
+              <FooterVideo key={video.src} video={video} />
+            ))}
+          </div>
+        </div>
       )}
     </section>
+  );
+}
+
+/** One video of the row: plays only while visible, never with sound. */
+function FooterVideo({video}: {video: CommunityVideo}) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) node.play().catch(() => {});
+        else node.pause();
+      },
+      {threshold: 0.4},
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      className="st-tiktok__video"
+      src={video.src}
+      poster={video.poster}
+      muted
+      loop
+      playsInline
+      preload="none"
+      aria-hidden="true"
+      tabIndex={-1}
+    />
   );
 }

@@ -58,8 +58,8 @@ export const BRAND = {
 
   /** Social profiles. Any empty entry is simply not shown. */
   social: {
-    instagram: '',
-    tiktok: '',
+    instagram: 'https://www.instagram.com/hustle_studio.fr/',
+    tiktok: 'https://www.tiktok.com/@hustle_studio.fr',
   },
 
   /** Handles of the Shopify menus (Shopify Admin → Online Store → Navigation). */

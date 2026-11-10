@@ -42,8 +42,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   off until a Hustle code is set in app/lib/reda/offers.ts.
 - Footer: "become part of the community" (the whole block fills black from
   the logo, then a slider of floating brand photos; Footer.tsx), a link to the story page (/about, dictionary
-  story.*), then a TikTok row — photos from app/config/community.ts, product
-  photos meanwhile; the account link appears once BRAND.social.tiktok is set.
+  story.*), then "follow us": Instagram and TikTok (BRAND.social) as bold
+  links, and the brand's videos (app/config/community.ts, files in
+  public/brand/tiktok/, 480px, no sound), each playing only while visible.
 - Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
   `welcomePopup`; sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo
@@ -52,9 +53,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
 - Opening loader (first page load of a session, skipped with reduced
   motion): app/lib/hs-loader.ts (inline CSS + head script) +
   app/components/hs/HsLoader.tsx. Product cards (ProductItem and
-  reda/ProductItem): hover zoom, quick add
-  through the cart's LinesAdd for single-variant products only (others link
-  to their page), header count bump and toasts — app/components/hs/,
+  reda/ProductItem): hover zoom, "Add to cart" through the cart's LinesAdd
+  (one variant: added at once; sizes: the customer picks one on the card,
+  never a default), header count bump and toasts — app/components/hs/,
   app/styles/hs-product-card.css. Animate transform/opacity/clip-path only.
 - Product page: "the details" and the FAQ answers are written per product
   from its own data (description, options, metafields custom.fit /

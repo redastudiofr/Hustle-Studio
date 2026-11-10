@@ -377,12 +377,16 @@ export const HOME_PRODUCT_FRAGMENT = `#graphql
         height
       }
     }
-    # Quick add on the card: only a product with a single variant is added
-    # straight from the grid.
-    variants(first: 2) {
+    # Quick add on the card: the sizes to choose from.
+    variants(first: 20) {
       nodes {
         id
+        title
         availableForSale
+        selectedOptions {
+          name
+          value
+        }
       }
     }
   }

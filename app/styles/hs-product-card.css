@@ -339,3 +339,82 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ── Quick add: the sizes ─────────────────────────────────────────────── */
+.hs-card .hs-quick.hs-quick--open {
+  transform: none;
+}
+
+.hs-quick__sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 6px;
+  border-radius: 2px;
+  background: rgb(242 240 235 / 0.96);
+  animation: hs-sizes-in 0.35s var(--hs-ease-out);
+}
+
+.hs-quick__size {
+  flex: 1 0 calc(25% - 4px);
+  min-width: 40px;
+  min-height: 38px;
+  padding: 0 0.4rem;
+  border: 1px solid var(--hs-ink);
+  border-radius: 2px;
+  background: #fff;
+  color: var(--hs-ink);
+  font: 600 0.72rem/1 var(--font-sans, Arial, sans-serif);
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.15s var(--hs-ease-out);
+}
+
+.hs-quick__size:hover:not(:disabled) {
+  background: var(--hs-ink);
+  color: var(--hs-cream);
+}
+
+.hs-quick__size:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.hs-quick__size:disabled {
+  border-color: rgb(13 13 13 / 0.25);
+  color: rgb(13 13 13 / 0.35);
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.hs-quick__size:focus-visible {
+  outline: 2px solid var(--hs-ink);
+  outline-offset: 2px;
+}
+
+@keyframes hs-sizes-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 47.99em) {
+  .hs-card .hs-quick .hs-quick__size {
+    min-height: 32px;
+    min-width: 34px;
+    font-size: 0.64rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs-quick__sizes {
+    animation: none;
+  }
+}
+
+/* The sizes never spill out of the photo: they scroll inside it. */
+.hs-quick__sizes {
+  max-height: calc(var(--hs-sizes-max, 9rem));
+  overflow-y: auto;
+}
