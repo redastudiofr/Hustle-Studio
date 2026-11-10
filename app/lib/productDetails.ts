@@ -99,7 +99,7 @@ const MATERIALS: Array<{test: RegExp; phrase: Phrase}> = [
   {test: /délav|washed/i, phrase: {en: 'washed denim', fr: 'denim délavé'}},
   {test: /denim/i, phrase: {en: 'denim', fr: 'denim'}},
   {test: /maille|knit/i, phrase: {en: 'knit', fr: 'maille'}},
-  {test: /toucher épais|heavyweight|heavy fleece|épais/i, phrase: {en: 'a thick, heavyweight hand-feel', fr: 'une matière au toucher épais'}},
+  {test: /toucher épais|heavyweight|heavy fleece|thick hand-feel|épais/i, phrase: {en: 'a thick, heavyweight hand-feel', fr: 'une matière au toucher épais'}},
 ];
 
 /** Construction details, from the description. */

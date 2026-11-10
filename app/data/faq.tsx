@@ -114,7 +114,7 @@ export function getProductFaq(
             preparation: LEGAL.shipping.preparation[lang],
             france: franceTime,
           })}{' '}
-          {elsewhere.join(' · ')}.{' '}
+          {elsewhere.join(' · ')}. {t('details.fullDetails')}{' '}
           <a href="/legal/shipping">{t('faqData.shippingLink')}</a>.
         </>
       ),
@@ -124,6 +124,7 @@ export function getProductFaq(
       answer: (
         <>
           {t('details.returnsAnswer', {days: LEGAL.returnDays})}{' '}
+          {t('details.fullDetails')}{' '}
           <a href="/legal/returns">{t('faqData.returnsLink')}</a>.
         </>
       ),
