@@ -1,7 +1,9 @@
 import {useId, useState} from 'react';
 import type {ReactNode} from 'react';
 import {Link} from 'react-router';
-import {useT, type Translate} from '~/lib/i18n';
+import {useI18n, useT, type Locale, type Translate} from '~/lib/i18n';
+import {BRAND} from '~/config/brand';
+import {LEGAL} from '~/config/legal';
 
 /**
  * A plus that turns into a minus as the row opens: the whole cross makes a
@@ -141,63 +143,6 @@ type HelpItem = {
   answer: ReactNode;
 };
 
-/**
- * Built inside the component rather than as a module constant, because every
- * string in it depends on the language and a constant would be frozen at
- * whatever the first render happened to be.
- */
-function buildItems(t: Translate): HelpItem[] {
-  return [
-    {
-      icon: <TruckIcon />,
-      question: t('faq.shipping'),
-      answer: (
-        <p>
-          {t('faq.shippingBody')}{' '}
-          <Link to="/order-tracking">{t('faq.trackingPage')}</Link>.
-        </p>
-      ),
-    },
-    {
-      icon: <ReturnIcon />,
-      question: t('faq.returns'),
-      answer: (
-        <>
-          <p>{t('faq.returnsBody1')}</p>
-          <p>
-            {t('faq.returnsBody2')}{' '}
-            <Link to="/legal/returns">{t('faq.returnsPage')}</Link>.
-          </p>
-        </>
-      ),
-    },
-    {
-      icon: <ShieldIcon />,
-      question: t('faq.legal'),
-      answer: (
-        <p>
-          {t('faq.legalBody')}{' '}
-          <Link to="/legal/terms">{t('faq.terms')}</Link>,{' '}
-          <Link to="/legal/privacy">{t('faq.privacy')}</Link>{' '}
-          {t('faq.and')}{' '}
-          <Link to="/legal/shipping">{t('faq.shippingPolicy')}</Link>.
-        </p>
-      ),
-    },
-    {
-      icon: <ChatIcon />,
-      question: t('faq.support'),
-      answer: (
-        <p>
-          {t('faq.supportBody')}{' '}
-          <Link to="/contact">{t('faq.contactPage')}</Link>{' '}
-          {t('faq.supportBodyEnd')}
-        </p>
-      ),
-    },
-  ];
-}
-
 function HelpRow({
   item,
   index,
@@ -250,15 +195,112 @@ function HelpRow({
   );
 }
 
+
 /**
- * Closing help block: four collapsible entries, one open at a time.
- * Deliberately light — a practical signpost, not the full FAQ, which lives on
- * the /faq page.
+ * Real questions, answered in full on the spot: delivery times and zones,
+ * shipping cost, returns, refunds, sizing, payment, tracking, contact. The
+ * figures come from app/config/legal.ts and app/config/brand.ts, the same
+ * source as the legal pages, so the two never disagree; the links only add
+ * the detail.
+ *
+ * Built inside the component because every string depends on the language.
  */
+function buildItems(t: Translate, locale: Locale): HelpItem[] {
+  const lang = locale === 'fr' ? 'fr' : 'en';
+  const zones = LEGAL.shipping.zones[lang];
+  const email = LEGAL.company.email || BRAND.email;
+
+  return [
+    {
+      icon: <TruckIcon />,
+      question: t('help.deliveryQ'),
+      answer: (
+        <>
+          <p>
+            {t('help.deliveryA', {
+              preparation: LEGAL.shipping.preparation[lang],
+            })}
+          </p>
+          <ul className="help-faq__zones">
+            {zones.map((zone) => (
+              <li key={zone}>{zone}</li>
+            ))}
+          </ul>
+          <p>
+            {t('help.deliveryTracking')}{' '}
+            <Link to="/order-tracking">{t('faq.trackingPage')}</Link>.
+          </p>
+        </>
+      ),
+    },
+    {
+      icon: <TruckIcon />,
+      question: t('help.costQ'),
+      answer: (
+        <p>
+          {t('help.costA')}
+          {BRAND.freeShippingThreshold
+            ? ` ${t('help.costFree', {amount: BRAND.freeShippingThreshold})}`
+            : ''}
+        </p>
+      ),
+    },
+    {
+      icon: <ReturnIcon />,
+      question: t('help.returnQ'),
+      answer: (
+        <>
+          <p>{t('help.returnA', {days: LEGAL.returnDays})}</p>
+          <p>
+            {t('help.returnHow')}{' '}
+            <Link to="/contact">{t('faq.contactPage')}</Link>
+            {t('help.returnHowEnd')}{' '}
+            <Link to="/legal/returns">{t('faq.returnsPage')}</Link>.
+          </p>
+        </>
+      ),
+    },
+    {
+      icon: <ReturnIcon />,
+      question: t('help.refundQ'),
+      answer: <p>{t('help.refundA')}</p>,
+    },
+    {
+      icon: <ShieldIcon />,
+      question: t('help.sizeQ'),
+      answer: <p>{t('help.sizeA')}</p>,
+    },
+    {
+      icon: <ShieldIcon />,
+      question: t('help.payQ'),
+      answer: <p>{t('help.payA')}</p>,
+    },
+    {
+      icon: <ChatIcon />,
+      question: t('help.contactQ'),
+      answer: (
+        <p>
+          {t('help.contactA')}{' '}
+          <Link to="/contact">{t('faq.contactPage')}</Link>
+          {email ? (
+            <>
+              {' '}
+              {t('help.contactOr')}{' '}
+              <a href={`mailto:${email}`}>{email}</a>
+            </>
+          ) : null}
+          . {t('faq.supportBodyEnd')}
+        </p>
+      ),
+    },
+  ];
+}
+
 export function HelpFaq() {
   const [openIndex, setOpenIndex] = useState(-1);
   const t = useT();
-  const items = buildItems(t);
+  const {locale} = useI18n();
+  const items = buildItems(t, locale);
 
   return (
     <section className="help-faq" aria-labelledby="help-faq-heading">

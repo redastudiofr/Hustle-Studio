@@ -10,6 +10,7 @@ import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
 import {ProductItem} from '~/components/reda/ProductItem';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
 import {HelpFaq} from '~/components/HelpFaq';
+import {CommunitySections} from '~/components/CommunitySections';
 import {Newsletter} from '~/components/Newsletter';
 import {Reveal} from '~/components/Reveal';
 import {BRAND} from '~/config/brand';
@@ -44,6 +45,9 @@ const HERO_IMAGE_DESKTOP = {
   src: '/brand/hero-desktop-paris.webp',
   alt: 'Grey zip hoodie and raw denim, worn at dusk in front of the Eiffel Tower',
 };
+
+/** The footer leaves out its community block: this page shows it itself. */
+export const handle = {communityInPage: true};
 
 export const meta: Route.MetaFunction = ({matches}) =>
   seoMeta({path: '/', origin: originFromMatches(matches)});
@@ -117,6 +121,10 @@ export default function Homepage() {
           }
         </Await>
       </Suspense>
+
+      {/* "become part of the community" and "follow us", here rather than in
+          the footer (see `handle`). */}
+      <CommunitySections />
 
       <HelpFaq />
 

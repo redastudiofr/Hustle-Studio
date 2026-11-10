@@ -6,6 +6,8 @@
  *
  * To add one: put video-0N.mp4 and video-0N.webp in public/brand/tiktok/ and
  * add a line here. The account links are BRAND.social (app/config/brand.ts).
+ * All of them play muted and in a loop, from the moment the block comes near
+ * the screen.
  */
 export type CommunityVideo = {src: string; poster: string};
 
@@ -15,4 +17,8 @@ export const TIKTOK_VIDEOS: CommunityVideo[] = [
   {src: '/brand/tiktok/video-03.mp4', poster: '/brand/tiktok/video-03.webp'},
   {src: '/brand/tiktok/video-04.mp4', poster: '/brand/tiktok/video-04.webp'},
   {src: '/brand/tiktok/video-05.mp4', poster: '/brand/tiktok/video-05.webp'},
+  {src: '/brand/tiktok/video-06.mp4', poster: '/brand/tiktok/video-06.webp'},
+  {src: '/brand/tiktok/video-07.mp4', poster: '/brand/tiktok/video-07.webp'},
+  {src: '/brand/tiktok/video-08.mp4', poster: '/brand/tiktok/video-08.webp'},
+  {src: '/brand/tiktok/video-09.mp4', poster: '/brand/tiktok/video-09.webp'},
 ];

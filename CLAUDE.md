@@ -40,11 +40,15 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   Reda Studio's (redastudiofr/reda-studio), ported into app/components/reda/
   and app/lib/reda/: no synthetic ratings or stock, the bundle offer stays
   off until a Hustle code is set in app/lib/reda/offers.ts.
-- Footer: "become part of the community" (the whole block fills black from
-  the logo, then a slider of floating brand photos; Footer.tsx), a link to the story page (/about, dictionary
-  story.*), then "follow us": Instagram and TikTok (BRAND.social) as bold
-  links, and the brand's videos (app/config/community.ts, files in
-  public/brand/tiktok/, 480px, no sound), each playing only while visible.
+- Community block (app/components/CommunitySections.tsx): "become part of
+  the community" (the whole block, "follow us" included, fills black from
+  the logo; a slider of floating brand photos; the story link) and "follow
+  us" (Instagram + TikTok from BRAND.social in bold; the brand's videos from
+  app/config/community.ts, files in public/brand/tiktok/, 480px, no sound,
+  all playing once the block nears the screen, swipe/drag/arrows). On the
+  homepage it sits before "need help?" (route handle `communityInPage`);
+  elsewhere the footer shows it. "Need help?" (HelpFaq) answers real
+  questions from app/config/legal.ts and brand.ts.
 - Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
   `welcomePopup`; sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo

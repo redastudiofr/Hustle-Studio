@@ -849,13 +849,13 @@ html .reviews .review-card {
   clip-path: circle(0 at 50% 6.5rem);
 }
 
-.st-footer .st-community,
-.st-footer .st-community .st-community__title {
+.st-community,
+.st-community .st-community__title {
   color: #fff;
 }
 
-.st-footer .st-community--armed,
-.st-footer .st-community--armed .st-community__title {
+.st-community--armed,
+.st-community--armed .st-community__title {
   color: var(--on-ink);
 }
 
@@ -958,7 +958,7 @@ html .reviews .review-card {
     color 0.25s;
 }
 
-.st-footer .st-community .st-community__story {
+.st-community .st-community__story {
   border-color: #fff;
   color: #fff;
   transition:
@@ -967,12 +967,12 @@ html .reviews .review-card {
     border-color 0.5s ease 0.9s;
 }
 
-.st-footer .st-community--armed .st-community__story {
+.st-community--armed .st-community__story {
   border-color: var(--on-ink);
   color: var(--on-ink);
 }
 
-.st-footer .st-community .st-community__story:hover {
+.st-community .st-community__story:hover {
   background: #fff;
   color: var(--on-ink);
 }
@@ -982,7 +982,7 @@ html .reviews .review-card {
   color: #fff;
 }
 
-.st-footer .st-community__about {
+.st-community__about {
   text-align: center;
 }
 
@@ -1315,4 +1315,88 @@ html .reviews .review-card {
   .st-tiktok__video {
     width: 220px;
   }
+}
+
+/* ── The community block outside the footer (homepage, before "need help?") ── */
+.home .st-community {
+  margin: clamp(3rem, 6vw, 5rem) 0 0;
+  padding: 3.5rem var(--sx-gutter, 24px) 3.5rem;
+}
+
+.st-community .st-community__about {
+  text-align: center;
+}
+
+/* "follow us", inside the black: white text, accounts, videos. */
+.st-community .st-tiktok {
+  position: relative;
+  margin: 3rem 0 0;
+  padding: 2.5rem 0 0;
+  border-top: 1px solid rgb(255 255 255 / 0.15);
+  color: #fff;
+  transition: color 0.5s ease 0.9s, border-color 0.5s ease 0.9s;
+}
+
+.st-community--armed .st-tiktok {
+  border-top-color: var(--on-line);
+  color: var(--on-ink);
+}
+
+.st-community .st-tiktok__title {
+  color: inherit;
+}
+
+.st-community .st-tiktok__accounts a {
+  color: inherit;
+}
+
+.st-community .st-tiktok__text {
+  color: inherit;
+  opacity: 0.72;
+}
+
+.st-tiktok__rail-wrap {
+  position: relative;
+  margin: 0 calc(var(--sx-gutter, 24px) * -1);
+}
+
+.st-community .st-tiktok__rail {
+  cursor: grab;
+}
+
+.st-community .st-tiktok__rail:active {
+  cursor: grabbing;
+}
+
+.st-community .st-tiktok__videos {
+  justify-content: flex-start;
+}
+
+.st-tiktok__video {
+  pointer-events: none;
+}
+
+.st-tiktok__rail-wrap .rail-arrow {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* "need help?": the delivery zones as a short list. */
+.help-faq__panel-inner .help-faq__zones {
+  margin: -0.6rem 0 1rem;
+  padding-left: calc(2.5rem + 1rem + 2.6rem + 1.1rem);
+  color: var(--color-muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+  list-style: disc;
+}
+
+@media (max-width: 40em) {
+  .help-faq__panel-inner .help-faq__zones {
+    padding-left: 1.35rem;
+  }
+}
+
+.help-faq__zones li + li {
+  margin-top: 0.2rem;
 }
