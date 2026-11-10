@@ -14,10 +14,8 @@ const SIGNUP_STORAGE_KEY = 'hs-promo-signup';
 /** Written by the pop-up before -15%, only once someone had actually subscribed. */
 const LEGACY_SIGNUP_STORAGE_KEY = 'hs-newsletter-subscribed';
 
-/** Closed with the X: left alone for DISMISS_DAYS, then offered again. */
-const DISMISS_COOKIE = 'hs_promo_dismissed';
-const DISMISS_STORAGE_KEY = 'hs-promo-dismissed';
-const DISMISS_DAYS = 7;
+/** Closed with the X: left alone for the rest of the visit (this tab session), offered again on the next one. */
+const DISMISS_SESSION_KEY = 'hs-promo-dismissed-session';
 
 const DAY_SECONDS = 60 * 60 * 24;
 const SIGNUP_MAX_AGE_SECONDS = DAY_SECONDS * 365;
@@ -76,12 +74,11 @@ function hasSignedUp(): boolean {
 }
 
 function recentlyDismissed(): boolean {
-  if (hasCookie(DISMISS_COOKIE)) return true;
-  const dismissedAt = Number(readStorage(DISMISS_STORAGE_KEY));
-  return (
-    dismissedAt > 0 &&
-    Date.now() - dismissedAt < DISMISS_DAYS * DAY_SECONDS * 1000
-  );
+  try {
+    return Boolean(window.sessionStorage.getItem(DISMISS_SESSION_KEY));
+  } catch {
+    return false;
+  }
 }
 
 function rememberSignup() {
@@ -90,8 +87,11 @@ function rememberSignup() {
 }
 
 function rememberDismissal() {
-  writeStorage(DISMISS_STORAGE_KEY, String(Date.now()));
-  setCookie(DISMISS_COOKIE, DISMISS_DAYS * DAY_SECONDS);
+  try {
+    window.sessionStorage.setItem(DISMISS_SESSION_KEY, '1');
+  } catch {
+    // Storage refused: it may show again on the next page.
+  }
 }
 
 /**
@@ -137,7 +137,7 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * Welcome pop-up: -15% in exchange for a phone number.
  *
  * - Shown only to a visitor who hasn't signed up. Once they have, never again.
- * - Closing it (X, the backdrop, Escape) is remembered for DISMISS_DAYS, so it
+ * - Closing it (X, the backdrop, Escape) is remembered for the visit, so it
  *   doesn't come back on every page or every visit — only after that pause.
  * - Hidden entirely while `enabled` is false, i.e. while the server has no
  *   way to record sign-ups (Google Sheet or e-mail): better no offer than a

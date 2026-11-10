@@ -48,7 +48,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   the logo; a slider of floating brand photos; the story link) and "follow
   us" (Instagram + TikTok from BRAND.social in bold; the brand's videos from
   app/config/community.ts, files in public/brand/tiktok/, 480px, no sound,
-  all playing once the block nears the screen, swipe/drag/arrows). On the
+  endless both ways, playing once the block nears the screen,
+  swipe/drag/arrows). On the
   homepage it sits before "need help?" (route handle `communityInPage`);
   elsewhere the footer shows it. "Need help?" (HelpFaq) answers real
   questions from app/config/legal.ts and brand.ts.
@@ -57,8 +58,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo
   centred, every page in the menu panel opened from the button on the right
   (app/config/navigation.ts `mobileLinks`).
-- Opening loader (first page load of a session, skipped with reduced
-  motion; white screen, the wordmark, then a fade to transparent): app/lib/hs-loader.ts (inline CSS + head script) +
+- Opening loader (every full page load, desktop and phone; white screen,
+  the wordmark, then a fade to transparent; a plain fade with reduced
+  motion): app/lib/hs-loader.ts (inline CSS + head script) +
   app/components/hs/HsLoader.tsx. Product cards (ProductItem and
   reda/ProductItem): hover zoom, "Add to cart" through the cart's LinesAdd
   (one variant: added at once; sizes: the customer picks one on the card,

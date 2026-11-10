@@ -1452,3 +1452,38 @@ html .reviews .review-card {
   background: var(--on-ink);
   color: #fff;
 }
+
+/* "follow us": no rule above it, wider gaps between the videos, room below
+   before the next section, and no side padding (the row loops). */
+.st-community .st-tiktok {
+  border-top: 0;
+  margin-top: 2rem;
+  padding-top: 1rem;
+}
+
+.st-community .st-tiktok__videos {
+  gap: 18px;
+  padding: 0;
+}
+
+@media (min-width: 48em) {
+  .st-community .st-tiktok__videos {
+    gap: 28px;
+  }
+}
+
+.st-community .st-tiktok__video {
+  margin: 0;
+}
+
+.st-community .st-tiktok__rail-wrap {
+  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.st-tiktok__rail-wrap .rail-arrow--prev {
+  left: 14px;
+}
+
+.st-tiktok__rail-wrap .rail-arrow--next {
+  right: 14px;
+}

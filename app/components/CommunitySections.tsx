@@ -133,69 +133,86 @@ function FollowUs() {
 }
 
 /**
- * The videos' row: swipe on touch, drag or arrows with a mouse. Every video
- * plays — muted, looping — from the moment the row comes near the screen,
- * including those still off to the side, and none is paused after that. A
- * page never scrolled that far downloads none of them.
+ * The videos' row: endless both ways (three copies of the list, kept in the
+ * middle one by useHorizontalRail's loop), swiped on touch, dragged or moved
+ * with the arrows with a mouse.
+ *
+ * Every video plays on its own — muted, looping — once the row comes near
+ * the screen: the ones in view or next to it play, those far along the row
+ * wait until they come close (nine videos three times over would otherwise
+ * all decode at once). A page never scrolled that far downloads none.
  */
 function VideoRail() {
   const t = useT();
-  const {ref, scrollByCard, atStart, atEnd} =
-    useHorizontalRail<HTMLDivElement>();
+  const {ref, scrollByCard} = useHorizontalRail<HTMLDivElement>({loop: true});
 
   useEffect(() => {
     const rail = ref.current;
-    if (!rail) return;
-    const start = () => {
-      rail.querySelectorAll('video').forEach((video) => {
-        video.preload = 'auto';
-        video.play().catch(() => {});
-      });
-    };
-    if (typeof IntersectionObserver === 'undefined') {
-      start();
-      return;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          start();
-          observer.disconnect();
+    if (!rail || typeof IntersectionObserver === 'undefined') return;
+    const videos = [...rail.querySelectorAll('video')];
+
+    // Along the row: play what is in view or close to it.
+    const along = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          const video = entry.target as HTMLVideoElement;
+          if (entry.isIntersecting) {
+            video.preload = 'auto';
+            video.play().catch(() => {});
+          } else {
+            video.pause();
+          }
         }
+      },
+      {root: rail, rootMargin: '0px 400px'},
+    );
+
+    // Down the page: start once the row comes near the screen.
+    const near = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        videos.forEach((video) => along.observe(video));
+        near.disconnect();
       },
       {rootMargin: '600px 0px'},
     );
-    observer.observe(rail);
-    return () => observer.disconnect();
+    near.observe(rail);
+
+    return () => {
+      near.disconnect();
+      along.disconnect();
+    };
   }, [ref]);
+
+  const copies = [0, 1, 2];
 
   return (
     <div className="st-tiktok__rail-wrap">
       <div className="st-tiktok__rail" ref={ref}>
         <div className="st-tiktok__videos">
-          {TIKTOK_VIDEOS.map((video) => (
-            <video
-              key={video.src}
-              className="st-tiktok__video"
-              src={video.src}
-              poster={video.poster}
-              muted
-              loop
-              playsInline
-              autoPlay
-              preload="none"
-              aria-hidden="true"
-              tabIndex={-1}
-              draggable={false}
-            />
-          ))}
+          {copies.map((copy) =>
+            TIKTOK_VIDEOS.map((video) => (
+              <video
+                key={`${copy}-${video.src}`}
+                className="st-tiktok__video"
+                src={video.src}
+                poster={video.poster}
+                muted
+                loop
+                playsInline
+                autoPlay
+                preload="none"
+                aria-hidden="true"
+                tabIndex={-1}
+                draggable={false}
+              />
+            )),
+          )}
         </div>
       </div>
       <RailArrows
         onPrev={() => scrollByCard(-1)}
         onNext={() => scrollByCard(1)}
-        disablePrev={atStart}
-        disableNext={atEnd}
         prevLabel={t('rail.prevVideo')}
         nextLabel={t('rail.nextVideo')}
       />

@@ -1,8 +1,8 @@
 /**
  * Opening loader — the critical parts that must run before the first paint.
  *
- * Shown only on the first page load of a browser session, never on in-app
- * navigation, never with prefers-reduced-motion. The overlay's markup is
+ * Shown on every full page load (desktop and phone), never on in-app
+ * navigation. With prefers-reduced-motion it is a plain fade, nothing moves. The overlay's markup is
  * rendered by app/components/hs/HsLoader.tsx; it stays `display: none` unless
  * HS_LOADER_SCRIPT (inlined in <head>) marks the document with
  * `hs-loader-run`. Everything is CSS animation: no asset, no library, nothing
@@ -18,15 +18,13 @@
 /** How long the overlay stays in the document, in ms. */
 export const HS_LOADER_DURATION_MS = 1800;
 
-/** sessionStorage key marking that the loader has played this session. */
-const SEEN_KEY = 'hs-loader-seen';
 
 /**
  * Runs in <head>, before the body is parsed. Decides whether the loader
  * plays, locks scrolling while it does, and unlocks after it — on its own, so
  * a failed hydration can never leave the page locked.
  */
-export const HS_LOADER_SCRIPT = `(function(){var d=document.documentElement;try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;if(window.sessionStorage.getItem('${SEEN_KEY}'))return;window.sessionStorage.setItem('${SEEN_KEY}','1');}catch(e){return;}d.classList.add('hs-loader-run');window.__hsLoaderStart=Date.now();setTimeout(function(){d.classList.remove('hs-loader-run');},${HS_LOADER_DURATION_MS});})();`;
+export const HS_LOADER_SCRIPT = `(function(){var d=document.documentElement;d.classList.add('hs-loader-run');window.__hsLoaderStart=Date.now();setTimeout(function(){d.classList.remove('hs-loader-run');},${HS_LOADER_DURATION_MS});})();`;
 
 /** Critical CSS of the overlay, inlined in <head>. */
 export const HS_LOADER_CSS = `
@@ -37,5 +35,5 @@ html.hs-loader-run,html.hs-loader-run body{overflow:hidden}
 html.hs-loader-run .hs-loader__logo{animation:hs-loader-logo 1.75s var(--hs-ease) forwards}
 @keyframes hs-loader-clear{to{opacity:0}}
 @keyframes hs-loader-logo{0%{opacity:0;transform:scale(.97)}25%{opacity:1;transform:none}100%{opacity:1;transform:scale(1.02)}}
-@media (prefers-reduced-motion:reduce){.hs-loader{display:none!important}}
+@media (prefers-reduced-motion:reduce){html.hs-loader-run .hs-loader__logo{animation:none}}
 `;

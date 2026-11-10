@@ -22,7 +22,7 @@ export function useAutoScroll<T extends HTMLElement>(
   ref: RefObject<T | null>,
   {
     direction,
-    pixelsPerSecond = 20,
+    pixelsPerSecond = 28,
     resumeAfterMs = 2500,
   }: {
     /** Which way the cards travel. 'right' means they slide to the right. */
@@ -39,6 +39,12 @@ export function useAutoScroll<T extends HTMLElement>(
 
     let frame = 0;
     let lastTime = 0;
+    // Browsers keep scrollLeft in whole pixels and a snapping rail pulls a
+    // small move straight back: the drift adds up the fractions and only
+    // moves by whole pixels, with snapping off while it drifts.
+    let carry = 0;
+    const snapType = node.style.scrollSnapType;
+    node.style.scrollSnapType = 'none';
     let paused = false;
     let onScreen = true;
     let resumeTimer = 0;
@@ -57,12 +63,16 @@ export function useAutoScroll<T extends HTMLElement>(
 
       if (paused || !onScreen || document.hidden) return;
 
-      const distance = (pixelsPerSecond * elapsed) / 1000;
-      node.scrollLeft += direction === 'right' ? -distance : distance;
+      carry += (pixelsPerSecond * elapsed) / 1000;
+      const whole = Math.floor(carry);
+      if (!whole) return;
+      carry -= whole;
+      node.scrollLeft += direction === 'right' ? -whole : whole;
     };
 
     const pause = () => {
       paused = true;
+      node.style.scrollSnapType = snapType;
       window.clearTimeout(resumeTimer);
     };
 
@@ -71,6 +81,7 @@ export function useAutoScroll<T extends HTMLElement>(
       resumeTimer = window.setTimeout(() => {
         paused = false;
         lastTime = 0;
+        node.style.scrollSnapType = 'none';
       }, resumeAfterMs);
     };
 
@@ -107,6 +118,7 @@ export function useAutoScroll<T extends HTMLElement>(
     frame = requestAnimationFrame(step);
 
     return () => {
+      node.style.scrollSnapType = snapType;
       cancelAnimationFrame(frame);
       window.clearTimeout(resumeTimer);
       controller.abort();
