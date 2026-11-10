@@ -371,7 +371,7 @@ export default function Product() {
             <section className="pdp__section">
               <h2 className="pdp__section-title">{t('product.faqTitle')}</h2>
               <div className="pdp__accordions">
-                {getProductFaq(t, description ?? '', details).map((item) => (
+                {getProductFaq(t, description ?? '', details, locale).map((item) => (
                   <Accordion key={item.question} title={item.question}>
                     <p>{item.answer}</p>
                   </Accordion>

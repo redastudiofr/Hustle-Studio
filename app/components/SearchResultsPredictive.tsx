@@ -269,13 +269,14 @@ function SearchResultsPredictiveEmpty({
 }: {
   term: React.MutableRefObject<string>;
 }) {
+  const t = useT();
   if (!term.current) {
     return null;
   }
 
   return (
     <p className="search-group">
-      aucun résultat pour <q>{term.current}</q>
+      {t('search.noResultsFor')} <q>{term.current}</q>
     </p>
   );
 }

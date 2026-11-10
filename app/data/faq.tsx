@@ -1,5 +1,6 @@
 import type {ReactNode} from 'react';
-import type {Translate} from '~/lib/i18n';
+import type {Locale, Translate} from '~/lib/i18n';
+import {LEGAL} from '~/config/legal';
 import type {ProductDetails} from '~/lib/productDetails';
 
 export interface FaqItem {
@@ -66,6 +67,7 @@ export function getProductFaq(
   t: Translate,
   description = '',
   details?: ProductDetails,
+  locale: Locale = 'en',
 ): FaqItem[] {
   const composition = details?.composition ?? extractComposition(description);
 
@@ -82,11 +84,18 @@ export function getProductFaq(
     ? `${fitParts.join(' ')} ${advice}`
     : details?.sizeAdvice ?? t('faqData.fitA');
 
+  const capitalise = (text: string) =>
+    `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
   const compositionAnswer = composition
-    ? `${composition}.`
+    ? `${capitalise(composition)}.`
     : details?.material
-      ? t('details.materialIs', {material: details.material})
+      ? t('details.materialAnswer', {material: capitalise(details.material)})
       : t('faqData.compositionA');
+
+  // Delivery and returns from app/config/legal.ts, the legal pages' source.
+  const lang = locale === 'fr' ? 'fr' : 'en';
+  const [france = '', ...elsewhere] = LEGAL.shipping.zones[lang];
+  const franceTime = france.replace(/^[^—]+—\s*/, '').replace(/,.*$/, '');
 
   return [
     {question: t('faqData.fitQ'), answer: fitAnswer},
@@ -101,7 +110,11 @@ export function getProductFaq(
       question: t('faqData.shipping2Q'),
       answer: (
         <>
-          {t('faqData.shipping2A')}{' '}
+          {t('details.shippingAnswer', {
+            preparation: LEGAL.shipping.preparation[lang],
+            france: franceTime,
+          })}{' '}
+          {elsewhere.join(' · ')}.{' '}
           <a href="/legal/shipping">{t('faqData.shippingLink')}</a>.
         </>
       ),
@@ -110,7 +123,7 @@ export function getProductFaq(
       question: t('faqData.returnsQ'),
       answer: (
         <>
-          {t('faqData.returnsA')}{' '}
+          {t('details.returnsAnswer', {days: LEGAL.returnDays})}{' '}
           <a href="/legal/returns">{t('faqData.returnsLink')}</a>.
         </>
       ),

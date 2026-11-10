@@ -167,11 +167,10 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
 
   useEffect(() => {
     if (!enabled || hasSignedUp() || recentlyDismissed()) return;
-    // Never on top of the first-visit language / cookies dialog: wait until
-    // the visitor has answered it, then open.
+    // Never under the opening loader: wait until it has gone, then open.
     let timer: ReturnType<typeof setTimeout>;
     const tryOpen = () => {
-      if (document.querySelector('.lang-prompt')) {
+      if (document.documentElement.classList.contains('hs-loader-run')) {
         timer = setTimeout(tryOpen, OPEN_DELAY_MS);
         return;
       }

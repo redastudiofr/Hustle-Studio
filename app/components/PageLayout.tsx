@@ -6,7 +6,7 @@ import {Footer} from '~/components/Footer';
 import {NewsletterPopup} from '~/components/NewsletterPopup';
 import {Header, HeaderMenu, type NavCollection} from '~/components/Header';
 import {CartMain} from '~/components/CartMain';
-import {LanguagePrompt} from '~/components/LanguagePrompt';
+import {CookieBar} from '~/components/CookieBar';
 import {useT} from '~/lib/i18n';
 import {SearchIcon} from '~/components/Icons';
 import {HeaderToneProvider} from '~/lib/header-tone';
@@ -71,12 +71,9 @@ export function PageLayout({
         </main>
         <Footer />
         <NewsletterPopup enabled={promoSignupEnabled} />
-        {(!localeChosen || !consentChosen) && (
-          <LanguagePrompt
-            askLanguage={!localeChosen}
-            askCookies={!consentChosen}
-          />
-        )}
+        {/* English only: no language to ask; the cookie question is a
+            small bar that leaves the page usable. */}
+        {!consentChosen && <CookieBar />}
       </HeaderToneProvider>
     </Aside.Provider>
   );

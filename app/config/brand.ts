@@ -94,7 +94,7 @@ export const BRAND = {
    * (/legal/…?lang=fr): consumer terms must exist in French for customers in
    * France. Remove 'fr' here to run the site in English only.
    */
-  languages: ['en', 'fr'] as ReadonlyArray<'en' | 'fr'>,
+  languages: ['en'] as ReadonlyArray<'en' | 'fr'>,
 
   /** Colour of the browser UI on mobile (address bar). */
   themeColor: '#111111',

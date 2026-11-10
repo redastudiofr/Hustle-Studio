@@ -1,4 +1,5 @@
 import {createHydrogenContext, InMemoryCache} from '@shopify/hydrogen';
+import {englishCopy} from '~/lib/englishCopy';
 import {BRAND} from '~/config/brand';
 import {localeFromRequest, shopifyLanguage} from '~/lib/i18n/locale';
 import {AppSession} from '~/lib/session';
@@ -97,6 +98,16 @@ export async function createHydrogenRouterContext(
     },
     additionalContext,
   );
+
+  // The shop wrote some product texts in French; the site is English only.
+  // Every Shopify answer goes through englishCopy (app/lib/englishCopy.ts).
+  const {storefront} = hydrogenContext;
+  const query = storefront.query.bind(storefront);
+  const mutate = storefront.mutate.bind(storefront);
+  storefront.query = (async (...args: Parameters<typeof query>) =>
+    englishCopy(await query(...args))) as typeof storefront.query;
+  storefront.mutate = (async (...args: Parameters<typeof mutate>) =>
+    englishCopy(await mutate(...args))) as typeof storefront.mutate;
 
   return hydrogenContext;
 }

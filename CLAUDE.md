@@ -20,8 +20,11 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   Reviews come only from Shopify `review` metaobjects + `app/data/reviews.ts`
   (real ones, app/lib/reviews.ts) or review-app metafields; videos only from `app/config/videos.ts`.
 - UI text goes through `app/lib/i18n/dictionary.ts` (EN + FR, same keys).
-  The site runs in English only (`BRAND.languages`); legal pages keep a
-  French version via `?lang=fr`.
+  The site runs in English only (`BRAND.languages = ['en']`: no language
+  prompt; cookies are a small bar, CookieBar.tsx). Product texts the shop
+  wrote in French in Shopify are replaced by English ones from
+  app/data/productEnglish.ts in every Shopify answer (app/lib/englishCopy.ts,
+  wired in app/lib/context.ts).
 - Homepage (app/routes/_index.tsx): Reda Studio's homepage, ported with
   Hustle's photos and Shopify data — hero (AnimatedHero, Paris photos
   served as supplied), collections slider, every product, real reviews,
@@ -55,7 +58,7 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   centred, every page in the menu panel opened from the button on the right
   (app/config/navigation.ts `mobileLinks`).
 - Opening loader (first page load of a session, skipped with reduced
-  motion): app/lib/hs-loader.ts (inline CSS + head script) +
+  motion; white screen, the wordmark, then a fade to transparent): app/lib/hs-loader.ts (inline CSS + head script) +
   app/components/hs/HsLoader.tsx. Product cards (ProductItem and
   reda/ProductItem): hover zoom, "Add to cart" through the cart's LinesAdd
   (one variant: added at once; sizes: the customer picks one on the card,

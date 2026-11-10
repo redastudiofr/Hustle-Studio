@@ -41,11 +41,8 @@ export function HsLoader() {
       role="status"
       aria-label={t('loader.label')}
     >
-      <div className="hs-loader__inner" aria-hidden="true">
-        {/* The site's wordmark, through the same CSS mask as the header. */}
-        <span className="hs-loader__logo" />
-        <span className="hs-loader__line" />
-      </div>
+      {/* The site's wordmark, through the same CSS mask as the header. */}
+      <span className="hs-loader__logo" aria-hidden="true" />
     </div>
   );
 }
