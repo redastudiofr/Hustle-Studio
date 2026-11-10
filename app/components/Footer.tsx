@@ -121,10 +121,10 @@ function FooterColumn({title, links}: {title: string; links: NavLinkConfig[]}) {
  * "become part of the community": the black disc of the logo fills in from
  * its centre, then the photos rise one by one and keep floating gently.
  *
- * Everything starts visible. Only once JavaScript runs is the block armed
- * (the starting state of the animation); the observer then plays it, and a
- * timer plays it anyway if the observer never answers, so the photos can
- * never stay hidden.
+ * Everything starts visible: without JavaScript, or with reduced motion,
+ * nothing is hidden. Once JavaScript runs the block is armed (empty disc,
+ * no photos) and plays only when it is really on screen — there is no timer,
+ * which used to play it before the visitor had scrolled down to it.
  */
 function CommunityBlock() {
   const t = useT();
@@ -143,14 +143,10 @@ function CommunityBlock() {
           observer.disconnect();
         }
       },
-      {threshold: 0.25},
+      {threshold: 0.35},
     );
     observer.observe(node);
-    const safety = window.setTimeout(() => setState('in'), 6000);
-    return () => {
-      observer.disconnect();
-      window.clearTimeout(safety);
-    };
+    return () => observer.disconnect();
   }, []);
 
   return (
