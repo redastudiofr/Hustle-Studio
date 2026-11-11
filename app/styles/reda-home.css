@@ -102,13 +102,13 @@
   height: auto;
   min-height: 0;
   max-height: none;
-  aspect-ratio: 941 / 1672;
+  aspect-ratio: 1100 / 1366;
 }
 
 @media (min-width: 48em) {
   .rhome.home .hero.hero--top {
     height: auto;
-    aspect-ratio: 1672 / 941;
+    aspect-ratio: 2000 / 1117;
   }
 }
 

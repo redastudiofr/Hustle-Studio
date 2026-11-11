@@ -43,14 +43,14 @@ import {useT} from '~/lib/i18n';
 const SMALLEST_CAP = 10;
 
 const HERO_IMAGE_MOBILE = {
-  src: '/brand/hero-mobile-paris.webp',
-  alt: 'Grey zip hoodie and raw denim, worn at dusk in front of the Eiffel Tower',
+  src: '/brand/hero-mobile-07.webp',
+  alt: 'Black cropped 07 zip hoodie and joggers, and a pink 07 zip hoodie, against a deep blue backdrop',
 };
 
 // Served exactly as supplied (no re-encoding, no resizing) and shown whole.
 const HERO_IMAGE_DESKTOP = {
-  src: '/brand/hero-desktop-paris.webp',
-  alt: 'Grey zip hoodie and raw denim, worn at dusk in front of the Eiffel Tower',
+  src: '/brand/hero-desktop-07.webp',
+  alt: 'Black cropped 07 zip hoodie and joggers, and a pink 07 zip hoodie, against a deep blue backdrop',
 };
 
 /** The footer leaves out its community block: this page shows it itself. */

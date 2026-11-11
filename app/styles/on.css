@@ -1745,3 +1745,26 @@ html .hero-rating:hover {
     display: none;
   }
 }
+
+/* Hero, phone: the portrait photo has both faces in its upper half, so the
+   title, buttons and score sit at the bottom, over a soft dark fade. */
+@media (max-width: 47.99em) {
+  html .rhome .hero--top .hero__scrim {
+    display: block;
+    background: linear-gradient(
+      to top,
+      rgba(8, 14, 32, 0.78) 0%,
+      rgba(8, 14, 32, 0.35) 38%,
+      rgba(8, 14, 32, 0) 60%
+    );
+  }
+
+  html .rhome .hero--top > :last-child {
+    top: auto;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 92%;
+  }
+}
