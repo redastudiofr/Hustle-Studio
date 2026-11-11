@@ -10,6 +10,7 @@ import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
 import {ProductItem} from '~/components/reda/ProductItem';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
 import {SetsGrid} from '~/components/sets/SetsGrid';
+import {MatchYourPerson} from '~/components/sets/MatchYourPerson';
 import {loadSetProducts, SET_PRODUCT_HANDLE} from '~/lib/sets';
 import {StarRating} from '~/components/StarRating';
 import type {Review} from '~/data/reviews';
@@ -138,6 +139,8 @@ export default function Homepage() {
           {(sets) => <SetsGrid products={sets} viewAll rail />}
         </Await>
       </Suspense>
+
+      <MatchYourPerson />
 
       <Suspense fallback={null}>
         <Await resolve={data.reviews}>

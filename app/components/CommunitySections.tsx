@@ -8,14 +8,18 @@ import {useHorizontalRail} from '~/lib/useHorizontalRail';
 
 /** The brand's own photos, floating in the "become part of the community" slider. */
 const COMMUNITY_PHOTOS = [
-  '/brand/about-street.webp',
-  '/brand/hero-mobile-paris.webp',
-  '/brand/hero-mobile-passage.webp',
-  '/brand/popup-business-after-hours.webp',
-  '/brand/about.webp',
-  '/brand/hero-mobile-chair.webp',
-  '/brand/hero-mobile-shoot.webp',
+  '/brand/community-07-blue.jpg',
+  '/brand/community-07-grey.webp',
 ];
+
+/**
+ * One run of the slider: the photos repeated until there are enough to span
+ * a wide screen (the track is two runs back to back, moved by half its width).
+ */
+const RUN = Array.from(
+  {length: Math.max(1, Math.ceil(8 / COMMUNITY_PHOTOS.length))},
+  () => COMMUNITY_PHOTOS,
+).flat();
 
 /**
  * "become part of the community": the whole block fills with black from the
@@ -68,16 +72,18 @@ export function CommunitySections() {
       <div className="st-community__photos" aria-hidden="true">
         <div className="st-community__track">
           {/* Two copies back to back: the slider loops without a jump. */}
-          {[...COMMUNITY_PHOTOS, ...COMMUNITY_PHOTOS].map((src, position) => (
+          {[...RUN, ...RUN].map((src, position) => (
             <img
-              key={`${position < COMMUNITY_PHOTOS.length ? 'a' : 'b'}-${src}`}
+              // Fixed list, never reordered.
+              // eslint-disable-next-line react/no-array-index-key
+              key={position}
               src={src}
               alt=""
               loading="lazy"
               decoding="async"
               style={
                 {
-                  '--i': position % COMMUNITY_PHOTOS.length,
+                  '--i': position % RUN.length,
                 } as React.CSSProperties
               }
             />
@@ -164,7 +170,9 @@ function VideoRail() {
     // One copy is nine videos plus nine gaps; the row has one gap fewer.
     const copyWidth = () => {
       const track = rail.firstElementChild as HTMLElement | null;
-      const gap = track ? parseFloat(getComputedStyle(track).columnGap) || 0 : 0;
+      const gap = track
+        ? parseFloat(getComputedStyle(track).columnGap) || 0
+        : 0;
       return (rail.scrollWidth + gap) / COPIES;
     };
     rail.scrollLeft = copyWidth() * Math.floor(COPIES / 2);

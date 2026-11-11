@@ -28,7 +28,10 @@ export function SetsGrid({
   if (!products.length) return null;
 
   return (
-    <section className={`hs-sets${rail ? ' hs-sets--rail' : ''}`}>
+    <section
+      className={`hs-sets${rail ? ' hs-sets--rail' : ''}`}
+      id={rail ? 'the-sets' : undefined}
+    >
       <div className="hs-sets__head">
         <h2 className="hs-sets__title">{heading ?? t('sets.title')}</h2>
         <div className="hs-sets__actions">

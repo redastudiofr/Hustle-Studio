@@ -45,7 +45,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   off until a Hustle code is set in app/lib/reda/offers.ts.
 - Community block (app/components/CommunitySections.tsx): "become part of
   the community" (the whole block, "follow us" included, fills black from
-  the logo; a slider of floating brand photos; the story link) and "follow
+  the logo; a slider of floating brand photos, COMMUNITY_PHOTOS, repeated
+  to fill the screen; the story link) and "follow
   us" (Instagram + TikTok from BRAND.social in bold; the brand's videos from
   app/config/community.ts, files in public/brand/tiktok/, 480px, no sound,
   endless both ways, playing once the block nears the screen,
@@ -72,7 +73,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   prices. On the homepage "the sets" is a slider under every product
   showing the Shopify "set-…" products themselves (first Shopify photo,
   title, price; loadSetProducts), which stay out of the product grid and the
-  cart suggestions; /sets lists them too. The
+  cart suggestions; /sets lists them too. After the slider, "Match your
+  person" (components/sets/MatchYourPerson.tsx, photos in MATCH_PHOTOS):
+  two worn photos + a grey panel, no price or shipping promise. The
   "any 2 sets" deal stays hidden until SETS_BUNDLE.code is set.
 - Product page: "the details" and the FAQ answers are written per product
   from its own data (description, options, metafields custom.fit /

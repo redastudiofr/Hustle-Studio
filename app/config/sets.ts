@@ -62,3 +62,26 @@ export const SETS_BUNDLE = {
   sets: 2,
   amount: 25,
 };
+
+/**
+ * "Match your person" (homepage, after the sets slider): two photos of the
+ * sets worn, each leading to its Shopify set product.
+ */
+export const MATCH_PHOTOS = [
+  {
+    src: '/brand/match-his-pink.webp',
+    width: 1100,
+    height: 1473,
+    label: 'His · Pink',
+    alt: 'Pink 07 zip hoodie and joggers, worn sitting on stone steps',
+    href: '/products/set-07-pink',
+  },
+  {
+    src: '/brand/match-hers-blue.webp',
+    width: 1100,
+    height: 1535,
+    label: 'Hers · Blue',
+    alt: 'Blue 07 zip hoodie and joggers, worn in front of a blue car',
+    href: '/products/set-07-blue',
+  },
+];
