@@ -66,6 +66,11 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   (one variant: added at once; sizes: the customer picks one on the card,
   never a default), header count bump and toasts — app/components/hs/,
   app/styles/hs-product-card.css. Animate transform/opacity/clip-path only.
+- 07 sets (app/config/sets.ts, app/lib/sets.ts, components/sets/, routes
+  /sets and /sets/:slug): a Zip 07 + the matching Jogging 07, two real
+  Shopify products added as two lines, priced at the sum of their Shopify
+  prices; "the sets" tiles sit under "our collections" on the homepage. The
+  "any 2 sets" deal stays hidden until SETS_BUNDLE.code is set.
 - Product page: "the details" and the FAQ answers are written per product
   from its own data (description, options, metafields custom.fit /
   composition / made_in / care) — app/lib/productDetails.ts; never invent a

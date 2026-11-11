@@ -65,7 +65,7 @@ function writeStorage(key: string, value: string) {
   }
 }
 
-function hasSignedUp(): boolean {
+export function hasSignedUp(): boolean {
   return (
     hasCookie(PROMO_SIGNUP_COOKIE) ||
     readStorage(SIGNUP_STORAGE_KEY) !== null ||
@@ -146,6 +146,9 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
  * The code shown is the one the server returns, and only after it has
  * confirmed the number is stored — see app/routes/newsletter.tsx.
  */
+/** Opens the pop-up on demand, e.g. from the set page's welcome card. */
+export const OPEN_WELCOME_EVENT = 'hs:open-welcome';
+
 export function NewsletterPopup({enabled}: {enabled: boolean}) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
@@ -178,6 +181,15 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
     };
     timer = setTimeout(tryOpen, OPEN_DELAY_MS);
     return () => clearTimeout(timer);
+  }, [enabled]);
+
+  useEffect(() => {
+    if (!enabled) return;
+    const openNow = () => {
+      if (!hasSignedUp()) setOpen(true);
+    };
+    window.addEventListener(OPEN_WELCOME_EVENT, openNow);
+    return () => window.removeEventListener(OPEN_WELCOME_EVENT, openNow);
   }, [enabled]);
 
   const close = useCallback(() => {

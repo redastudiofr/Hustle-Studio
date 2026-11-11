@@ -9,6 +9,8 @@ import {AnimatedHero} from '~/components/reda/AnimatedHero';
 import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
 import {ProductItem} from '~/components/reda/ProductItem';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
+import {SetsGrid} from '~/components/sets/SetsGrid';
+import {loadSets} from '~/lib/sets';
 import {StarRating} from '~/components/StarRating';
 import type {Review} from '~/data/reviews';
 import {HelpFaq} from '~/components/HelpFaq';
@@ -90,8 +92,9 @@ export async function loader({context}: Route.LoaderArgs) {
     });
 
   const reviews = loadReviews(storefront).catch(() => []);
+  const sets = loadSets(storefront);
 
-  return {collections: visible, allProducts, reviews};
+  return {collections: visible, allProducts, reviews, sets};
 }
 
 export default function Homepage() {
@@ -119,6 +122,12 @@ export default function Homepage() {
       />
 
       <CollectionsSlider collections={data.collections} />
+
+      <Suspense fallback={null}>
+        <Await resolve={data.sets}>
+          {(sets) => <SetsGrid sets={sets} viewAll />}
+        </Await>
+      </Suspense>
 
       <AllProducts products={data.allProducts} />
 

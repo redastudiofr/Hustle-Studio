@@ -3,7 +3,7 @@
  * with Hustle Studio data: only real ratings and reviews, no offer without a
  * Hustle code, no pre-order. Components in app/components/reda/.
  */
-import {Await, useLoaderData} from 'react-router';
+import {Await, Link, useLoaderData} from 'react-router';
 import {Suspense} from 'react';
 import type {Route} from './+types/products.$handle';
 import {
@@ -23,6 +23,7 @@ import {BundleOffer} from '~/components/reda/BundleOffer';
 import type {SizeEntry} from '~/components/reda/ProductSizeGuide';
 import {Accordion} from '~/components/reda/Accordion';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
+import {SETS} from '~/config/sets';
 import {RelatedProductsRail} from '~/components/reda/RelatedProductsRail';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 import {getProductFaq} from '~/data/faq';
@@ -143,7 +144,12 @@ function loadDeferredData(
       // Recommending something the visitor can't actually buy defeats the
       // point of the row, so an out-of-stock product is skipped rather than
       // shown with a "sold out" badge here.
-      if (!item || seen.has(item.id) || item.handle === handle || !item.availableForSale) {
+      if (
+        !item ||
+        seen.has(item.id) ||
+        item.handle === handle ||
+        !item.availableForSale
+      ) {
         continue;
       }
       seen.add(item.id);
@@ -331,6 +337,28 @@ export default function Product() {
             }
           />
 
+          {/* A Zip 07 or a Jogging 07: the set it belongs to. */}
+          {(() => {
+            const set = SETS.find(
+              (item) =>
+                item.jacket === product.handle ||
+                item.sweats === product.handle,
+            );
+            return set ? (
+              <Link
+                to={`/sets/${set.slug}`}
+                prefetch="intent"
+                className="hs-set-link"
+              >
+                <span>
+                  <strong>{t('sets.completeTitle', {color: set.color})}</strong>
+                  <span>{t('sets.completeText')}</span>
+                </span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            ) : null;
+          })()}
+
           {/* The "take two" box, on every product — the pack is sold on the
               homepage and /pack, never here. Skipped during pre-order: it
               exists to add a product to the cart, which is exactly what is
@@ -343,7 +371,9 @@ export default function Product() {
                 {(choices) => (
                   <BundleOffer
                     productTitle={title}
-                    productImage={product.images.nodes[0] ?? selectedVariant?.image}
+                    productImage={
+                      product.images.nodes[0] ?? selectedVariant?.image
+                    }
                     productPrice={selectedVariant?.price}
                     productVariantId={selectedVariant?.id}
                     choices={choices}
@@ -371,11 +401,13 @@ export default function Product() {
             <section className="pdp__section">
               <h2 className="pdp__section-title">{t('product.faqTitle')}</h2>
               <div className="pdp__accordions">
-                {getProductFaq(t, description ?? '', details, locale).map((item) => (
-                  <Accordion key={item.question} title={item.question}>
-                    <p>{item.answer}</p>
-                  </Accordion>
-                ))}
+                {getProductFaq(t, description ?? '', details, locale).map(
+                  (item) => (
+                    <Accordion key={item.question} title={item.question}>
+                      <p>{item.answer}</p>
+                    </Accordion>
+                  ),
+                )}
               </div>
             </section>
           </div>
@@ -384,7 +416,9 @@ export default function Product() {
 
       <Suspense fallback={null}>
         <Await resolve={recommended}>
-          {(items) => (items.length ? <RelatedProductsRail items={items} /> : null)}
+          {(items) =>
+            items.length ? <RelatedProductsRail items={items} /> : null
+          }
         </Await>
       </Suspense>
 
