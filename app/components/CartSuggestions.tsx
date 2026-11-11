@@ -48,7 +48,11 @@ export function CartSuggestions({
         {(data: CartSuggestionsQuery | null) => {
           const products = (data?.products?.nodes ?? [])
             .filter(
-              (product) => product.availableForSale && !inCart.has(product.id),
+              (product) =>
+                product.availableForSale &&
+                !inCart.has(product.id) &&
+                // Shopify "set 07" products: sold through the sets slider.
+                !product.handle.startsWith('set-'),
             )
             .slice(0, MAX_SUGGESTIONS);
 
