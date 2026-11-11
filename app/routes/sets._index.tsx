@@ -1,7 +1,7 @@
 import {useLoaderData} from 'react-router';
 import type {Route} from './+types/sets._index';
 import {SetsGrid} from '~/components/sets/SetsGrid';
-import {loadSets} from '~/lib/sets';
+import {loadSetProducts} from '~/lib/sets';
 import {seoMeta, originFromMatches} from '~/lib/seo';
 
 export const meta: Route.MetaFunction = ({matches}) =>
@@ -13,14 +13,14 @@ export const meta: Route.MetaFunction = ({matches}) =>
   });
 
 export async function loader({context}: Route.LoaderArgs) {
-  return {sets: await loadSets(context.storefront)};
+  return {sets: await loadSetProducts(context.storefront)};
 }
 
 export default function SetsPage() {
   const {sets} = useLoaderData<typeof loader>();
   return (
     <div className="hs-sets-page">
-      <SetsGrid sets={sets} />
+      <SetsGrid products={sets} />
     </div>
   );
 }

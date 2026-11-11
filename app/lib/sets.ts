@@ -149,3 +149,69 @@ export async function loadSets(
     return [];
   }
 }
+
+/** A Shopify product that is a whole set ("set 07 black"…). */
+export type SetProduct = {
+  id: string;
+  handle: string;
+  title: string;
+  availableForSale: boolean;
+  /** The first image set on the product in Shopify. */
+  image: SetImage | null;
+  minPrice: Money;
+  maxPrice: Money;
+};
+
+/** Shopify handles of the set products. */
+export const SET_PRODUCT_HANDLE = /^set-/;
+
+/**
+ * The Shopify products whose handle starts with "set-" — shown, as they are
+ * in Shopify (title, first photo, price), in the homepage's sets slider.
+ */
+export async function loadSetProducts(
+  storefront: Storefront,
+): Promise<SetProduct[]> {
+  try {
+    const data = (await storefront.query(
+      `query SetProducts {
+        products(first: 30, query: "title:set*", sortKey: CREATED_AT) {
+          nodes {
+            id handle title availableForSale
+            featuredImage { url altText width height }
+            priceRange {
+              minVariantPrice { amount currencyCode }
+              maxVariantPrice { amount currencyCode }
+            }
+          }
+        }
+      }`,
+      {cache: storefront.CacheShort()},
+    )) as {
+      products: {
+        nodes: Array<{
+          id: string;
+          handle: string;
+          title: string;
+          availableForSale: boolean;
+          featuredImage: SetImage | null;
+          priceRange: {minVariantPrice: Money; maxVariantPrice: Money};
+        }>;
+      };
+    };
+    return data.products.nodes
+      .filter((product) => SET_PRODUCT_HANDLE.test(product.handle))
+      .map((product) => ({
+        id: product.id,
+        handle: product.handle,
+        title: product.title,
+        availableForSale: product.availableForSale,
+        image: product.featuredImage,
+        minPrice: product.priceRange.minVariantPrice,
+        maxPrice: product.priceRange.maxVariantPrice,
+      }));
+  } catch (error) {
+    console.error('[sets] could not load the set products', error);
+    return [];
+  }
+}

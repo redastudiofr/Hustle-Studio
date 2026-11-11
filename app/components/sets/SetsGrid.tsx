@@ -3,38 +3,36 @@ import {Image, Money} from '@shopify/hydrogen';
 import type {CurrencyCode} from '@shopify/hydrogen/storefront-api-types';
 import {useHorizontalRail} from '~/lib/useHorizontalRail';
 import {useT} from '~/lib/i18n';
-import type {SetData} from '~/lib/sets';
+import type {SetProduct} from '~/lib/sets';
 
 /**
- * "The sets": one tile per colour — the photo of the set worn, its name and
- * its price (hoodie + trousers, at their Shopify prices).
+ * "The sets": the Shopify set products ("set 07 black"…), each with the
+ * first photo set on it in Shopify, its title and its Shopify price.
  *
- * `rail`: a horizontal slider (homepage, under every product), its tiles a
- * little larger than the product cards above it. Otherwise a grid (/sets).
+ * `rail`: a horizontal slider (homepage, under every product). Otherwise a
+ * grid (/sets).
  */
 export function SetsGrid({
-  sets,
+  products,
   heading,
   viewAll = false,
   rail = false,
 }: {
-  sets: SetData[];
+  products: SetProduct[];
   heading?: string;
   viewAll?: boolean;
   rail?: boolean;
 }) {
   const t = useT();
   const {ref, scrollByCard} = useHorizontalRail<HTMLDivElement>();
-  if (!sets.length) return null;
+  if (!products.length) return null;
 
   return (
-    <section
-      className={`hs-sets${rail ? ' hs-sets--rail' : ''}${sets.length <= 3 ? ' hs-sets--few' : ''}`}
-    >
+    <section className={`hs-sets${rail ? ' hs-sets--rail' : ''}`}>
       <div className="hs-sets__head">
         <h2 className="hs-sets__title">{heading ?? t('sets.title')}</h2>
         <div className="hs-sets__actions">
-          {rail && sets.length > 1 && (
+          {rail && products.length > 1 && (
             <>
               <button
                 type="button"
@@ -64,46 +62,56 @@ export function SetsGrid({
       <div
         className="hs-sets__grid"
         ref={rail ? ref : undefined}
-        style={{'--sets-cols': Math.min(sets.length, 4)} as React.CSSProperties}
+        style={
+          {'--sets-cols': Math.min(products.length, 4)} as React.CSSProperties
+        }
       >
-        {sets.map((set, index) => (
-          <Link
-            key={set.slug}
-            to={`/sets/${set.slug}`}
-            prefetch="intent"
-            className="hs-sets__tile"
-            draggable={false}
-          >
-            <div className="hs-sets__media">
-              {set.image && (
-                <Image
-                  data={{...set.image, altText: set.image.altText ?? set.title}}
-                  aspectRatio="2/3"
-                  sizes={
-                    rail
-                      ? '(min-width: 64em) 30vw, (min-width: 48em) 40vw, 58vw'
-                      : '(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw'
-                  }
-                  loading={index < 2 ? 'eager' : 'lazy'}
-                  draggable={false}
+        {products.map((product, index) => {
+          const ranged =
+            Number(product.maxPrice.amount) > Number(product.minPrice.amount);
+          return (
+            <Link
+              key={product.id}
+              to={`/products/${product.handle}`}
+              prefetch="intent"
+              className="hs-sets__tile"
+              draggable={false}
+            >
+              <div className="hs-sets__media">
+                {product.image && (
+                  <Image
+                    data={{
+                      ...product.image,
+                      altText: product.image.altText ?? product.title,
+                    }}
+                    aspectRatio="3/4"
+                    sizes={
+                      rail
+                        ? '(min-width: 64em) 24vw, (min-width: 48em) 34vw, 52vw'
+                        : '(min-width: 64em) 25vw, (min-width: 48em) 33vw, 50vw'
+                    }
+                    loading={index < 2 ? 'eager' : 'lazy'}
+                    draggable={false}
+                  />
+                )}
+                {!product.availableForSale && (
+                  <span className="hs-sets__badge">{t('product.soldOut')}</span>
+                )}
+              </div>
+              <p className="hs-sets__name">{product.title}</p>
+              <p className="hs-sets__price">
+                {ranged && `${t('sets.from')} `}
+                <Money
+                  as="span"
+                  data={{
+                    amount: product.minPrice.amount,
+                    currencyCode: product.minPrice.currencyCode as CurrencyCode,
+                  }}
                 />
-              )}
-              {!set.available && (
-                <span className="hs-sets__badge">{t('product.soldOut')}</span>
-              )}
-            </div>
-            <p className="hs-sets__name">{set.title}</p>
-            <p className="hs-sets__price">
-              <Money
-                as="span"
-                data={{
-                  amount: set.price.amount,
-                  currencyCode: set.price.currencyCode as CurrencyCode,
-                }}
-              />
-            </p>
-          </Link>
-        ))}
+              </p>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

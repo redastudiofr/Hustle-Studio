@@ -1844,7 +1844,7 @@ html .hs-sets__title {
 .hs-sets__media {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: 3 / 4;
   background: #eee;
 }
 
@@ -2146,7 +2146,7 @@ html .hs-set-buy .hs-set-buy__add:disabled {
 }
 
 .hs-sets--rail .hs-sets__tile {
-  flex: 0 0 58%;
+  flex: 0 0 54%;
   scroll-snap-align: start;
 }
 
@@ -2159,25 +2159,18 @@ html .hs-set-buy .hs-set-buy__add:disabled {
   }
 
   .hs-sets--rail .hs-sets__tile {
-    flex-basis: 38%;
+    flex-basis: 34%;
   }
 }
 
 @media (min-width: 64em) {
   .hs-sets--rail .hs-sets__tile {
-    flex-basis: 29%;
+    flex-basis: 26%;
   }
 }
 
 @media (max-width: 47.99em) {
   .hs-sets__arrow {
-    display: none;
-  }
-}
-
-/* Three sets or fewer fit on a desktop row: no arrows to show there. */
-@media (min-width: 64em) {
-  .hs-sets--few .hs-sets__arrow {
     display: none;
   }
 }

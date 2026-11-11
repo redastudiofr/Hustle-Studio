@@ -10,7 +10,7 @@ import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
 import {ProductItem} from '~/components/reda/ProductItem';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
 import {SetsGrid} from '~/components/sets/SetsGrid';
-import {loadSets} from '~/lib/sets';
+import {loadSetProducts, SET_PRODUCT_HANDLE} from '~/lib/sets';
 import {StarRating} from '~/components/StarRating';
 import type {Review} from '~/data/reviews';
 import {HelpFaq} from '~/components/HelpFaq';
@@ -43,9 +43,6 @@ import {useT} from '~/lib/i18n';
  * smallest cap: fewer products than that need no button.
  */
 const SMALLEST_CAP = 10;
-
-/** Shopify products that are whole sets ("set 07 black"…). */
-const SET_PRODUCT_HANDLE = /^set-/;
 
 const HERO_IMAGE_MOBILE = {
   src: '/brand/hero-mobile-07.webp',
@@ -102,7 +99,7 @@ export async function loader({context}: Route.LoaderArgs) {
     });
 
   const reviews = loadReviews(storefront).catch(() => []);
-  const sets = loadSets(storefront);
+  const sets = loadSetProducts(storefront);
 
   return {collections: visible, allProducts, reviews, sets};
 }
@@ -138,7 +135,7 @@ export default function Homepage() {
       {/* The 07 sets, as a slider, under every product. */}
       <Suspense fallback={null}>
         <Await resolve={data.sets}>
-          {(sets) => <SetsGrid sets={sets} viewAll rail />}
+          {(sets) => <SetsGrid products={sets} viewAll rail />}
         </Await>
       </Suspense>
 
