@@ -1574,7 +1574,8 @@ html .st-community .st-tiktok__video {
    Grey band, green score line, big uppercase title; white rounded cards:
    stars, headline, text, then the customer (initial, name, "verified
    purchase" only when real, date) and the product they bought. */
-html .rhome .reviews {
+html .rhome .reviews,
+html .rpdp .reviews {
   background: #f3f3f1;
   padding: 3.5rem 0 3rem;
 }
@@ -1595,17 +1596,20 @@ html .hero-rating .stars__tile-fill {
   fill: #00b67a;
 }
 
-html .rhome .reviews__title {
+html .rhome .reviews__title,
+html .rpdp .reviews__title {
   text-transform: uppercase;
   font-weight: 900;
   letter-spacing: -0.01em;
 }
 
-html .rhome .reviews-row__item {
+html .rhome .reviews-row__item,
+html .rpdp .reviews-row__item {
   flex: 0 0 min(82vw, 340px);
 }
 
-html .rhome .review-card--rich {
+html .rhome .review-card--rich,
+html .rpdp .review-card--rich {
   min-height: 12.5rem;
   gap: 0.55rem;
   padding: 1.25rem 1.3rem 1.1rem;
@@ -1732,4 +1736,12 @@ html .hero-rating {
 
 html .hero-rating:hover {
   background: #fff;
+}
+
+/* Product page, phone: the rows are swiped, as on the homepage — no arrows
+   under each row. */
+@media (max-width: 47.99em) {
+  html .rpdp .reviews .rail-arrow {
+    display: none;
+  }
 }

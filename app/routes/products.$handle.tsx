@@ -395,7 +395,8 @@ export default function Product() {
           <Await resolve={reviews}>
             {(items) => (
               <ReviewsSection
-                heading={t('reviews.forProduct')}
+                heading={t('reviews.title')}
+                subheading={t('reviews.subtitle')}
                 reviews={items}
                 productTitle={title}
               />
