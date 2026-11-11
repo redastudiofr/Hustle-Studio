@@ -1794,6 +1794,32 @@ html .hs-sets__title {
   text-transform: uppercase;
 }
 
+.hs-sets__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hs-sets__arrow {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid #d6d6d6;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+}
+
+.hs-sets__arrow:hover {
+  border-color: #111;
+}
+
+.hs-sets__arrow + .hs-sets__all {
+  margin-left: 0.6rem;
+}
+
 .hs-sets__all {
   font-size: 0.74rem;
   letter-spacing: 0.18em;
@@ -2099,4 +2125,59 @@ html .hs-set-buy .hs-set-buy__add:disabled {
 
 .hs-set-buy__piece:hover {
   border-color: #111;
+}
+
+/* Homepage: the sets as a slider, each tile a little larger than a product
+   card of the grid above (2 per row on phone, 4 on desktop). */
+.hs-sets--rail .hs-sets__grid {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  margin-inline: -1rem;
+  padding-inline: 1rem;
+  scroll-padding-inline: 1rem;
+}
+
+.hs-sets--rail .hs-sets__grid::-webkit-scrollbar {
+  display: none;
+}
+
+.hs-sets--rail .hs-sets__tile {
+  flex: 0 0 58%;
+  scroll-snap-align: start;
+}
+
+@media (min-width: 48em) {
+  .hs-sets--rail .hs-sets__grid {
+    gap: 0.75rem;
+    margin-inline: -2rem;
+    padding-inline: 2rem;
+    scroll-padding-inline: 2rem;
+  }
+
+  .hs-sets--rail .hs-sets__tile {
+    flex-basis: 38%;
+  }
+}
+
+@media (min-width: 64em) {
+  .hs-sets--rail .hs-sets__tile {
+    flex-basis: 29%;
+  }
+}
+
+@media (max-width: 47.99em) {
+  .hs-sets__arrow {
+    display: none;
+  }
+}
+
+/* Three sets or fewer fit on a desktop row: no arrows to show there. */
+@media (min-width: 64em) {
+  .hs-sets--few .hs-sets__arrow {
+    display: none;
+  }
 }

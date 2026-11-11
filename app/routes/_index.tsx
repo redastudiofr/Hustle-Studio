@@ -44,6 +44,9 @@ import {useT} from '~/lib/i18n';
  */
 const SMALLEST_CAP = 10;
 
+/** Shopify products that are whole sets ("set 07 black"…). */
+const SET_PRODUCT_HANDLE = /^set-/;
+
 const HERO_IMAGE_MOBILE = {
   src: '/brand/hero-mobile-07.webp',
   alt: 'Black cropped 07 zip hoodie and joggers, and a pink 07 zip hoodie, against a deep blue backdrop',
@@ -85,7 +88,14 @@ export async function loader({context}: Route.LoaderArgs) {
 
   const allProducts = storefront
     .query(REDA_ALL_PRODUCTS_QUERY, {variables: {first: 100}})
-    .then((response) => response.products.nodes)
+    // The Shopify "set 07" products are sold through the sets slider
+    // below, not in this grid.
+    .then((response) =>
+      response.products.nodes.filter(
+        (product: HomeProductFragment) =>
+          !SET_PRODUCT_HANDLE.test(product.handle),
+      ),
+    )
     .catch((error: Error) => {
       console.error(error);
       return [] as HomeProductFragment[];
@@ -123,13 +133,14 @@ export default function Homepage() {
 
       <CollectionsSlider collections={data.collections} />
 
+      <AllProducts products={data.allProducts} />
+
+      {/* The 07 sets, as a slider, under every product. */}
       <Suspense fallback={null}>
         <Await resolve={data.sets}>
-          {(sets) => <SetsGrid sets={sets} viewAll />}
+          {(sets) => <SetsGrid sets={sets} viewAll rail />}
         </Await>
       </Suspense>
-
-      <AllProducts products={data.allProducts} />
 
       <Suspense fallback={null}>
         <Await resolve={data.reviews}>
