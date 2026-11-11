@@ -9,6 +9,8 @@ import {AnimatedHero} from '~/components/reda/AnimatedHero';
 import {CollectionsSlider} from '~/components/reda/CollectionsSlider';
 import {ProductItem} from '~/components/reda/ProductItem';
 import {ReviewsSection} from '~/components/reda/ReviewsSection';
+import {StarRating} from '~/components/StarRating';
+import type {Review} from '~/data/reviews';
 import {HelpFaq} from '~/components/HelpFaq';
 import {CommunitySections} from '~/components/CommunitySections';
 import {Newsletter} from '~/components/Newsletter';
@@ -32,8 +34,13 @@ import {useT} from '~/lib/i18n';
  * Styles: reda-home.css, scoped under `.rhome`.
  */
 
-/** Products beyond this many wait behind "view more" on mobile. */
-const MOBILE_INITIAL_PRODUCT_COUNT = 16;
+/**
+ * The grid shows the best sellers first (Shopify's BEST_SELLING order), four
+ * rows on a computer, five on a phone; the rest wait behind "view all
+ * products" (the rows are capped in on.css, per breakpoint). Ten is the
+ * smallest cap: fewer products than that need no button.
+ */
+const SMALLEST_CAP = 10;
 
 const HERO_IMAGE_MOBILE = {
   src: '/brand/hero-mobile-paris.webp',
@@ -102,6 +109,13 @@ export default function Homepage() {
         description={t('home.tagline')}
         ctaButton={{text: t('home.shopNow'), href: '/collections'}}
         secondaryCta={{text: t('home.ourStory'), href: '/about'}}
+        rating={
+          <Suspense fallback={null}>
+            <Await resolve={data.reviews}>
+              {(reviews) => <HeroRating reviews={reviews} />}
+            </Await>
+          </Suspense>
+        }
       />
 
       <CollectionsSlider collections={data.collections} />
@@ -112,11 +126,13 @@ export default function Homepage() {
         <Await resolve={data.reviews}>
           {(reviews) =>
             reviews.length ? (
-              <ReviewsSection
-                heading={t('reviews.title')}
-                subheading={t('reviews.subtitle')}
-                reviews={reviews}
-              />
+              <div id="reviews">
+                <ReviewsSection
+                  heading={t('reviews.title')}
+                  subheading={t('reviews.subtitle')}
+                  reviews={reviews}
+                />
+              </div>
             ) : null
           }
         </Await>
@@ -137,8 +153,8 @@ export default function Homepage() {
 
 function AllProducts({products}: {products: Promise<HomeProductFragment[]>}) {
   const t = useT();
-  // Mobile only: the rest of the grid waits behind "view more" (see
-  // .product-grid--capped in reda-home.css). Desktop always shows them all.
+  // The rest of the grid waits behind "view all products" (rows capped per
+  // breakpoint in on.css, .product-grid--capped).
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -165,13 +181,14 @@ function AllProducts({products}: {products: Promise<HomeProductFragment[]>}) {
                   />
                 ))}
               </div>
-              {!expanded && nodes.length > MOBILE_INITIAL_PRODUCT_COUNT && (
+              {!expanded && nodes.length > SMALLEST_CAP && (
                 <button
                   type="button"
-                  className="view-more-mobile"
+                  className="view-more-mobile home-show-all"
+                  data-count={nodes.length}
                   onClick={() => setExpanded(true)}
                 >
-                  {t('home.viewMore')}
+                  {t('home.showAll')}
                 </button>
               )}
             </>
@@ -206,7 +223,7 @@ const REDA_ALL_PRODUCTS_QUERY = `#graphql
     $language: LanguageCode
     $first: Int
   ) @inContext(country: $country, language: $language) {
-    products(first: $first, sortKey: UPDATED_AT, reverse: true) {
+    products(first: $first, sortKey: BEST_SELLING) {
       nodes {
         ...HomeProduct
       }
@@ -214,3 +231,29 @@ const REDA_ALL_PRODUCTS_QUERY = `#graphql
   }
   ${HOME_PRODUCT_FRAGMENT}
 ` as const;
+
+/**
+ * The shop's own score on the banner: the average of the real reviews shown
+ * further down, and how many there are. Nothing when there are none — and
+ * never another platform's or another brand's rating.
+ */
+function HeroRating({reviews}: {reviews: Review[]}) {
+  const t = useT();
+  const rated = reviews.filter((review) => review.rating > 0);
+  if (!rated.length) return null;
+  const average =
+    Math.round(
+      (rated.reduce((sum, review) => sum + review.rating, 0) / rated.length) *
+        10,
+    ) / 10;
+  return (
+    <a href="#reviews" className="hero-rating">
+      <StarRating rating={average} size={16} />
+      <span>
+        <strong>{average.toFixed(1)}/5</strong>
+        {' · '}
+        {t('reviews.scoreCount', {count: rated.length})}
+      </span>
+    </a>
+  );
+}

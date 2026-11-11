@@ -133,18 +133,61 @@ function FollowUs() {
 }
 
 /**
- * The videos' row: endless both ways (three copies of the list, kept in the
- * middle one by useHorizontalRail's loop), swiped on touch, dragged or moved
- * with the arrows with a mouse.
+ * The videos' row: endless both ways, swiped on touch, dragged or moved with
+ * the arrows with a mouse.
  *
  * Every video plays on its own — muted, looping — once the row comes near
  * the screen: the ones in view or next to it play, those far along the row
- * wait until they come close (nine videos three times over would otherwise
+ * wait until they come close (the list repeated five times would otherwise
  * all decode at once). A page never scrolled that far downloads none.
  */
+/** How many times the video list is repeated in the endless row. */
+const COPIES = 5;
+
 function VideoRail() {
   const t = useT();
-  const {ref, scrollByCard} = useHorizontalRail<HTMLDivElement>({loop: true});
+  // Drag and arrows from the shared hook; the endless wrap is done here, so
+  // that it never fights a finger: see the effect below.
+  const {ref, scrollByCard} = useHorizontalRail<HTMLDivElement>();
+
+  /*
+   * Endless both ways, smoothly. The list is rendered COPIES times and the
+   * row starts in the middle copy. The position is moved back by whole
+   * copies only once the row has come to rest (no scroll event for a
+   * moment), never during a swipe — moving it mid-flight is what made the
+   * phone's momentum scrolling stutter. With five copies there is always
+   * plenty of room on both sides before it rests.
+   */
+  useEffect(() => {
+    const rail = ref.current;
+    if (!rail) return;
+    // One copy is nine videos plus nine gaps; the row has one gap fewer.
+    const copyWidth = () => {
+      const track = rail.firstElementChild as HTMLElement | null;
+      const gap = track ? parseFloat(getComputedStyle(track).columnGap) || 0 : 0;
+      return (rail.scrollWidth + gap) / COPIES;
+    };
+    rail.scrollLeft = copyWidth() * Math.floor(COPIES / 2);
+
+    let timer = 0;
+    const recentre = () => {
+      const width = copyWidth();
+      if (!width) return;
+      const middle = width * Math.floor(COPIES / 2);
+      const offset = rail.scrollLeft - middle;
+      const shift = Math.round(offset / width) * width;
+      if (shift) rail.scrollLeft -= shift;
+    };
+    const onScroll = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(recentre, 180);
+    };
+    rail.addEventListener('scroll', onScroll, {passive: true});
+    return () => {
+      window.clearTimeout(timer);
+      rail.removeEventListener('scroll', onScroll);
+    };
+  }, [ref]);
 
   useEffect(() => {
     const rail = ref.current;
@@ -184,7 +227,7 @@ function VideoRail() {
     };
   }, [ref]);
 
-  const copies = [0, 1, 2];
+  const copies = Array.from({length: COPIES}, (_, copy) => copy);
 
   return (
     <div className="st-tiktok__rail-wrap">

@@ -121,7 +121,65 @@ export async function loadReviews(storefront: Storefront): Promise<Review[]> {
     // No "Review" definition yet, or Shopify unreachable: local reviews only.
     console.error(error);
   }
-  return [...fromShopify, ...getAllReviews()];
+  return withProducts(storefront, [...fromShopify, ...getAllReviews()]);
+}
+
+type ReviewProduct = NonNullable<Review['product']>;
+
+/**
+ * Fills in the product each review is about (title, photo, price), from
+ * Shopify, for the "purchased" box on the card. Reviews about the shop in
+ * general have none; a handle Shopify does not know is simply skipped.
+ */
+async function withProducts(
+  storefront: Storefront,
+  reviews: Review[],
+): Promise<Review[]> {
+  const handles = [
+    ...new Set(
+      reviews
+        .map((review) => review.productHandle)
+        .filter((handle): handle is string => Boolean(handle)),
+    ),
+  ].slice(0, 30);
+  if (!handles.length) return reviews;
+
+  const fields = `title handle featuredImage { url altText } priceRange { minVariantPrice { amount currencyCode } }`;
+  const query = `query ReviewProducts {
+    ${handles.map((handle, index) => `p${index}: product(handle: ${JSON.stringify(handle)}) { ${fields} }`).join('\n')}
+  }`;
+
+  try {
+    const data = (await storefront.query(query, {
+      cache: storefront.CacheShort(),
+    })) as Record<
+      string,
+      | (Omit<ReviewProduct, 'image' | 'price'> & {
+          featuredImage?: ReviewProduct['image'];
+          priceRange?: {minVariantPrice: NonNullable<ReviewProduct['price']>};
+        })
+      | null
+    >;
+    const byHandle = new Map<string, ReviewProduct>();
+    for (const product of Object.values(data ?? {})) {
+      if (!product?.handle) continue;
+      byHandle.set(product.handle, {
+        title: product.title,
+        handle: product.handle,
+        image: product.featuredImage ?? null,
+        price: product.priceRange?.minVariantPrice ?? null,
+      });
+    }
+    return reviews.map((review) => {
+      const product = review.productHandle
+        ? byHandle.get(review.productHandle)
+        : undefined;
+      return product ? {...review, product} : review;
+    });
+  } catch (error) {
+    console.error(error);
+    return reviews;
+  }
 }
 
 /** One product's reviews first, then those about the shop in general. */

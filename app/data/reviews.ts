@@ -39,6 +39,24 @@ export interface Review {
   rating: number;
   /** The review, in the customer's own words — never translated or edited. */
   text: string;
+  /** A short headline, when the customer wrote one. */
+  title?: string;
+  /**
+   * true only when the review is tied to a real order (a review app's
+   * "verified buyer", or checked by hand against the order). Shows
+   * "verified purchase" on the card; never set it otherwise.
+   */
+  verified?: boolean;
+  /**
+   * The product reviewed, filled in by app/lib/reviews.ts from
+   * `productHandle` (its Shopify title, photo and price) — never typed here.
+   */
+  product?: {
+    title: string;
+    handle: string;
+    image?: {url: string; altText?: string | null} | null;
+    price?: {amount: string; currencyCode: string} | null;
+  };
   /**
    * Handle of the product reviewed (last part of its URL). Omit for a
    * review about the shop in general: it then shows on every product page.

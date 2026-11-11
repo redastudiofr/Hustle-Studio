@@ -52,6 +52,7 @@ export function AnimatedHero({
   secondaryCta,
   tone = 'light',
   layout = 'bottom',
+  rating,
 }: {
   imageMobile: HeroImage;
   imageDesktop: HeroImage;
@@ -69,6 +70,8 @@ export function AnimatedHero({
    * the title and one outlined button high on the left.
    */
   layout?: 'bottom' | 'top';
+  /** A line under the buttons, e.g. the shop's real review score. */
+  rating?: ReactNode;
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const {setTransparent} = useHeaderTone();
@@ -138,7 +141,10 @@ export function AnimatedHero({
           </motion.picture>
         )}
         {eyebrow && (
-          <motion.p variants={itemVariants} className="text-[11px] uppercase tracking-[0.14em] text-white/70 sm:text-xs">
+          <motion.p
+            variants={itemVariants}
+            className="text-[11px] uppercase tracking-[0.14em] text-white/70 sm:text-xs"
+          >
             {eyebrow}
           </motion.p>
         )}
@@ -149,20 +155,39 @@ export function AnimatedHero({
           {title}
         </motion.h1>
         {description && (
-          <motion.p variants={itemVariants} className="mt-4 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">
+          <motion.p
+            variants={itemVariants}
+            className="mt-4 max-w-md text-sm leading-relaxed text-white/80 sm:text-base"
+          >
             {description}
           </motion.p>
         )}
-        <motion.div variants={itemVariants} className="mt-7 flex flex-wrap items-center gap-3 sm:mt-9">
-          <Link to={ctaButton.href} prefetch="intent" className={glassButtonClassName}>
+        <motion.div
+          variants={itemVariants}
+          className="mt-7 flex flex-wrap items-center gap-3 sm:mt-9"
+        >
+          <Link
+            to={ctaButton.href}
+            prefetch="intent"
+            className={glassButtonClassName}
+          >
             {ctaButton.text}
           </Link>
           {secondaryCta && (
-            <Link to={secondaryCta.href} prefetch="intent" className={glassButtonClassName}>
+            <Link
+              to={secondaryCta.href}
+              prefetch="intent"
+              className={glassButtonClassName}
+            >
               {secondaryCta.text}
             </Link>
           )}
         </motion.div>
+        {rating && (
+          <motion.div variants={itemVariants} className="hero__rating">
+            {rating}
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );

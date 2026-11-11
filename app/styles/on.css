@@ -1487,3 +1487,249 @@ html .reviews .review-card {
 .st-tiktok__rail-wrap .rail-arrow--next {
   right: 14px;
 }
+
+/* ── Homepage grid: best sellers, capped rows, "view all products" ──────
+   Phone (2 columns): 5 rows = 10. Tablet (3): 4 rows = 12.
+   Computer (4): 4 rows = 16. The button reveals the rest. */
+html .rhome .product-grid--capped > *,
+html .rhome .product-grid--capped.product-grid--expanded > * {
+  display: block;
+}
+
+html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 11) {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 11) {
+    display: block;
+  }
+
+  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 13) {
+    display: none;
+  }
+}
+
+@media (min-width: 64em) {
+  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 13) {
+    display: block;
+  }
+
+  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 17) {
+    display: none;
+  }
+}
+
+/* The button shows at every width (it was phone-only). */
+html .rhome .home-show-all {
+  display: block;
+  max-width: 22rem;
+}
+
+@media (min-width: 64em) {
+  /* Sixteen or fewer products all fit on a computer: no button. */
+  html .rhome .home-show-all[data-count='11'],
+  html .rhome .home-show-all[data-count='12'],
+  html .rhome .home-show-all[data-count='13'],
+  html .rhome .home-show-all[data-count='14'],
+  html .rhome .home-show-all[data-count='15'],
+  html .rhome .home-show-all[data-count='16'] {
+    display: none;
+  }
+}
+
+/* ── Phones: no add-to-cart bar on the cards, larger products ──────── */
+@media (max-width: 47.99em) {
+  html .hs-card .hs-quick {
+    display: none;
+  }
+
+  html .rhome .product-grid {
+    gap: 0.75rem 0.35rem;
+    padding: 0.35rem;
+  }
+
+  html .sx-grid,
+  html .st-grid {
+    gap: 0.9rem 0.35rem;
+  }
+
+  html .hs-card.hs-card .hs-card__media :is(.hs-card__img, .product-card__img--main) {
+    transform: scale(1.18);
+  }
+}
+
+/* The video row scrolls freely (no snapping, which fought the endless wrap
+   and the phone's momentum). */
+html .st-community .st-tiktok__rail {
+  scroll-snap-type: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+html .st-community .st-tiktok__video {
+  scroll-snap-align: none;
+}
+
+/* ── Reviews, laid out like a review-platform block ──
+   Grey band, green score line, big uppercase title; white rounded cards:
+   stars, headline, text, then the customer (initial, name, "verified
+   purchase" only when real, date) and the product they bought. */
+html .rhome .reviews {
+  background: #f3f3f1;
+  padding: 3.5rem 0 3rem;
+}
+
+html .reviews__score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.85rem;
+  color: #333;
+}
+
+html .reviews__score .stars__tile-fill,
+html .hero-rating .stars__tile-fill {
+  fill: #00b67a;
+}
+
+html .rhome .reviews__title {
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+html .rhome .reviews-row__item {
+  flex: 0 0 min(82vw, 340px);
+}
+
+html .rhome .review-card--rich {
+  min-height: 12.5rem;
+  gap: 0.55rem;
+  padding: 1.25rem 1.3rem 1.1rem;
+  background: #fff;
+  border: 0;
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+html .review-card--rich .review-card__title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+html .review-card--rich .review-card__text {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: #333;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+html .review-card--rich .review-card__footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+html .review-card--rich .review-card__author {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+html .review-card--rich .review-card__avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: #111;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+html .review-card--rich .review-card__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: normal;
+}
+
+html .review-card--rich .review-card__verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #00a36c;
+}
+
+html .review-card--rich .review-card__meta {
+  margin: 0.1rem 0 0;
+  padding: 0;
+  font-size: 0.72rem;
+  color: #777;
+}
+
+html .review-card--rich .review-card__product {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background: #f5f5f3;
+}
+
+html .review-card--rich .review-card__product img {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #e8e8e6;
+}
+
+html .review-card--rich .review-card__product-label {
+  font-size: 0.66rem;
+  color: #777;
+}
+
+html .review-card--rich .review-card__product-title {
+  font-size: 0.76rem;
+  line-height: 1.3;
+}
+
+/* The shop's own score on the banner. */
+html .rhome .hero__rating {
+  margin-top: 1rem;
+}
+
+html .hero-rating {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+html .hero-rating:hover {
+  background: #fff;
+}

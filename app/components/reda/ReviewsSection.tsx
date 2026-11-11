@@ -9,38 +9,112 @@ import {useCenterFocus} from '~/lib/useCenterFocus';
 import {useI18n, useT} from '~/lib/i18n';
 
 /**
- * One review: the stars and the customer's name on the same line, then the
- * review in the words it was written in, then where and when it was left.
- * No avatar, no badge — what the customer said, and nothing invented around
- * it.
+ * One review, laid out like a review-platform card: the stars, the customer's
+ * headline if they wrote one, the review in their own words, then who left
+ * it — their initial in a circle, their name, "verified purchase" only when
+ * the review is tied to a real order, the date — and, when the review is
+ * about a product, that product as bought (its Shopify photo, title, price).
+ * Nothing on it is invented: a field the review does not have is left out.
  */
 function ReviewCard({review}: {review: Review}) {
   const {locale} = useI18n();
   const t = useT();
   const [open, close] = locale === 'fr' ? ['« ', ' »'] : ['“', '”'];
-  const place = review.location ?? '';
-  const meta = [place, review.date].filter(Boolean).join(' · ');
+  const name = review.name ?? t('reviews.anonymous');
+  const initial = name.trim().charAt(0).toUpperCase();
+  const when = [review.date, review.location].filter(Boolean).join(' · ');
 
   return (
-    <article className="review-card">
-      <header className="review-card__head">
-        {typeof review.rating === 'number' && (
-          <StarRating rating={review.rating} className="review-card__stars" />
-        )}
-        <span className="review-card__name">
-          {review.name ?? t('reviews.anonymous')}
-        </span>
-      </header>
-
+    <article className="review-card review-card--rich">
+      {typeof review.rating === 'number' && (
+        <StarRating rating={review.rating} className="review-card__stars" />
+      )}
+      {review.title && <h3 className="review-card__title">{review.title}</h3>}
       <p className="review-card__text">
         {open}
         {review.text}
         {close}
       </p>
 
-      {meta && <p className="review-card__meta">{meta}</p>}
+      <footer className="review-card__footer">
+        <div className="review-card__author">
+          <span className="review-card__avatar" aria-hidden="true">
+            {initial}
+          </span>
+          <div>
+            <p className="review-card__name">
+              {name}
+              {review.verified && (
+                <span className="review-card__verified">
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 16 16"
+                    aria-hidden="true"
+                  >
+                    <circle cx="8" cy="8" r="8" fill="currentColor" />
+                    <path
+                      d="M4.6 8.2l2.2 2.2 4.6-4.8"
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  {t('reviews.verified')}
+                </span>
+              )}
+            </p>
+            {when && <p className="review-card__meta">{when}</p>}
+          </div>
+        </div>
+
+        {review.product && (
+          <div className="review-card__product">
+            {review.product.image && (
+              <img
+                src={`${review.product.image.url}${review.product.image.url.includes('?') ? '&' : '?'}width=96`}
+                alt=""
+                width={40}
+                height={40}
+                loading="lazy"
+              />
+            )}
+            <div>
+              <p className="review-card__product-label">
+                {t('reviews.purchased')}
+              </p>
+              <p className="review-card__product-title">
+                {review.product.title}
+                {review.product.price && (
+                  <>
+                    {' · '}
+                    <strong>{formatPrice(review.product.price, locale)}</strong>
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+      </footer>
     </article>
   );
+}
+
+function formatPrice(
+  price: {amount: string; currencyCode: string},
+  locale: string,
+) {
+  try {
+    return new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-GB', {
+      style: 'currency',
+      currency: price.currencyCode,
+      maximumFractionDigits: 2,
+    }).format(Number(price.amount));
+  } catch {
+    return `${price.amount} ${price.currencyCode}`;
+  }
 }
 
 /**
@@ -146,6 +220,15 @@ export function ReviewsSection({
   const t = useT();
   if (!reviews.length) return null;
 
+  // The average of these very reviews — the same ones shown below.
+  const rated = reviews.filter((review) => review.rating > 0);
+  const average = rated.length
+    ? Math.round(
+        (rated.reduce((sum, review) => sum + review.rating, 0) / rated.length) *
+          10,
+      ) / 10
+    : null;
+
   const writeReviewHref = productTitle
     ? `/reviews?product=${encodeURIComponent(productTitle)}`
     : '/reviews';
@@ -153,6 +236,16 @@ export function ReviewsSection({
   return (
     <section className="reviews">
       <div className="reviews__head">
+        {average !== null && (
+          <div className="reviews__score">
+            <StarRating rating={average} className="reviews__score-stars" />
+            <p>
+              <strong>{average.toFixed(1)}/5</strong>
+              {' · '}
+              {t('reviews.scoreCount', {count: rated.length})}
+            </p>
+          </div>
+        )}
         <h2 className="reviews__title">{heading}</h2>
         {subheading ? <p className="reviews__subtitle">{subheading}</p> : null}
       </div>

@@ -39,6 +39,7 @@ export const en = {
   'home.ourStory': 'our story',
   'home.allProducts': 'all products',
   'home.viewMore': 'view more',
+  'home.showAll': 'view all products',
   'home.basics': 'our collections',
   'home.viewAll': 'view all',
 
@@ -515,8 +516,11 @@ export const en = {
   'reviews.forProduct': 'customer reviews',
   'reviews.next': 'next reviews',
   'reviews.prev': 'previous reviews',
-  'reviews.subtitle': 'honest words from {brand} customers.',
-  'reviews.title': 'What our customers say',
+  'reviews.subtitle': 'Quality, fit, details: they say it better than we do.',
+  'reviews.title': 'They fell for {brand}',
+  'reviews.verified': 'Verified purchase',
+  'reviews.purchased': 'Purchased',
+  'reviews.scoreCount': 'from {count} customer reviews',
   'reviews.empty': 'Be the first to review',
   'reviews.emptyText':
     'Wearing a {brand} piece? Tell us how it fits and feels.',
@@ -722,6 +726,7 @@ export const fr: Record<TranslationKey, string> = {
   'home.ourStory': 'notre histoire',
   'home.allProducts': 'tous les produits',
   'home.viewMore': 'voir plus',
+  'home.showAll': 'voir tous les produits',
   'home.basics': 'nos collections',
   'home.viewAll': 'tout voir',
 
@@ -1207,8 +1212,11 @@ export const fr: Record<TranslationKey, string> = {
   'reviews.forProduct': 'avis clients',
   'reviews.next': 'avis suivants',
   'reviews.prev': 'avis précédents',
-  'reviews.subtitle': 'les mots de clients {brand}, sans filtre.',
-  'reviews.title': 'Ce que disent nos clients',
+  'reviews.subtitle': 'Qualité, coupe, détails : ils en parlent mieux que nous.',
+  'reviews.title': 'Ils ont craqué pour {brand}',
+  'reviews.verified': 'Achat vérifié',
+  'reviews.purchased': 'A acheté',
+  'reviews.scoreCount': 'sur {count} avis clients',
   'reviews.empty': 'Soyez le premier à donner votre avis',
   'reviews.emptyText':
     'Vous portez une pièce {brand} ? Dites-nous comment elle tombe.',
