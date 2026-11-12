@@ -8,7 +8,11 @@ import {useHorizontalRail} from '~/lib/useHorizontalRail';
 
 /** The brand's own photos, floating in the "become part of the community" slider. */
 const COMMUNITY_PHOTOS = [
+  '/brand/community-07-pink-car.webp',
   '/brand/community-07-blue.jpg',
+  '/brand/community-07-black.webp',
+  '/brand/community-gwagon-tee.webp',
+  '/brand/community-07-pink.jpg',
   '/brand/community-07-grey.webp',
 ];
 
@@ -178,6 +182,13 @@ function VideoRail() {
     rail.scrollLeft = copyWidth() * Math.floor(COPIES / 2);
 
     let timer = 0;
+    // Where the drift last put the row: a scroll event that finds it there
+    // is the drift's own, not the visitor's.
+    let driftedTo = -1;
+    let heldUntil = 0;
+    const hold = () => {
+      heldUntil = performance.now() + 2500;
+    };
     const recentre = () => {
       const width = copyWidth();
       if (!width) return;
@@ -187,13 +198,67 @@ function VideoRail() {
       if (shift) rail.scrollLeft -= shift;
     };
     const onScroll = () => {
+      if (Math.abs(rail.scrollLeft - driftedTo) < 2) return;
+      // The visitor's own scroll (momentum included) holds the drift.
+      hold();
       window.clearTimeout(timer);
       timer = window.setTimeout(recentre, 180);
     };
     rail.addEventListener('scroll', onScroll, {passive: true});
+
+    /*
+     * Always turning: the row drifts slowly to the left on its own, forever
+     * (the copies are re-centred as it goes). A touch, a drag, the wheel or
+     * an arrow pauses it; it picks up again a moment after the hand leaves.
+     * Off screen, with reduced motion or in a hidden tab, it stays still.
+     */
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const SPEED = 34; // px per second
+    let frame = 0;
+    let last = 0;
+    let carry = 0;
+    let onScreen = false;
+    const step = (now: number) => {
+      frame = requestAnimationFrame(step);
+      const elapsed = last ? Math.min(now - last, 64) : 0;
+      last = now;
+      if (!onScreen || reduce.matches || document.hidden) return;
+      if (now < heldUntil) {
+        carry = 0;
+        return;
+      }
+      carry += (SPEED * elapsed) / 1000;
+      const whole = Math.floor(carry);
+      if (!whole) return;
+      carry -= whole;
+      rail.scrollLeft += whole;
+      const width = copyWidth();
+      if (width && rail.scrollLeft > width * (Math.floor(COPIES / 2) + 1)) {
+        rail.scrollLeft -= width;
+      }
+      driftedTo = rail.scrollLeft;
+    };
+    frame = requestAnimationFrame(step);
+
+    const seen = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+    });
+    seen.observe(rail);
+
+    const events = ['pointerdown', 'touchstart', 'wheel', 'keydown'] as const;
+    events.forEach((name) =>
+      rail.addEventListener(name, hold, {passive: true}),
+    );
+    const wrap = rail.parentElement;
+    wrap?.addEventListener('click', hold);
+
     return () => {
       window.clearTimeout(timer);
+      cancelAnimationFrame(frame);
+      seen.disconnect();
       rail.removeEventListener('scroll', onScroll);
+      events.forEach((name) => rail.removeEventListener(name, hold));
+      wrap?.removeEventListener('click', hold);
     };
   }, [ref]);
 

@@ -49,8 +49,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   to fill the screen; the story link) and "follow
   us" (Instagram + TikTok from BRAND.social in bold; the brand's videos from
   app/config/community.ts, files in public/brand/tiktok/, 480px, no sound,
-  endless both ways, playing once the block nears the screen,
-  swipe/drag/arrows). On the
+  endless both ways, playing once the block nears the screen, the row
+  drifting on its own and pausing while touched; swipe/drag/arrows). On the
   homepage it sits before "need help?" (route handle `communityInPage`);
   elsewhere the footer shows it. "Need help?" (HelpFaq) answers real
   questions from app/config/legal.ts and brand.ts.
