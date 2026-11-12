@@ -27,8 +27,7 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   wired in app/lib/context.ts).
 - Homepage (app/routes/_index.tsx): Reda Studio's homepage, ported with
   Hustle's photos and Shopify data — hero (AnimatedHero, photos served as
-  supplied; on phones two photos alternate, one full homepage load out of
-  two, via HS_HERO_SCRIPT in app/lib/hs-loader.ts), collections slider, every product, real reviews,
+  supplied; a portrait photo on phones, a landscape one on computers), collections slider, every product, real reviews,
   help, newsletter; no collection banners. Styles in reda-home.css, scoped under
   `.rhome`. The older configurable homepage (app/config/home.ts +
   components/home/HomeSections.tsx) is no longer rendered.
@@ -55,8 +54,8 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   homepage it sits before "need help?" (route handle `communityInPage`);
   elsewhere the footer shows it. "Need help?" (HelpFaq) answers real
   questions from app/config/legal.ts and brand.ts.
-- Welcome pop-up (-15%, e-mail and/or phone): code in promotions.ts
-  `welcomePopup`; sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
+- Welcome pop-up (-15%, e-mail and/or phone), switched off for now
+  (`welcomePopup.enabled: false` in promotions.ts); sign-ups go to a Google Sheet (GOOGLE_SHEET_WEBHOOK_URL),
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo
   centred, every page in the menu panel opened from the button on the right
   (app/config/navigation.ts `mobileLinks`).

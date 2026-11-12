@@ -46,16 +46,6 @@ import {useT} from '~/lib/i18n';
 const SMALLEST_CAP = 10;
 
 const HERO_IMAGE_MOBILE = {
-  src: '/brand/hero-mobile-07.webp',
-  alt: 'Black cropped 07 zip hoodie and joggers, and a pink 07 zip hoodie, against a deep blue backdrop',
-};
-
-/**
- * The phone banner's second photo: one full page load of the homepage out of
- * two shows it instead of HERO_IMAGE_MOBILE (HS_HERO_SCRIPT in
- * app/lib/hs-loader.ts picks, before the first paint).
- */
-const HERO_IMAGE_MOBILE_ALT = {
   src: '/brand/hero-mobile-gwagon.webp',
   alt: 'Black Need Money for G Wagon T-shirt with yellow lettering, worn on a sofa with a camo cap and cargo shorts',
 };
@@ -74,9 +64,12 @@ export const meta: Route.MetaFunction = ({matches}) =>
 
 export function links() {
   return [
-    // No preload for the phone photo: which of the two shows is only
-    // known in the browser, and preloading one would fetch it for nothing
-    // every other time.
+    {
+      rel: 'preload',
+      as: 'image',
+      href: HERO_IMAGE_MOBILE.src,
+      media: '(max-width: 47.99em)',
+    },
     {
       rel: 'preload',
       as: 'image',
@@ -121,7 +114,6 @@ export default function Homepage() {
       <AnimatedHero
         layout="top"
         imageMobile={HERO_IMAGE_MOBILE}
-        imageMobileAlt={HERO_IMAGE_MOBILE_ALT}
         imageDesktop={HERO_IMAGE_DESKTOP}
         eyebrow={t('home.eyebrow')}
         title={BRAND.name}

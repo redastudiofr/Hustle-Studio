@@ -109,7 +109,8 @@ export const PROMOTIONS = {
    * same; the pop-up shows once one of those two stores is configured.
    */
   welcomePopup: {
-    enabled: true,
+    // Off: no pop-up, and no "-15%" card on the set pages that opened it.
+    enabled: false,
     code: 'HUSTLE15',
     percent: 15,
   },

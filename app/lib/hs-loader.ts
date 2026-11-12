@@ -38,10 +38,3 @@ html.hs-loader-run .hs-loader__logo{animation:hs-loader-logo 1.75s var(--hs-ease
 @media (prefers-reduced-motion:reduce){html.hs-loader-run .hs-loader__logo{animation:none}}
 `;
 
-/**
- * Runs in <head> with the loader script: on a full load of the homepage,
- * counts the visit and marks every other one with `hs-hero-alt`, which shows
- * the banner's second phone photo (AnimatedHero `imageMobileAlt`). Done
- * before the first paint, so the photo never swaps in front of the visitor.
- */
-export const HS_HERO_SCRIPT = `(function(){if(location.pathname!=='/')return;try{var k='hs-hero-n',n=(parseInt(localStorage.getItem(k),10)||0)+1;localStorage.setItem(k,String(n));if(n%2===0)document.documentElement.classList.add('hs-hero-alt');}catch(e){}})();`;

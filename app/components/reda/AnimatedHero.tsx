@@ -43,7 +43,6 @@ const glassButtonClassName =
  */
 export function AnimatedHero({
   imageMobile,
-  imageMobileAlt,
   imageDesktop,
   badge,
   eyebrow,
@@ -57,12 +56,6 @@ export function AnimatedHero({
   hideTitle = false,
 }: {
   imageMobile: HeroImage;
-  /**
-   * A second phone photo, shown instead of imageMobile on every other visit
-   * (the html.hs-hero-alt class, set before the first paint). Both phone
-   * photos are lazy: the hidden one is then never downloaded.
-   */
-  imageMobileAlt?: HeroImage;
   imageDesktop: HeroImage;
   /** Petite image au-dessus de l'eyebrow, une version par largeur d'écran. */
   badge?: {mobile: string; desktop: string; alt: string};
@@ -119,20 +112,10 @@ export function AnimatedHero({
           src={imageMobile.src}
           alt={imageMobile.alt}
           fetchPriority="high"
-          loading={imageMobileAlt ? 'lazy' : 'eager'}
+          loading="eager"
           decoding="async"
           className="hero__img hero__img--mobile"
         />
-        {imageMobileAlt && (
-          <img
-            src={imageMobileAlt.src}
-            alt={imageMobileAlt.alt}
-            fetchPriority="high"
-            loading="lazy"
-            decoding="async"
-            className="hero__img hero__img--mobile hero__img--alt"
-          />
-        )}
         <img
           src={imageDesktop.src}
           alt={imageDesktop.alt}
