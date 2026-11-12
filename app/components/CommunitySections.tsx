@@ -7,13 +7,14 @@ import {useT} from '~/lib/i18n';
 import {useHorizontalRail} from '~/lib/useHorizontalRail';
 
 /** The brand's own photos, floating in the "become part of the community" slider. */
+// Resized to 560px wide (twice their largest size on screen).
 const COMMUNITY_PHOTOS = [
-  '/brand/community-07-pink-car.webp',
-  '/brand/community-07-blue.jpg',
-  '/brand/community-07-black.webp',
-  '/brand/community-gwagon-tee.webp',
-  '/brand/community-07-pink.jpg',
-  '/brand/community-07-grey.webp',
+  '/brand/community-07-pink-car-560.webp',
+  '/brand/community-07-blue-560.webp',
+  '/brand/community-07-black-560.webp',
+  '/brand/community-gwagon-tee-560.webp',
+  '/brand/community-07-pink-560.webp',
+  '/brand/community-07-grey-560.webp',
 ];
 
 /**
@@ -21,7 +22,7 @@ const COMMUNITY_PHOTOS = [
  * a wide screen (the track is two runs back to back, moved by half its width).
  */
 const RUN = Array.from(
-  {length: Math.max(1, Math.ceil(8 / COMMUNITY_PHOTOS.length))},
+  {length: Math.max(1, Math.ceil(6 / COMMUNITY_PHOTOS.length))},
   () => COMMUNITY_PHOTOS,
 ).flat();
 
@@ -83,6 +84,8 @@ export function CommunitySections() {
               key={position}
               src={src}
               alt=""
+              width={560}
+              height={747}
               loading="lazy"
               decoding="async"
               style={
@@ -152,7 +155,7 @@ function FollowUs() {
  * all decode at once). A page never scrolled that far downloads none.
  */
 /** How many times the video list is repeated in the endless row. */
-const COPIES = 5;
+const COPIES = 3;
 
 function VideoRail() {
   const t = useT();
@@ -165,7 +168,7 @@ function VideoRail() {
    * row starts in the middle copy. The position is moved back by whole
    * copies only once the row has come to rest (no scroll event for a
    * moment), never during a swipe — moving it mid-flight is what made the
-   * phone's momentum scrolling stutter. With five copies there is always
+   * phone's momentum scrolling stutter. With three copies there is always
    * plenty of room on both sides before it rests.
    */
   useEffect(() => {
@@ -218,11 +221,20 @@ function VideoRail() {
     let last = 0;
     let carry = 0;
     let onScreen = false;
+    // Measured once and on resize, never inside the frame loop: reading
+    // layout there would force the browser to lay the page out every frame.
+    let width = copyWidth();
+    const resized = new ResizeObserver(() => {
+      width = copyWidth();
+    });
+    resized.observe(rail);
+    const limit = () => width * (Math.floor(COPIES / 2) + 1);
+
     const step = (now: number) => {
       frame = requestAnimationFrame(step);
       const elapsed = last ? Math.min(now - last, 64) : 0;
       last = now;
-      if (!onScreen || reduce.matches || document.hidden) return;
+      if (reduce.matches || document.hidden) return;
       if (now < heldUntil) {
         carry = 0;
         return;
@@ -231,17 +243,22 @@ function VideoRail() {
       const whole = Math.floor(carry);
       if (!whole) return;
       carry -= whole;
-      rail.scrollLeft += whole;
-      const width = copyWidth();
-      if (width && rail.scrollLeft > width * (Math.floor(COPIES / 2) + 1)) {
-        rail.scrollLeft -= width;
-      }
-      driftedTo = rail.scrollLeft;
+      let next = rail.scrollLeft + whole;
+      if (width && next > limit()) next -= width;
+      rail.scrollLeft = next;
+      driftedTo = next;
     };
-    frame = requestAnimationFrame(step);
 
+    // The loop only runs while the row is on screen.
     const seen = new IntersectionObserver(([entry]) => {
       onScreen = entry.isIntersecting;
+      if (onScreen && !frame) {
+        last = 0;
+        frame = requestAnimationFrame(step);
+      } else if (!onScreen && frame) {
+        cancelAnimationFrame(frame);
+        frame = 0;
+      }
     });
     seen.observe(rail);
 
@@ -256,6 +273,7 @@ function VideoRail() {
       window.clearTimeout(timer);
       cancelAnimationFrame(frame);
       seen.disconnect();
+      resized.disconnect();
       rail.removeEventListener('scroll', onScroll);
       events.forEach((name) => rail.removeEventListener(name, hold));
       wrap?.removeEventListener('click', hold);
@@ -280,7 +298,7 @@ function VideoRail() {
           }
         }
       },
-      {root: rail, rootMargin: '0px 400px'},
+      {root: rail, rootMargin: '0px 60px'},
     );
 
     // Down the page: start once the row comes near the screen.

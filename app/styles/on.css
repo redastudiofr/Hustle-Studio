@@ -2437,3 +2437,24 @@ video:not([controls])::-webkit-media-controls {
   display: none !important;
   -webkit-appearance: none;
 }
+
+/* ── Community block, lighter to animate ──
+   The sliding track gets its own compositor layer; each section keeps its
+   paint to itself; on phones the floating photos carry a smaller shadow
+   (a 40px blur on a dozen moving layers is what made scrolling lag). */
+.st-community__track {
+  will-change: transform;
+}
+
+.st-community .st-community__photos,
+html .st-community .st-tiktok__rail {
+  contain: paint;
+}
+
+@media (max-width: 47.99em) {
+  .st-community .st-community__photos img,
+  .st-community .st-community__photos img:nth-child(n) {
+    border-width: 3px;
+    box-shadow: 0 8px 16px rgb(0 0 0 / 0.3);
+  }
+}
