@@ -267,13 +267,21 @@ function HeroRating({reviews}: {reviews: Review[]}) {
         10,
     ) / 10;
   return (
-    <a href="#reviews" className="hero-rating">
-      <StarRating rating={average} size={16} />
-      <span>
-        <strong>{average.toFixed(1)}/5</strong>
-        {' · '}
-        {t('reviews.scoreCount', {count: rated.length})}
+    <a href="#reviews" className="hero-proof">
+      <StarRating rating={average} size={26} className="hero-proof__stars" />
+      <span className="hero-proof__score">
+        {t('hero.proofScore', {
+          score: average.toFixed(1),
+          count: rated.length,
+        })}
       </span>
+      <span className="hero-proof__source">
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 1.3l2.06 4.18 4.61.67-3.34 3.25.79 4.6L8 11.8l-4.12 2.2.79-4.6L1.33 6.15l4.61-.67L8 1.3z" />
+        </svg>
+        {t('hero.proofSource')}
+      </span>
+      <span className="hero-proof__brand">{t('hero.proofBrand')}</span>
     </a>
   );
 }

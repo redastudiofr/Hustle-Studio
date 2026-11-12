@@ -70,7 +70,7 @@ export function AnimatedHero({
    * the title and one outlined button high on the left.
    */
   layout?: 'bottom' | 'top';
-  /** A line under the buttons, e.g. the shop's real review score. */
+  /** Above the eyebrow, bottom left: the shop's real review score. */
   rating?: ReactNode;
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -140,6 +140,11 @@ export function AnimatedHero({
             <img src={badge.mobile} alt={badge.alt} decoding="async" />
           </motion.picture>
         )}
+        {rating && (
+          <motion.div variants={itemVariants} className="hero__rating">
+            {rating}
+          </motion.div>
+        )}
         {eyebrow && (
           <motion.p
             variants={itemVariants}
@@ -183,11 +188,6 @@ export function AnimatedHero({
             </Link>
           )}
         </motion.div>
-        {rating && (
-          <motion.div variants={itemVariants} className="hero__rating">
-            {rating}
-          </motion.div>
-        )}
       </motion.div>
     </section>
   );

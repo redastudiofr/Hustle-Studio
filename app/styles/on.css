@@ -1715,27 +1715,88 @@ html .review-card--rich .review-card__product-title {
   line-height: 1.3;
 }
 
-/* The shop's own score on the banner. */
+/* The shop's own score on the banner, bottom left above "new collection":
+   green squares, a serif score, the source, the brand line. No card. */
 html .rhome .hero__rating {
-  margin-top: 1rem;
+  margin-bottom: 1.1rem;
 }
 
-html .hero-rating {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.8rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  color: #111;
-  font-size: 0.78rem;
+html .hero-proof {
+  --proof-square: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  max-width: 100%;
+  color: #fff;
+  text-align: left;
   text-decoration: none;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.25);
 }
 
-html .hero-rating:hover {
-  background: #fff;
+html .hero-proof__stars .stars__icons {
+  display: flex;
+  gap: 3px;
+}
+
+html .hero-proof__stars svg {
+  width: var(--proof-square);
+  height: var(--proof-square);
+}
+
+html .hero-proof .stars__tile-fill,
+html .reviews__score .stars__tile-fill {
+  fill: #00b67a;
+}
+
+html .hero-proof .stars__tile {
+  fill: rgba(255, 255, 255, 0.35);
+}
+
+html .hero-proof__score {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1.15rem, 0.8rem + 1.4vw, 1.75rem);
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+html .hero-proof__source {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: clamp(1rem, 0.85rem + 0.6vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+html .hero-proof__source svg {
+  width: 1.35em;
+  height: 1.35em;
+  fill: currentColor;
+}
+
+html .hero-proof__brand {
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+/* Every text of the hero bottom left, aligned on one edge. */
+html .rhome .hero--top > :last-child {
+  top: auto;
+  bottom: 9%;
+  left: 4.5%;
+  transform: none;
+  width: auto;
+  max-width: min(36rem, 91%);
+  align-items: flex-start;
+  text-align: left;
+}
+
+html .rhome .hero--top > :last-child > div {
+  justify-content: flex-start;
 }
 
 /* Product page, phone: the rows are swiped, as on the homepage — no arrows
@@ -1747,25 +1808,55 @@ html .hero-rating:hover {
 }
 
 /* Hero, phone: the portrait photo has both faces in its upper half, so the
-   title, buttons and score sit at the bottom, over a soft dark fade. */
+   title, buttons and score sit at the bottom, over a soft dark fade, which
+   also runs up a little higher to carry the score. */
 @media (max-width: 47.99em) {
   html .rhome .hero--top .hero__scrim {
     display: block;
     background: linear-gradient(
       to top,
-      rgba(8, 14, 32, 0.78) 0%,
-      rgba(8, 14, 32, 0.35) 38%,
-      rgba(8, 14, 32, 0) 60%
+      rgba(8, 14, 32, 0.82) 0%,
+      rgba(8, 14, 32, 0.45) 45%,
+      rgba(8, 14, 32, 0) 70%
     );
   }
 
   html .rhome .hero--top > :last-child {
-    top: auto;
     bottom: 5%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 92%;
-    max-width: 92%;
+    left: 1.1rem;
+    max-width: calc(100% - 2.2rem);
+  }
+
+  /* A taller banner on the phone: the portrait photo fills it, trimmed
+     only at the sides, so the faces stay above the text block. */
+  html .rhome.home .hero.hero--top {
+    aspect-ratio: auto;
+    height: min(88svh, 660px);
+  }
+
+  html .rhome .hero--top .hero__media,
+  html .rhome .hero--top .hero__img--mobile {
+    height: 100%;
+  }
+
+  html .rhome .hero--top .hero__img--mobile {
+    width: 100%;
+    object-fit: cover;
+    object-position: 50% 0%;
+  }
+
+  html .hero-proof {
+    --proof-square: 18px;
+    gap: 0.3rem;
+  }
+
+  html .rhome .hero__rating {
+    margin-bottom: 0.7rem;
+  }
+
+  html .hero-proof__brand {
+    font-size: 0.56rem;
+    letter-spacing: 0.2em;
   }
 }
 
