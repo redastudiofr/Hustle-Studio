@@ -12,7 +12,7 @@ const COMMUNITY_PHOTOS = [
   '/brand/community-07-pink-car-560.webp',
   '/brand/community-07-blue-560.webp',
   '/brand/community-07-black-560.webp',
-  '/brand/community-gwagon-tee-560.webp',
+  '/brand/community-gwagon-tee-street-560.webp',
   '/brand/community-07-pink-560.webp',
   '/brand/community-07-grey-560.webp',
 ];
@@ -174,7 +174,7 @@ function VideoRail() {
   useEffect(() => {
     const rail = ref.current;
     if (!rail) return;
-    // One copy is nine videos plus nine gaps; the row has one gap fewer.
+    // One copy is every video plus as many gaps; the row has one gap fewer.
     const copyWidth = () => {
       const track = rail.firstElementChild as HTMLElement | null;
       const gap = track

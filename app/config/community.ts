@@ -16,7 +16,6 @@ export const TIKTOK_VIDEOS: CommunityVideo[] = [
   {src: '/brand/tiktok/video-02.mp4', poster: '/brand/tiktok/video-02.webp'},
   {src: '/brand/tiktok/video-03.mp4', poster: '/brand/tiktok/video-03.webp'},
   {src: '/brand/tiktok/video-04.mp4', poster: '/brand/tiktok/video-04.webp'},
-  {src: '/brand/tiktok/video-05.mp4', poster: '/brand/tiktok/video-05.webp'},
   {src: '/brand/tiktok/video-06.mp4', poster: '/brand/tiktok/video-06.webp'},
   {src: '/brand/tiktok/video-07.mp4', poster: '/brand/tiktok/video-07.webp'},
   {src: '/brand/tiktok/video-08.mp4', poster: '/brand/tiktok/video-08.webp'},
