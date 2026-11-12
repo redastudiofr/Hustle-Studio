@@ -117,7 +117,9 @@ export default function Homepage() {
         imageDesktop={HERO_IMAGE_DESKTOP}
         eyebrow={t('home.eyebrow')}
         title={BRAND.name}
-        description={t('home.tagline')}
+        // The brand name stays the page's heading for search engines and
+        // screen readers, but is not shown on the banner.
+        hideTitle
         ctaButton={{text: t('home.shopNow'), href: '/collections'}}
         secondaryCta={{text: t('home.ourStory'), href: '/about'}}
         rating={

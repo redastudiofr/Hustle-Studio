@@ -53,6 +53,7 @@ export function AnimatedHero({
   tone = 'light',
   layout = 'bottom',
   rating,
+  hideTitle = false,
 }: {
   imageMobile: HeroImage;
   imageDesktop: HeroImage;
@@ -72,6 +73,8 @@ export function AnimatedHero({
   layout?: 'bottom' | 'top';
   /** Above the eyebrow, bottom left: the shop's real review score. */
   rating?: ReactNode;
+  /** Keeps the title for search engines and screen readers only. */
+  hideTitle?: boolean;
 }) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const {setTransparent} = useHeaderTone();
@@ -153,12 +156,16 @@ export function AnimatedHero({
             {eyebrow}
           </motion.p>
         )}
-        <motion.h1
-          variants={itemVariants}
-          className="mt-3 text-3xl font-bold leading-[1.1] text-white sm:mt-4 sm:text-5xl md:text-6xl"
-        >
-          {title}
-        </motion.h1>
+        {hideTitle ? (
+          <h1 className="sr-only">{title}</h1>
+        ) : (
+          <motion.h1
+            variants={itemVariants}
+            className="mt-3 text-3xl font-bold leading-[1.1] text-white sm:mt-4 sm:text-5xl md:text-6xl"
+          >
+            {title}
+          </motion.h1>
+        )}
         {description && (
           <motion.p
             variants={itemVariants}
