@@ -294,9 +294,30 @@ function VideoRail() {
     );
     near.observe(rail);
 
+    /*
+     * Safari can refuse to start even muted videos on its own (Low Power
+     * Mode, its auto-play setting): they then sit on their poster. The
+     * visitor's first touch, click or key anywhere on the page lets them
+     * play, so try again then.
+     */
+    const retry = () => {
+      videos.forEach((video) => {
+        if (!video.paused) return;
+        const box = video.getBoundingClientRect();
+        if (box.right < -400 || box.left > window.innerWidth + 400) return;
+        video.muted = true;
+        video.play().catch(() => {});
+      });
+    };
+    const gestures = ['pointerdown', 'touchend', 'keydown'] as const;
+    gestures.forEach((name) =>
+      document.addEventListener(name, retry, {passive: true}),
+    );
+
     return () => {
       near.disconnect();
       along.disconnect();
+      gestures.forEach((name) => document.removeEventListener(name, retry));
     };
   }, [ref]);
 

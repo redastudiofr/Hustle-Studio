@@ -2402,3 +2402,29 @@ html .hs-match__title {
     padding: 3rem 3.5rem;
   }
 }
+
+/* Videos without controls (follow us, ambient videos): never show the
+   browser's own play triangle over them. Safari draws one when it refuses
+   to auto-play (Low Power Mode, its auto-play setting); the poster stays
+   instead, and the video starts at the visitor's first touch.
+   One rule per selector: a browser that does not know one of them would
+   otherwise drop the whole list. */
+video:not([controls])::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+video:not([controls])::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+video:not([controls])::-webkit-media-controls-panel {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
+video:not([controls])::-webkit-media-controls {
+  display: none !important;
+  -webkit-appearance: none;
+}
