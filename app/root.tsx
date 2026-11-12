@@ -23,7 +23,7 @@ import redaPdpStyles from '~/styles/reda-pdp.css?url';
 import onStyles from '~/styles/on.css?url';
 import redaHomeStyles from '~/styles/reda-home.css?url';
 import hsProductCardStyles from '~/styles/hs-product-card.css?url';
-import {HS_LOADER_CSS, HS_LOADER_SCRIPT} from '~/lib/hs-loader';
+import {HS_HERO_SCRIPT, HS_LOADER_CSS, HS_LOADER_SCRIPT} from '~/lib/hs-loader';
 import {HsLoader} from '~/components/hs/HsLoader';
 import {HsToastViewport} from '~/components/hs/HsToast';
 import tailwindCss from './styles/tailwind.css?url';
@@ -247,6 +247,10 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <script
           nonce={nonce}
           dangerouslySetInnerHTML={{__html: HS_LOADER_SCRIPT}}
+        />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{__html: HS_HERO_SCRIPT}}
         />
         <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>

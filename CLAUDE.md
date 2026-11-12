@@ -26,8 +26,9 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   app/data/productEnglish.ts in every Shopify answer (app/lib/englishCopy.ts,
   wired in app/lib/context.ts).
 - Homepage (app/routes/_index.tsx): Reda Studio's homepage, ported with
-  Hustle's photos and Shopify data — hero (AnimatedHero, Paris photos
-  served as supplied), collections slider, every product, real reviews,
+  Hustle's photos and Shopify data — hero (AnimatedHero, photos served as
+  supplied; on phones two photos alternate, one full homepage load out of
+  two, via HS_HERO_SCRIPT in app/lib/hs-loader.ts), collections slider, every product, real reviews,
   help, newsletter; no collection banners. Styles in reda-home.css, scoped under
   `.rhome`. The older configurable homepage (app/config/home.ts +
   components/home/HomeSections.tsx) is no longer rendered.
