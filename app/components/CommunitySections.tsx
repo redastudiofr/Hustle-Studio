@@ -339,16 +339,16 @@ function VideoRail() {
      * Mode, its auto-play setting). The visitor's next touch, click or key
      * lets them play: try again then — still only for the videos on screen.
      */
-    const gestures = ['pointerdown', 'touchend', 'keydown'] as const;
-    gestures.forEach((name) =>
-      document.addEventListener(name, sync, {passive: true}),
-    );
+    // Only a deliberate click (no drag) retries: never the touch that ends a
+    // swipe, which is when the videos used to jump on screen.
+    const onClick = () => sync();
+    document.addEventListener('click', onClick, {passive: true});
 
     return () => {
       near.disconnect();
       seen.disconnect();
       along.disconnect();
-      gestures.forEach((name) => document.removeEventListener(name, sync));
+      document.removeEventListener('click', onClick);
     };
   }, [ref]);
 
@@ -368,6 +368,11 @@ function VideoRail() {
                 muted
                 loop
                 playsInline
+                controls={false}
+                controlsList="nodownload nofullscreen noremoteplayback"
+                disablePictureInPicture
+                disableRemotePlayback
+                {...{'x-webkit-airplay': 'deny'}}
                 preload="none"
                 aria-hidden="true"
                 tabIndex={-1}

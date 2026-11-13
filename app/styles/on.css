@@ -295,7 +295,10 @@ body:has(.home) .site-header {
   transition: transform 0.8s var(--on-ease);
 }
 
-.home:not(.rhome) .collections-slider__tile:hover .collections-slider__media img {
+.home:not(.rhome)
+  .collections-slider__tile:hover
+  .collections-slider__media
+  img {
   transform: scale(1.04);
 }
 
@@ -749,7 +752,9 @@ a.st-card,
 
 body:has(.hero--ink) .site-header.site-header--transparent,
 body:has(.hero--ink) .site-header.site-header--transparent .site-header__logo,
-body:has(.hero--ink) .site-header.site-header--transparent .site-header__icon-btn {
+body:has(.hero--ink)
+  .site-header.site-header--transparent
+  .site-header__icon-btn {
   color: var(--on-ink);
 }
 
@@ -1334,7 +1339,9 @@ html .reviews .review-card {
   padding: 2.5rem 0 0;
   border-top: 1px solid rgb(255 255 255 / 0.15);
   color: #fff;
-  transition: color 0.5s ease 0.9s, border-color 0.5s ease 0.9s;
+  transition:
+    color 0.5s ease 0.9s,
+    border-color 0.5s ease 0.9s;
 }
 
 .st-community--armed .st-tiktok {
@@ -1496,26 +1503,41 @@ html .rhome .product-grid--capped.product-grid--expanded > * {
   display: block;
 }
 
-html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 11) {
+html
+  .rhome
+  .product-grid--capped:not(.product-grid--expanded)
+  > *:nth-child(n + 11) {
   display: none;
 }
 
 @media (min-width: 48em) {
-  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 11) {
+  html
+    .rhome
+    .product-grid--capped:not(.product-grid--expanded)
+    > *:nth-child(n + 11) {
     display: block;
   }
 
-  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 13) {
+  html
+    .rhome
+    .product-grid--capped:not(.product-grid--expanded)
+    > *:nth-child(n + 13) {
     display: none;
   }
 }
 
 @media (min-width: 64em) {
-  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 13) {
+  html
+    .rhome
+    .product-grid--capped:not(.product-grid--expanded)
+    > *:nth-child(n + 13) {
     display: block;
   }
 
-  html .rhome .product-grid--capped:not(.product-grid--expanded) > *:nth-child(n + 17) {
+  html
+    .rhome
+    .product-grid--capped:not(.product-grid--expanded)
+    > *:nth-child(n + 17) {
     display: none;
   }
 }
@@ -1551,8 +1573,16 @@ html .rhome .home-show-all {
     padding: 0.75rem;
   }
 
-  html .rhome .hs-card.hs-card .hs-card__media :is(.hs-card__img, .product-card__img--main),
-  html .rhome .hs-card.hs-card .hs-card__media:hover :is(.hs-card__img, .product-card__img--main) {
+  html
+    .rhome
+    .hs-card.hs-card
+    .hs-card__media
+    :is(.hs-card__img, .product-card__img--main),
+  html
+    .rhome
+    .hs-card.hs-card
+    .hs-card__media:hover
+    :is(.hs-card__img, .product-card__img--main) {
     padding: 2%;
     object-fit: contain;
     transform: none;
@@ -1563,7 +1593,10 @@ html .rhome .home-show-all {
     gap: 0.9rem 0.35rem;
   }
 
-  html .hs-card.hs-card .hs-card__media :is(.hs-card__img, .product-card__img--main) {
+  html
+    .hs-card.hs-card
+    .hs-card__media
+    :is(.hs-card__img, .product-card__img--main) {
     transform: scale(1.18);
   }
 }
@@ -2609,4 +2642,77 @@ html .st-community .st-tiktok__rail {
   .hs-look__card {
     transition: none;
   }
+}
+
+/* Review card, Reda's structure: stars and name on one line, the words,
+   then the place and date small at the bottom. Overrides the card above. */
+html .rhome .review-card--rich,
+html .rpdp .review-card--rich {
+  min-height: 0;
+  gap: 0.7rem;
+  padding: 1.1rem 1.15rem 1rem;
+  background: #fff;
+  border: 1px solid #e6e6e4;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+html .review-card--rich .review-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+html .review-card--rich .review-card__stars .stars__tile-fill {
+  fill: #00b67a;
+}
+
+html .review-card--rich .review-card__name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+html .review-card--rich .review-card__text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #111;
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+}
+
+html .review-card--rich .review-card__title {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+html .review-card--rich .review-card__footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: 0.5rem;
+}
+
+html .review-card--rich .review-card__meta {
+  margin: 0;
+  padding: 0;
+  font-size: 0.7rem;
+  color: #777;
+}
+
+html .review-card--rich .review-card__verified {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #00a36c;
+}
+
+/* Follow-us videos are decoration: they take no touch of their own, so a
+   swipe over them scrolls the row and never opens the phone's own video
+   player on top of the page. */
+html .st-community .st-tiktok__video {
+  pointer-events: none;
 }

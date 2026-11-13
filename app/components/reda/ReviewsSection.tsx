@@ -21,55 +21,30 @@ function ReviewCard({review}: {review: Review}) {
   const t = useT();
   const [open, close] = locale === 'fr' ? ['« ', ' »'] : ['“', '”'];
   const name = review.name ?? t('reviews.anonymous');
-  const initial = name.trim().charAt(0).toUpperCase();
-  const when = [review.date, review.location].filter(Boolean).join(' · ');
+  // Reda's card: stars and name on one line, the words, then the place and
+  // the date small at the bottom. "Verified purchase" and the product box
+  // come only from real data (see app/lib/reviews.ts).
+  const meta = [review.location, review.date].filter(Boolean).join(' · ');
 
   return (
     <article className="review-card review-card--rich">
-      {typeof review.rating === 'number' && (
-        <StarRating rating={review.rating} className="review-card__stars" />
-      )}
+      <header className="review-card__head">
+        {typeof review.rating === 'number' && (
+          <StarRating rating={review.rating} className="review-card__stars" />
+        )}
+        <span className="review-card__name">{name}</span>
+      </header>
       {review.title && <h3 className="review-card__title">{review.title}</h3>}
       <p className="review-card__text">
         {open}
         {review.text}
         {close}
       </p>
-
       <footer className="review-card__footer">
-        <div className="review-card__author">
-          <span className="review-card__avatar" aria-hidden="true">
-            {initial}
-          </span>
-          <div>
-            <p className="review-card__name">
-              {name}
-              {review.verified && (
-                <span className="review-card__verified">
-                  <svg
-                    width="13"
-                    height="13"
-                    viewBox="0 0 16 16"
-                    aria-hidden="true"
-                  >
-                    <circle cx="8" cy="8" r="8" fill="currentColor" />
-                    <path
-                      d="M4.6 8.2l2.2 2.2 4.6-4.8"
-                      fill="none"
-                      stroke="#fff"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  {t('reviews.verified')}
-                </span>
-              )}
-            </p>
-            {when && <p className="review-card__meta">{when}</p>}
-          </div>
-        </div>
-
+        {meta && <p className="review-card__meta">{meta}</p>}
+        {review.verified && (
+          <p className="review-card__verified">{t('reviews.verified')}</p>
+        )}
         {review.product && (
           <div className="review-card__product">
             {review.product.image && (
