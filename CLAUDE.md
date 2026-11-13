@@ -45,8 +45,10 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   off until a Hustle code is set in app/lib/reda/offers.ts.
 - Community block (app/components/CommunitySections.tsx): "become part of
   the community" (the whole block, "follow us" included, fills black from
-  the logo; a slider of floating brand photos, COMMUNITY_PHOTOS, repeated
-  to fill the screen; the story link) and "follow
+  the logo; a looks carousel, LOOKS + LookRail: centre card full size,
+  neighbours smaller behind it, swipe/drag/arrows, each look named after
+  and linked to its Shopify product — no invented people or verified
+  badges; the story link) and "follow
   us" (Instagram + TikTok from BRAND.social in bold; the brand's videos from
   app/config/community.ts, files in public/brand/tiktok/, 480px, no sound,
   endless both ways, playing once the block nears the screen, the row

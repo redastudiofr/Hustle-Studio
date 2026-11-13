@@ -6,30 +6,46 @@ import {TIKTOK_VIDEOS} from '~/config/community';
 import {useT} from '~/lib/i18n';
 import {useHorizontalRail} from '~/lib/useHorizontalRail';
 
-/** The brand's own photos, floating in the "become part of the community" slider. */
-// Resized to 560px wide (twice their largest size on screen).
-const COMMUNITY_PHOTOS = [
-  '/brand/community-07-pink-car-560.webp',
-  '/brand/community-07-blue-560.webp',
-  '/brand/community-07-black-560.webp',
-  '/brand/community-gwagon-tee-street-560.webp',
-  '/brand/community-07-pink-560.webp',
-  '/brand/community-07-grey-560.webp',
+/**
+ * The looks in the "become part of the community" carousel: the brand's own
+ * photos (560px wide), each with the product it shows and a link to it.
+ */
+const LOOKS = [
+  {
+    src: '/brand/community-07-pink-car-560.webp',
+    product: 'Set 07 — Pink',
+    href: '/products/set-07-pink',
+  },
+  {
+    src: '/brand/community-07-blue-560.webp',
+    product: 'Zip 07 — Blue',
+    href: '/products/zip-07-bleu',
+  },
+  {
+    src: '/brand/community-07-black-560.webp',
+    product: 'Set 07 — Black',
+    href: '/products/set-07-black',
+  },
+  {
+    src: '/brand/community-gwagon-tee-street-560.webp',
+    product: 'Need Money for G Wagon T-shirt',
+    href: '/products/need-money-for-g-wagon-t-shirt-black',
+  },
+  {
+    src: '/brand/community-07-pink-560.webp',
+    product: 'Set 07 — Pink',
+    href: '/products/set-07-pink',
+  },
+  {
+    src: '/brand/community-07-grey-560.webp',
+    product: 'Set 07 — Grey',
+    href: '/products/set-07-gris',
+  },
 ];
 
 /**
- * One run of the slider: the photos repeated until there are enough to span
- * a wide screen (the track is two runs back to back, moved by half its width).
- */
-const RUN = Array.from(
-  {length: Math.max(1, Math.ceil(6 / COMMUNITY_PHOTOS.length))},
-  () => COMMUNITY_PHOTOS,
-).flat();
-
-/**
  * "become part of the community": the whole block fills with black from the
- * logo outwards, then the photos arrive one by one in a slow slider, every
- * one of them floating.
+ * logo outwards; under the title, a carousel of looks (LookRail).
  *
  * Everything starts visible: without JavaScript, or with reduced motion,
  * nothing is hidden. Once JavaScript runs the block is armed (empty disc,
@@ -74,29 +90,7 @@ export function CommunitySections() {
       <h2 className="st-community__title" id="st-community-title">
         {t('store.communityTitle')}
       </h2>
-      <div className="st-community__photos" aria-hidden="true">
-        <div className="st-community__track">
-          {/* Two copies back to back: the slider loops without a jump. */}
-          {[...RUN, ...RUN].map((src, position) => (
-            <img
-              // Fixed list, never reordered.
-              // eslint-disable-next-line react/no-array-index-key
-              key={position}
-              src={src}
-              alt=""
-              width={560}
-              height={747}
-              loading="lazy"
-              decoding="async"
-              style={
-                {
-                  '--i': position % RUN.length,
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </div>
-      </div>
+      <LookRail />
       <div className="st-community__about">
         <Link to="/about" prefetch="intent" className="st-community__story">
           {t('store.storyButton')}
@@ -373,4 +367,193 @@ function VideoRail() {
       />
     </div>
   );
+}
+
+/**
+ * The looks carousel: the card in the middle full size, its neighbours
+ * smaller and tucked behind it. Native horizontal scrolling with centre
+ * snapping — a finger swipes it, the mouse drags it, the arrows step it —
+ * and each card's size follows its distance from the centre, frame by frame,
+ * so it moves with the finger. Card centres are measured once (and on
+ * resize), never during the scroll.
+ */
+function LookRail() {
+  const t = useT();
+  const {ref, scrollByCard} = useLookRail();
+
+  return (
+    <div className="hs-look">
+      <div className="hs-look__rail" ref={ref}>
+        {LOOKS.map((look, index) => (
+          <Link
+            // Fixed list, never reordered.
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            to={look.href}
+            prefetch="intent"
+            className="hs-look__card"
+            draggable={false}
+          >
+            <img
+              src={look.src}
+              alt={look.product}
+              width={560}
+              height={747}
+              loading="lazy"
+              decoding="async"
+              draggable={false}
+            />
+            <span className="hs-look__info">
+              <span className="hs-look__name">{look.product}</span>
+              <span className="hs-look__cta">
+                {t('look.viewProduct')} <span aria-hidden="true">→</span>
+              </span>
+            </span>
+          </Link>
+        ))}
+      </div>
+      <button
+        type="button"
+        className="hs-look__arrow hs-look__arrow--prev"
+        onClick={() => scrollByCard(-1)}
+        aria-label={t('rail.prevProduct')}
+      >
+        <svg viewBox="0 0 18 18" aria-hidden="true">
+          <path d="M16 9H3M8 4L3 9l5 5" />
+        </svg>
+      </button>
+      <button
+        type="button"
+        className="hs-look__arrow hs-look__arrow--next"
+        onClick={() => scrollByCard(1)}
+        aria-label={t('rail.nextProduct')}
+      >
+        <svg viewBox="0 0 18 18" aria-hidden="true">
+          <path d="M2 9h13M10 4l5 5-5 5" />
+        </svg>
+      </button>
+    </div>
+  );
+}
+
+function useLookRail() {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const centres = useRef<number[]>([]);
+
+  useEffect(() => {
+    const rail = ref.current;
+    if (!rail) return;
+    const cards = [...rail.querySelectorAll<HTMLElement>('.hs-look__card')];
+    if (!cards.length) return;
+
+    const measure = () => {
+      centres.current = cards.map(
+        (card) => card.offsetLeft + card.offsetWidth / 2,
+      );
+    };
+    let frame = 0;
+    const paint = () => {
+      frame = 0;
+      const width = cards[0].offsetWidth || 1;
+      const middle = rail.scrollLeft + rail.clientWidth / 2;
+      cards.forEach((card, index) => {
+        const distance = Math.min(
+          3,
+          Math.abs(centres.current[index] - middle) / width,
+        );
+        card.style.setProperty('--look-scale', String(1 - distance * 0.13));
+        card.style.zIndex = String(30 - Math.round(distance * 10));
+      });
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(paint);
+    };
+
+    measure();
+    // Start on the middle look, with neighbours on both sides.
+    const first = Math.floor(cards.length / 2);
+    rail.scrollLeft = centres.current[first] - rail.clientWidth / 2;
+    paint();
+
+    const resized = new ResizeObserver(() => {
+      measure();
+      schedule();
+    });
+    resized.observe(rail);
+    rail.addEventListener('scroll', schedule, {passive: true});
+
+    // Mouse drag on a computer (touch scrolls natively).
+    let drag: {x: number; left: number; moved: boolean} | null = null;
+    const down = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
+      drag = {x: event.clientX, left: rail.scrollLeft, moved: false};
+      rail.classList.add('is-dragging');
+    };
+    const move = (event: PointerEvent) => {
+      if (!drag) return;
+      const dx = event.clientX - drag.x;
+      if (Math.abs(dx) > 4) drag.moved = true;
+      rail.scrollLeft = drag.left - dx;
+    };
+    const up = () => {
+      if (!drag) return;
+      const moved = drag.moved;
+      drag = null;
+      rail.classList.remove('is-dragging');
+      // Settle on the nearest look.
+      const middle = rail.scrollLeft + rail.clientWidth / 2;
+      let best = 0;
+      centres.current.forEach((centre, index) => {
+        if (
+          Math.abs(centre - middle) < Math.abs(centres.current[best] - middle)
+        )
+          best = index;
+      });
+      rail.scrollTo({
+        left: centres.current[best] - rail.clientWidth / 2,
+        behavior: 'smooth',
+      });
+      if (moved) {
+        // A drag is not a click on the card under the pointer.
+        rail.addEventListener('click', (e) => e.preventDefault(), {
+          capture: true,
+          once: true,
+        });
+      }
+    };
+    rail.addEventListener('pointerdown', down);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      resized.disconnect();
+      rail.removeEventListener('scroll', schedule);
+      rail.removeEventListener('pointerdown', down);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+  }, []);
+
+  const scrollByCard = (step: number) => {
+    const rail = ref.current;
+    if (!rail || !centres.current.length) return;
+    const middle = rail.scrollLeft + rail.clientWidth / 2;
+    let current = 0;
+    centres.current.forEach((centre, index) => {
+      if (
+        Math.abs(centre - middle) < Math.abs(centres.current[current] - middle)
+      )
+        current = index;
+    });
+    const count = centres.current.length;
+    // Past either end, go round to the other.
+    const target = (current + step + count) % count;
+    rail.scrollTo({
+      left: centres.current[target] - rail.clientWidth / 2,
+      behavior: 'smooth',
+    });
+  };
+
+  return {ref, scrollByCard};
 }
