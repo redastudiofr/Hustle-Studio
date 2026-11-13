@@ -279,57 +279,76 @@ function VideoRail() {
     if (!rail || typeof IntersectionObserver === 'undefined') return;
     const videos = [...rail.querySelectorAll('video')];
 
-    // Along the row: play what is in view or close to it.
+    /*
+     * A video plays only when the row is really on the screen AND the video
+     * is in view along the row; everything else is paused. Nothing is
+     * fetched before the row comes near: no `autoplay` attribute (which
+     * made the browser download and start every video as the page opened,
+     * wherever the row was), and the posters are only set when the row gets
+     * close.
+     */
+    const inRow = new Set<HTMLVideoElement>();
+    let onScreen = false;
+    const sync = () => {
+      for (const video of videos) {
+        if (onScreen && inRow.has(video)) {
+          if (!video.paused) continue;
+          video.muted = true;
+          video.preload = 'auto';
+          video.play().catch(() => {});
+        } else if (!video.paused) {
+          video.pause();
+        }
+      }
+    };
+
     const along = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           const video = entry.target as HTMLVideoElement;
-          if (entry.isIntersecting) {
-            video.preload = 'auto';
-            video.play().catch(() => {});
-          } else {
-            video.pause();
-          }
+          if (entry.isIntersecting) inRow.add(video);
+          else inRow.delete(video);
         }
+        sync();
       },
       {root: rail, rootMargin: '0px 60px'},
     );
+    videos.forEach((video) => along.observe(video));
 
-    // Down the page: start once the row comes near the screen.
+    const seen = new IntersectionObserver(([entry]) => {
+      onScreen = entry.isIntersecting;
+      sync();
+    });
+    seen.observe(rail);
+
+    // Posters, once the row is near.
     const near = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
-        videos.forEach((video) => along.observe(video));
+        videos.forEach((video) => {
+          if (video.dataset.poster) video.poster = video.dataset.poster;
+        });
         near.disconnect();
       },
-      {rootMargin: '600px 0px'},
+      {rootMargin: '800px 0px'},
     );
     near.observe(rail);
 
     /*
      * Safari can refuse to start even muted videos on its own (Low Power
-     * Mode, its auto-play setting): they then sit on their poster. The
-     * visitor's first touch, click or key anywhere on the page lets them
-     * play, so try again then.
+     * Mode, its auto-play setting). The visitor's next touch, click or key
+     * lets them play: try again then — still only for the videos on screen.
      */
-    const retry = () => {
-      videos.forEach((video) => {
-        if (!video.paused) return;
-        const box = video.getBoundingClientRect();
-        if (box.right < -400 || box.left > window.innerWidth + 400) return;
-        video.muted = true;
-        video.play().catch(() => {});
-      });
-    };
     const gestures = ['pointerdown', 'touchend', 'keydown'] as const;
     gestures.forEach((name) =>
-      document.addEventListener(name, retry, {passive: true}),
+      document.addEventListener(name, sync, {passive: true}),
     );
 
     return () => {
       near.disconnect();
+      seen.disconnect();
       along.disconnect();
-      gestures.forEach((name) => document.removeEventListener(name, retry));
+      gestures.forEach((name) => document.removeEventListener(name, sync));
     };
   }, [ref]);
 
@@ -345,11 +364,10 @@ function VideoRail() {
                 key={`${copy}-${video.src}`}
                 className="st-tiktok__video"
                 src={video.src}
-                poster={video.poster}
+                data-poster={video.poster}
                 muted
                 loop
                 playsInline
-                autoPlay
                 preload="none"
                 aria-hidden="true"
                 tabIndex={-1}
