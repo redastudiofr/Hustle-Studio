@@ -1,4 +1,5 @@
 import type {ProductDetails} from '~/lib/productDetails';
+import {Accordion} from '~/components/reda/Accordion';
 import {useT} from '~/lib/i18n';
 
 /**
@@ -23,18 +24,20 @@ export function ProductDetailsList({details}: {details: ProductDetails}) {
     {label: t('details.care'), value: details.care},
   ].filter((row): row is {label: string; value: string} => Boolean(row.value));
 
+  // Only the title shows; the facts open on a click, like the FAQ below.
   return (
     <section className="pdp__section product-details">
-      <h2 className="pdp__section-title">{t('details.title')}</h2>
-      <p className="product-details__summary">{details.summary}</p>
-      <dl className="product-details__list">
-        {rows.map((row) => (
-          <div className="product-details__row" key={row.label}>
-            <dt>{row.label}</dt>
-            <dd>{row.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <Accordion title={t('details.title')}>
+        <p className="product-details__summary">{details.summary}</p>
+        <dl className="product-details__list">
+          {rows.map((row) => (
+            <div className="product-details__row" key={row.label}>
+              <dt>{row.label}</dt>
+              <dd>{row.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </Accordion>
     </section>
   );
 }

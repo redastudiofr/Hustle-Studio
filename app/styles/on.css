@@ -2787,3 +2787,12 @@ html
   :is(.hs-card__img, .product-card__img--main, .hs-card__img--alt) {
   transform: none;
 }
+
+/* Product page accordions ("the details", the FAQ): the panel opens by its
+   max-height (components/reda/Accordion.tsx). An older grid rule from
+   editorial.css collapsed its contents to zero rows, so nothing showed. */
+html .rpdp .accordion__panel {
+  display: block;
+  grid-template-rows: none;
+  transition: max-height 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
