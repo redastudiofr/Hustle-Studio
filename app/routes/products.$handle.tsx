@@ -445,7 +445,7 @@ export default function Product() {
           {(collections) => (
             <CollectionShowcase
               collections={collections}
-              heading={t('store.communityTitle')}
+              heading={t('product.collectionsTitle')}
             />
           )}
         </Await>

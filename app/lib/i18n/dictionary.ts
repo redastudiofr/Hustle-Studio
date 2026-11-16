@@ -41,6 +41,7 @@ export const en = {
   'home.viewMore': 'view more',
   'home.showAll': 'view all products',
   'home.basics': 'our collections',
+  'product.collectionsTitle': 'our collection',
   'home.viewAll': 'view all',
 
   // — collections —
@@ -759,6 +760,7 @@ export const fr: Record<TranslationKey, string> = {
   'home.viewMore': 'voir plus',
   'home.showAll': 'voir tous les produits',
   'home.basics': 'nos collections',
+  'product.collectionsTitle': 'notre collection',
   'home.viewAll': 'tout voir',
 
   // — collections —
