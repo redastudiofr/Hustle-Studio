@@ -2716,3 +2716,74 @@ html .review-card--rich .review-card__verified {
 html .st-community .st-tiktok__video {
   pointer-events: none;
 }
+
+/* ── Bigger product photos in "You might also like" ── */
+html .pdp__related .related-rail__item {
+  flex-basis: 60%;
+}
+
+@media (min-width: 40em) {
+  html .pdp__related .related-rail__item {
+    flex-basis: 34%;
+  }
+}
+
+@media (min-width: 64em) {
+  html .pdp__related .related-rail__item {
+    flex-basis: 26%;
+  }
+}
+
+/* ── Collections: each product photo shown whole, in more room ──
+   The phone crop (cover + zoom) and the desktop zoom cut the garment off;
+   here the whole photo sits inside its square, with air around it. */
+html .sx-grid {
+  gap: 0.6rem 0.45rem;
+  margin-inline: 0.5rem;
+}
+
+html
+  .sx-grid
+  .hs-card.hs-card
+  .hs-card__media
+  :is(.hs-card__img, .product-card__img--main, .product-card__img--alt) {
+  object-fit: contain;
+  padding: 4%;
+  transform: none;
+}
+
+html .sx-grid .hs-card .hs-card__media {
+  background: #f4f4f2;
+}
+
+@media (min-width: 64em) {
+  html .sx-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem 0.75rem;
+  }
+}
+
+/* Product cards in the grids (collections, search, "you might also like"):
+   the photo is the whole picture, centred in its square. Shopify crops a
+   photo to a square on request, which cut the garment off; the square is
+   now drawn here instead, so the image keeps its own shape. */
+html .hs-card .hs-card__media {
+  aspect-ratio: 1 / 1;
+  background: #f4f4f2;
+}
+
+html .hs-card .hs-card__media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4%;
+}
+
+html
+  .hs-card.hs-card
+  .hs-card__media
+  :is(.hs-card__img, .product-card__img--main, .hs-card__img--alt) {
+  transform: none;
+}

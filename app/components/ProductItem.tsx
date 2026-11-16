@@ -1,5 +1,5 @@
 import {Link} from 'react-router';
-import {Image} from '@shopify/hydrogen';
+
 import type {
   ProductItemFragment,
   CollectionItemFragment,
@@ -91,12 +91,10 @@ export function ProductItem({
             )
           )}
           {image ? (
-            <Image
-              alt={image.altText || product.title}
-              aspectRatio="1/1"
+            <WholeImage
               data={image}
+              alt={image.altText || product.title}
               loading={loading}
-              sizes="(min-width: 64em) 25vw, 50vw"
               className="st-card__img hs-card__img"
             />
           ) : (
@@ -104,12 +102,10 @@ export function ProductItem({
           )}
           {/* The other photo, shown when the pointer is over the card. */}
           {hoverImage && (
-            <Image
-              alt=""
-              aspectRatio="1/1"
+            <WholeImage
               data={hoverImage}
+              alt=""
               loading="lazy"
-              sizes="(min-width: 64em) 25vw, 50vw"
               className="st-card__img st-card__img--hover hs-card__img--alt"
             />
           )}
@@ -136,5 +132,36 @@ export function ProductItem({
         )}
       </Link>
     </div>
+  );
+}
+
+/**
+ * A product photo as the whole picture: Shopify's CDN is asked for the
+ * width only, never a crop (Hydrogen's Image adds a centre crop, which cut
+ * garments off). The square and the fit are set in CSS (on.css).
+ */
+function WholeImage({
+  data,
+  alt,
+  loading,
+  className,
+}: {
+  data: {url: string; width?: number | null; height?: number | null};
+  alt: string;
+  loading?: 'eager' | 'lazy';
+  className: string;
+}) {
+  const base = data.url.includes('?') ? `${data.url}&` : `${data.url}?`;
+  const widths = [200, 400, 600, 800];
+  return (
+    <img
+      src={`${base}width=400`}
+      srcSet={widths.map((w) => `${base}width=${w} ${w}w`).join(', ')}
+      sizes="(min-width: 64em) 25vw, 50vw"
+      alt={alt}
+      loading={loading}
+      decoding="async"
+      className={className}
+    />
   );
 }
