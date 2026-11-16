@@ -2753,7 +2753,7 @@ html
 }
 
 html .sx-grid .hs-card .hs-card__media {
-  background: #f4f4f2;
+  background: #fff;
 }
 
 @media (min-width: 64em) {
@@ -2769,7 +2769,7 @@ html .sx-grid .hs-card .hs-card__media {
    now drawn here instead, so the image keeps its own shape. */
 html .hs-card .hs-card__media {
   aspect-ratio: 1 / 1;
-  background: #f4f4f2;
+  background: #fff;
 }
 
 html .hs-card .hs-card__media img {
