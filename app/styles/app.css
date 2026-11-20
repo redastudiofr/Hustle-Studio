@@ -225,8 +225,8 @@
   width: 9.25rem;
   height: 1.25rem;
   background-color: currentColor;
-  -webkit-mask: url('/images/logo-wordmark.png') center / contain no-repeat;
-  mask: url('/images/logo-wordmark.png') center / contain no-repeat;
+  -webkit-mask: var(--brand-wordmark) center / contain no-repeat;
+  mask: var(--brand-wordmark) center / contain no-repeat;
   transition: opacity 200ms var(--ease-out-soft);
 }
 

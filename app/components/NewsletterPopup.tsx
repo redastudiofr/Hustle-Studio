@@ -170,16 +170,7 @@ export function NewsletterPopup({enabled}: {enabled: boolean}) {
 
   useEffect(() => {
     if (!enabled || hasSignedUp() || recentlyDismissed()) return;
-    // Never under the opening loader: wait until it has gone, then open.
-    let timer: ReturnType<typeof setTimeout>;
-    const tryOpen = () => {
-      if (document.documentElement.classList.contains('hs-loader-run')) {
-        timer = setTimeout(tryOpen, OPEN_DELAY_MS);
-        return;
-      }
-      setOpen(true);
-    };
-    timer = setTimeout(tryOpen, OPEN_DELAY_MS);
+    const timer = setTimeout(() => setOpen(true), OPEN_DELAY_MS);
     return () => clearTimeout(timer);
   }, [enabled]);
 

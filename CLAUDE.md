@@ -62,10 +62,7 @@ same app on Mini Oxygen through `server.ts`; keep the two entries in step.
   by e-mail (Resend) and to Shopify customers — docs/POPUP.md. Header: logo
   centred, every page in the menu panel opened from the button on the right
   (app/config/navigation.ts `mobileLinks`).
-- Opening loader (every full page load, desktop and phone; white screen,
-  the wordmark, then a fade to transparent; a plain fade with reduced
-  motion): app/lib/hs-loader.ts (inline CSS + head script) +
-  app/components/hs/HsLoader.tsx. Product cards (ProductItem and
+- No opening loader any more (removed on the owner's request). Product cards (ProductItem and
   reda/ProductItem): hover zoom, "Add to cart" through the cart's LinesAdd
   (one variant: added at once; sizes: the customer picks one on the card,
   never a default), header count bump and toasts — app/components/hs/,
