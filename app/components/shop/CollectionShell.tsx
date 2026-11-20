@@ -3,13 +3,12 @@ import {Form, NavLink, useRouteLoaderData} from 'react-router';
 import type {RootLoader} from '~/root';
 import {SortSelect} from '~/components/SortSelect';
 import {useT} from '~/lib/i18n';
-import {ModelViewProvider} from '~/lib/modelView';
 import type {SortOption} from '~/lib/sort';
 import {hasFilters, type ShopFilters} from '~/lib/shopFilters';
 
 /**
  * The frame of every collection page, as in the reference shop: the row of
- * Shopify collections, the "Model" switch, the item count, the filter panel
+ * Shopify collections, the item count, the filter panel
  * and the sort menu; then the product grid (children).
  */
 export function CollectionShell({
@@ -40,54 +39,52 @@ export function CollectionShell({
   const [filterOpen, setFilterOpen] = useState(false);
 
   return (
-    <ModelViewProvider>
-      <div className="sx-collection">
-        <h1 className="sr-only">{title}</h1>
+    <div className="sx-collection">
+      <h1 className="sr-only">{title}</h1>
 
-        <div className="sx-collection__bar">
-          {collections.length > 0 && (
-            <nav className="sx-tabs" aria-label={t('nav.collections')}>
-              {collections.map((collection) => (
-                <NavLink
-                  key={collection.id}
-                  to={`/collections/${collection.handle}`}
-                  prefetch="intent"
-                  className="sx-tabs__link"
-                  aria-current={
-                    collection.handle === activeHandle ? 'page' : undefined
-                  }
-                >
-                  {collection.title}
-                </NavLink>
-              ))}
-            </nav>
-          )}
-        </div>
-
-        <div className="sx-collection__tools">
-          <p className="sx-collection__count">
-            {t('shop.items', {count: more ? `${count}+` : count})}
-          </p>
-          <div className="sx-collection__actions">
-            <button
-              type="button"
-              className="sx-tool"
-              aria-expanded={filterOpen}
-              onClick={() => setFilterOpen((open) => !open)}
-            >
-              <FilterIcon />
-              {t('shop.filter')}
-              {hasFilters(filters) && <span className="sx-tool__dot" />}
-            </button>
-            <SortSelect value={sort} exclude={sortExclude} />
-          </div>
-        </div>
-
-        {filterOpen && <FilterPanel filters={filters} sort={sort} />}
-
-        {children}
+      <div className="sx-collection__bar">
+        {collections.length > 0 && (
+          <nav className="sx-tabs" aria-label={t('nav.collections')}>
+            {collections.map((collection) => (
+              <NavLink
+                key={collection.id}
+                to={`/collections/${collection.handle}`}
+                prefetch="intent"
+                className="sx-tabs__link"
+                aria-current={
+                  collection.handle === activeHandle ? 'page' : undefined
+                }
+              >
+                {collection.title}
+              </NavLink>
+            ))}
+          </nav>
+        )}
       </div>
-    </ModelViewProvider>
+
+      <div className="sx-collection__tools">
+        <p className="sx-collection__count">
+          {t('shop.items', {count: more ? `${count}+` : count})}
+        </p>
+        <div className="sx-collection__actions">
+          <button
+            type="button"
+            className="sx-tool"
+            aria-expanded={filterOpen}
+            onClick={() => setFilterOpen((open) => !open)}
+          >
+            <FilterIcon />
+            {t('shop.filter')}
+            {hasFilters(filters) && <span className="sx-tool__dot" />}
+          </button>
+          <SortSelect value={sort} exclude={sortExclude} />
+        </div>
+      </div>
+
+      {filterOpen && <FilterPanel filters={filters} sort={sort} />}
+
+      {children}
+    </div>
   );
 }
 

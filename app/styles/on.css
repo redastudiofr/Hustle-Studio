@@ -2804,3 +2804,11 @@ html .rpdp .accordion__panel {
     height: 15px;
   }
 }
+
+/* Product photos in the collection, search and "you might also like" grids:
+   one size everywhere — a 4 : 5 frame, the whole photo inside it. The
+   homepage grid keeps Reda Studio's own square. */
+html .sx-grid .hs-card .hs-card__media,
+html .pdp__related .hs-card .hs-card__media {
+  aspect-ratio: 4 / 5;
+}

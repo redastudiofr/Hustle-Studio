@@ -8,7 +8,6 @@ import type {
 } from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {useT} from '~/lib/i18n';
-import {useModelView} from '~/lib/modelView';
 import {Price} from '~/components/Price';
 import {HsQuickAdd} from '~/components/hs/HsCardActions';
 
@@ -24,8 +23,8 @@ type GridProduct =
  * nothing is left), the title, the prices — the old one struck through, the
  * new one in red — and how many colours exist. Everything comes from Shopify.
  *
- * Hovering a card shows the product's second Shopify image. With the
- * collection page's "Model" switch on, the two swap places.
+ * The card always shows the product's first Shopify photo; hovering it shows
+ * the second one.
  */
 export function ProductItem({
   product,
@@ -37,14 +36,14 @@ export function ProductItem({
   variant?: 'grid' | 'rail';
 }) {
   const t = useT();
-  const {on: modelView} = useModelView();
   const variantUrl = useVariantUrl(product.handle);
   const soldOut = !product.availableForSale;
 
   const images = 'images' in product ? (product.images?.nodes ?? []) : [];
   const featured = product.featuredImage;
   const second = images.find((img) => img.id !== featured?.id);
-  const image = modelView && second ? second : featured;
+  // Always the first Shopify photo; hovering shows the second one.
+  const image = featured;
   const hoverImage = image === featured ? second : featured;
 
   const price = product.priceRange.minVariantPrice;
