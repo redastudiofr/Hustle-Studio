@@ -88,9 +88,9 @@ export function links() {
     // files (see app/config/brand.ts). The .ico bundles 16/32/48px and is the
     // most reliable fallback; the 32px PNG is preferred by modern browsers,
     // and apple-touch-icon covers iOS home-screen / bookmarks.
-    {rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png'},
-    {rel: 'icon', sizes: '48x48', href: '/favicon.ico'},
-    {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png'},
+    {rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-v2-32.png'},
+    {rel: 'icon', sizes: '48x48', href: '/favicon-v2.ico'},
+    {rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon-v2.png'},
   ];
 }
 
