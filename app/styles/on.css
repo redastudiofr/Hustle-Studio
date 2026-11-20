@@ -814,17 +814,16 @@ html .reviews .review-card {
   justify-content: flex-start;
 }
 
-/* The wordmark: the "Hustle Studio®" file is wide and short (about 9 : 1),
-   so the box is a wide strip, the text centred in it. */
+/* The logo: the ® mark, a square. */
 .site-header .site-header__wordmark {
-  width: 190px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 }
 
 @media (min-width: 64em) {
   .site-header .site-header__wordmark {
-    width: 240px;
-    height: 27px;
+    width: 30px;
+    height: 30px;
   }
 }
 
@@ -2798,10 +2797,10 @@ html .rpdp .accordion__panel {
   transition: max-height 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Logo in the header, phone: a little smaller so it clears the search icon. */
+/* Logo in the header, phone: the ® mark, square. */
 @media (max-width: 47.99em) {
   .site-header .site-header__wordmark {
-    width: 128px;
-    height: 15px;
+    width: 24px;
+    height: 24px;
   }
 }

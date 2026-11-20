@@ -31,7 +31,7 @@ export const HS_LOADER_CSS = `
 .hs-loader{--hs-ease:cubic-bezier(.4,0,.2,1);position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;background:#fff;color:#111;opacity:1;pointer-events:none}
 html.hs-loader-run .hs-loader{display:flex;animation:hs-loader-clear .8s var(--hs-ease) .95s forwards}
 html.hs-loader-run,html.hs-loader-run body{overflow:hidden}
-.hs-loader__logo{display:block;width:min(420px,72vw);aspect-ratio:1012/114;background:currentColor;-webkit-mask:var(--brand-wordmark) center/contain no-repeat;mask:var(--brand-wordmark) center/contain no-repeat}
+.hs-loader__logo{display:block;width:min(150px,40vw);aspect-ratio:1/1;background:currentColor;-webkit-mask:var(--brand-wordmark) center/contain no-repeat;mask:var(--brand-wordmark) center/contain no-repeat}
 html.hs-loader-run .hs-loader__logo{animation:hs-loader-logo 1.75s var(--hs-ease) forwards}
 @keyframes hs-loader-clear{to{opacity:0}}
 @keyframes hs-loader-logo{0%{opacity:0;transform:scale(.97)}25%{opacity:1;transform:none}100%{opacity:1;transform:scale(1.02)}}
