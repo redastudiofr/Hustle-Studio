@@ -27,7 +27,7 @@ export const BRAND = {
     /** Wordmark, black on transparent. Painted with currentColor via a CSS mask. */
     wordmark: '/brand/logo-wordmark.png',
     /** width / height of the wordmark file, so the header reserves the right space. */
-    wordmarkRatio: 1,
+    wordmarkRatio: 1012 / 114,
     /** Square brand mark (the flower), used for structured data. */
     icon: '/brand/icon-512.png',
   },
